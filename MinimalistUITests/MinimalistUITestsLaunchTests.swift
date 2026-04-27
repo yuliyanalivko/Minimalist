@@ -1,10 +1,3 @@
-//
-//  MinimalistUITestsLaunchTests.swift
-//  MinimalistUITests
-//
-//  Created by Yuliya Naliuka on 27.04.26.
-//
-
 import XCTest
 
 final class MinimalistUITestsLaunchTests: XCTestCase {

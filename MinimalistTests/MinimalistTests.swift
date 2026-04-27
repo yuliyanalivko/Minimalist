@@ -1,10 +1,3 @@
-//
-//  MinimalistTests.swift
-//  MinimalistTests
-//
-//  Created by Yuliya Naliuka on 27.04.26.
-//
-
 import Testing
 @testable import Minimalist
 
