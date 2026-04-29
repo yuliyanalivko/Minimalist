@@ -5,32 +5,32 @@ import Testing
 struct FontTests {
     
     @Test
-    func appName() async throws {
+    func appName_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.appName == .system(size: 25, weight: .semibold))
     }
     
     @Test
-    func headline() async throws {
+    func headline_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.headline == .system(size: 17, weight: .semibold))
     }
     
     @Test
-    func inputText() async throws {
+    func inputText_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.inputText == .system(size: 16, weight: .regular))
     }
     
     @Test
-    func cardTitle() async throws {
+    func cardTitle_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.cardTitle == .system(size: 15, weight: .regular))
     }
     
     @Test
-    func body() async throws {
+    func body_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.body == .system(size: 15, weight: .regular))
     }
     
     @Test
-    func caption() async throws {
+    func caption_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.caption == .system(size: 12, weight: .regular))
     }
 }
