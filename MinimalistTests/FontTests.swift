@@ -10,6 +10,11 @@ struct FontTests {
     }
     
     @Test
+    func icon_hasExpectedSizeAndWeight() async throws {
+        #expect(Font.AppFont.icon == .system(size: 24, weight: .regular))
+    }
+    
+    @Test
     func headline_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.headline == .system(size: 17, weight: .semibold))
     }
@@ -32,10 +37,5 @@ struct FontTests {
     @Test
     func caption_hasExpectedSizeAndWeight() async throws {
         #expect(Font.AppFont.caption == .system(size: 12, weight: .regular))
-    }
-    
-    @Test
-    func icon_hasExpectedSizeAndWeight() async throws {
-        #expect(Font.AppFont.icon == .system(size: 24, weight: .regular))
     }
 }

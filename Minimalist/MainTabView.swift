@@ -25,15 +25,14 @@ struct MainTabView: View {
         }
     }
     
-    private let tabs = Tab.allCases.map { tab in
-        TabItem(
-            title: tab.title,
-            icon: tab.icon
-        )
-    }
+    private let viewModel = FlatTabViewModel(
+        tabs: Tab.allCases.map { tab in
+            TabItem( title: tab.title, icon: tab.icon )
+        }
+    )
     
     var body: some View {
-        FlatTabView(tabs: tabs)
+        FlatTabView(viewModel: viewModel!)
     }
 }
 

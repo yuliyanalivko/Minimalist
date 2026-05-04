@@ -5,28 +5,20 @@ struct TabBarView: View {
     
     var body: some View {
         HStack {
-            ForEach(viewModel.tabs) { tab in
+            ForEach(Array(viewModel.tabs.enumerated()), id: \.offset) { index, tab in
                 Spacer()
                 
                 VStack {
                     Image(systemName: tab.icon)
                         .font(.AppFont.icon)
                     
-                    ZStack {
-                        Text(tab.title)
-                            .fontWeight(.bold)
-                            .opacity(viewModel.isSelected(tab) ? 1 : 0)
-                        
-                        Text(tab.title)
-                            .fontWeight(.medium)
-                            .opacity(viewModel.isSelected(tab) ? 0 : 1)
-                    }
-                    .font(.AppFont.caption)
-                    .padding(.top, 5)
+                    Text(tab.title)
+                        .font(.AppFont.caption)
+                        .padding(.top, 5)
                 }
-                .foregroundStyle(viewModel.isSelected(tab) ? Color.AppColor.primary : Color.AppColor.textSecondary)
+                .foregroundStyle(viewModel.isSelected(index) ? Color.AppColor.primary : Color.AppColor.textSecondary)
                 .onTapGesture {
-                    viewModel.select(tab)
+                    viewModel.selectedTabIndex = index
                 }
                 
                 Spacer()

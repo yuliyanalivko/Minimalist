@@ -1,27 +1,41 @@
 import SwiftUI
 
 @Observable
-class FlatTabViewModel {
+class FlatTabViewModel: BaseViewModel {
     enum TabError: Error {
         case emptyTabs
     }
     
     let tabs: [TabItem]
     
-    var selectedTab: TabItem
+    var selectedTabIndex: Int = 0 {
+        didSet {
+            let validIndex = Self.validSelectedTabIndex(selectedTabIndex, tabsCount: tabs.count)
+            
+            if selectedTabIndex != validIndex {
+                selectedTabIndex = validIndex
+            }
+        }
+    }
     
-    init(tabs: [TabItem], selectedTab: TabItem? = nil) {
-        assert(!tabs.isEmpty, "Tabs cannot be empty")
-
+    var selectedTab: TabItem {
+        tabs[selectedTabIndex]
+    }
+    
+    init?(tabs: [TabItem], selectedTabIndex: Int = 0) {
+        guard !tabs.isEmpty else {
+            return nil
+        }
+        
         self.tabs = tabs
-        self.selectedTab = tabs.first(where: { $0.id == selectedTab?.id }) ?? tabs.first!
+        self.selectedTabIndex = Self.validSelectedTabIndex(selectedTabIndex, tabsCount: tabs.count)
     }
     
-    func select(_ tab: TabItem) {
-        selectedTab = tabs.first(where: { $0.id == tab.id }) ?? tabs.first!
+    func isSelected(_ index: Int) -> Bool {
+        selectedTabIndex == index
     }
     
-    func isSelected(_ tab: TabItem) -> Bool {
-        selectedTab.id == tab.id
+    private static func validSelectedTabIndex(_ index: Int, tabsCount: Int) -> Int {
+        max(0, min(index, tabsCount - 1))
     }
 }
