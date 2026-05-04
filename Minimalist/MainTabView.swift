@@ -1,11 +1,15 @@
 import SwiftUI
 
 struct MainTabView: View {
-    enum Tab: String {
-        case catalog = "Catalog"
-        case favorites = "Favorites"
-        case cart = "Cart"
-        case settings = "Settings"
+    enum Tab: String, CaseIterable {
+        case catalog
+        case favorites
+        case cart
+        case settings
+        
+        var title: String {
+            rawValue.capitalized
+        }
         
         var icon: String {
             switch self {
@@ -21,28 +25,12 @@ struct MainTabView: View {
         }
     }
     
-    private let tabs: [TabItem] = [
+    private let tabs = Tab.allCases.map { tab in
         TabItem(
-            title: Tab.catalog.rawValue,
-            icon: Tab.catalog.icon,
-            //TODO: view:
-        ),
-        TabItem(
-            title: Tab.favorites.rawValue,
-            icon: Tab.favorites.icon,
-            //TODO: view:
-        ),
-        TabItem(
-            title: Tab.cart.rawValue,
-            icon: Tab.cart.icon,
-            //TODO: view:
-        ),
-        TabItem(
-            title: Tab.settings.rawValue,
-            icon: Tab.settings.icon,
-            //TODO: view:
+            title: tab.title,
+            icon: tab.icon
         )
-    ]
+    }
     
     var body: some View {
         FlatTabView(tabs: tabs)

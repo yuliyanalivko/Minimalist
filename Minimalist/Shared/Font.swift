@@ -31,5 +31,9 @@ extension Font {
         static var caption: Font {
             .system(size: 12, weight: .regular)
         }
+        
+        static var icon: Font {
+            .system(size: 24, weight: .regular)
+        }
     }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct PrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
-    @Environment(\.isFocused) var isFocused: Bool
+    @Environment(\.isFocused) private var isFocused: Bool
     @State private var isHovering = false
 
     func makeBody(configuration: Configuration) -> some View {
@@ -13,7 +13,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .cornerRadius(10)
             .overlay(
                 isFocused ? RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.primaryFocus, lineWidth: 2) : nil
+                    .stroke(Color.AppColor.primaryFocus, lineWidth: 2) : nil
             )
             .fontWeight(.semibold)
             .textCase(.uppercase)
@@ -22,6 +22,6 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
     
     private func backgroundColor(isPressed: Bool) -> Color {
-        isPressed || isHovering ? Color("primaryFocus") : Color("primary").opacity(isEnabled ? 1 : 0.5)
+        isPressed || isHovering ? Color.AppColor.primaryFocus : Color.AppColor.primary.opacity(isEnabled ? 1 : 0.5)
     }
 }

@@ -1,18 +1,20 @@
 import SwiftUI
 
 struct FlatTabView: View {
-    let tabs: [TabItem]
-
-    @State var selectedTabIndex: Int = 0
+    @State private var viewModel: FlatTabViewModel
     
+    init(tabs: [TabItem], selectedTab: TabItem? = nil) {
+        self.viewModel = FlatTabViewModel(tabs: tabs, selectedTab: selectedTab)
+    }
+
     var body: some View {
         ZStack {
             //TODO: tabs[selectedTabIndex].view
-            Text(tabs[selectedTabIndex].title)
+            Text(viewModel.selectedTab.title)
             
             VStack {
                 Spacer()
-                TabBarView(tabs: tabs, selectedTabIndex: $selectedTabIndex)
+                TabBarView(viewModel: viewModel)
                     .ignoresSafeArea(edges: .bottom)
             }
         }
