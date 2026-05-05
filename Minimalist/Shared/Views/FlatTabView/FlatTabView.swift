@@ -5,9 +5,7 @@ struct FlatTabView: View {
 
     var body: some View {
         ZStack {
-            //TODO: tabs[selectedTabIndex].view
-            Text(viewModel.selectedTab.title)
-            
+            viewModel.selectedTab.view
             
             VStack {
                 Spacer()

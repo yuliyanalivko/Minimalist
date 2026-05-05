@@ -1,3 +1,4 @@
+import SwiftUI
 import Testing
 @testable import Minimalist
 
@@ -6,15 +7,18 @@ struct FlatTabViewModelTests {
     let tabs: [TabItem] = [
         TabItem(
             title: "Home",
-            icon: "house"
+            icon: "house",
+            view: AnyView(Text("Home"))
         ),
         TabItem(
             title: "Cart",
-            icon: "cart"
+            icon: "cart",
+            view: AnyView(Text("Cart"))
         ),
         TabItem(
             title: "Settings",
-            icon: "gearshape"
+            icon: "gearshape",
+            view: AnyView(Text("Settings"))
         )
     ]
     

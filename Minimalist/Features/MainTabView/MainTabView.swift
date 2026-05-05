@@ -23,11 +23,32 @@ struct MainTabView: View {
                 return "gearshape.fill"
             }
         }
+        
+        @ViewBuilder
+        var view: some View {
+            switch self {
+            case .catalog:
+                CatalogView()
+                
+            case .favorites:
+                Text(self.title)
+                
+            case .cart:
+                Text(self.title)
+                
+            case .settings:
+                Text(self.title)
+            }
+        }
     }
     
     private let viewModel = FlatTabViewModel(
         tabs: Tab.allCases.map { tab in
-            TabItem( title: tab.title, icon: tab.icon )
+            TabItem(
+                title: tab.title,
+                icon: tab.icon,
+                view: AnyView(tab.view)
+            )
         }
     )
     
