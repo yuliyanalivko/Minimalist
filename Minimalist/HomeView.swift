@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    @Binding var isStarted: Bool
-
+    let vm: AppViewModel
+    
     var body: some View {
         VStack {
             Image("logo")
@@ -20,7 +20,7 @@ struct HomeView: View {
                 .padding(.bottom, 130)
             
             Button("Start shop") {
-                isStarted = true
+                vm.isStarted = true
             }
             .buttonStyle(PrimaryButtonStyle())
             .padding(.bottom, 130)
@@ -32,5 +32,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(isStarted: .constant(false))
+    HomeView(vm: AppViewModel())
 }

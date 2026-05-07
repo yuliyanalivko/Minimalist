@@ -1,24 +1,24 @@
 import SwiftUI
 
-struct TabBarView: View {
-    let viewModel: FlatTabViewModel
-    
+struct FlatTabBarView: View {
+    let viewModel: TabBarDataModel
+        
     var body: some View {
         HStack {
-            ForEach(Array(viewModel.tabs.enumerated()), id: \.offset) { index, tab in
+            ForEach(Array(viewModel.items.enumerated()), id: \.offset) { index, item in
                 Spacer()
                 
                 VStack {
-                    Image(systemName: tab.icon)
+                    Image(systemName: item.icon)
                         .font(.AppFont.icon)
                     
-                    Text(tab.title)
+                    Text(item.title)
                         .font(.AppFont.caption)
                         .padding(.top, 5)
                 }
-                .foregroundStyle(viewModel.isSelected(index) ? Color.AppColor.primary : Color.AppColor.textSecondary)
+                .foregroundStyle(viewModel.isSelected(index) ? item.selectedColor : item.unSelectedColor)
                 .onTapGesture {
-                    viewModel.selectedTabIndex = index
+                    viewModel.select(index)
                 }
                 
                 Spacer()
