@@ -12,9 +12,11 @@ struct MainTabView: View {
                 Spacer()
                 
                 if showRoundedTabBar {
-                    RoundedTabBarView(viewModel: vm)                .ignoresSafeArea(edges: .bottom)
+                    RoundedTabBarView(viewModel: vm)
+                        .ignoresSafeArea(edges: .bottom)
                 } else {
-                    FlatTabBarView(viewModel: vm)                .ignoresSafeArea(edges: .bottom)
+                    FlatTabBarView(viewModel: vm)
+                        .ignoresSafeArea(edges: .bottom)
                 }
             }
         }
