@@ -7,6 +7,11 @@ extension Font {
             .system(size: 25, weight: .semibold)
         }
         
+        // Typeface: SF Pro Text, weight: regular, size: 24
+        static var icon: Font {
+            .system(size: 24, weight: .regular)
+        }
+        
         // Typeface: SF Pro Text, weight: semibold, size: 17
         static var headline: Font {
             .system(size: 17, weight: .semibold)
