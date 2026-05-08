@@ -2,10 +2,11 @@ import SwiftUI
 
 @Observable class BaseViewModel {
     var isLoading: Bool = false
-    var error: AppError?
+    
+    private(set) var error: Error?
     
     var errorMessage: String? {
-        error?.message
+        error?.localizedDescription
     }
     
     /// Sets the current error state for the view model.
@@ -16,8 +17,8 @@ import SwiftUI
     /// The UI layer is expected to observe `errorMessage`  and
     /// present an appropriate user-facing message.
     ///
-    /// - Parameter error: An AppError representing the failure state.
-    func setError(_ error: AppError) {
+    /// - Parameter error: Error representing the failure state.
+    func setError(_ error: Error) {
         self.error = error
     }
     
