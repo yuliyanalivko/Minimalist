@@ -31,7 +31,7 @@ struct CatalogViewModelTests {
         
         vm.categories = categories
         
-        #expect(vm.view == .category)
+        #expect(vm.displayMode == .category)
     }
     
     @Test("returns View.subategory when category is selected")
@@ -41,7 +41,7 @@ struct CatalogViewModelTests {
         vm.categories = categories
         vm.select(categories[0])
 
-        #expect(vm.view == .subCategory)
+        #expect(vm.displayMode == .subCategory)
     }
     
     @Test("returns categories when category is not selected")
