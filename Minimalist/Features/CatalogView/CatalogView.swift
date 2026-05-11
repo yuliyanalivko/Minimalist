@@ -6,20 +6,11 @@ struct CatalogView: View {
     var body: some View {
         ScrollView {
             LazyVGrid(columns: vm.columns, spacing: 16) {
-                if vm.view == .category {
-                    ForEach(vm.categories, id: \.id) { item in
-                        CatalogCardView(title: item.name, icon: item.iconName)
-                            .onTapGesture {
-                                vm.selectCategory(item)
-                            }
-                    }
-                } else {
-                    ForEach(vm.subCategories ?? [], id: \.id) { item in
-                        CatalogCardView(title: item.name)
-                            .onTapGesture {
-                                vm.selectSubCategory(item)
-                            }
-                    }
+                ForEach(vm.itemsToShow, id: \.id) { item in
+                    CatalogCardView(title: item.name, icon: item.iconName ?? nil)
+                        .onTapGesture {
+                            vm.select(item)
+                        }
                 }
             }
         }

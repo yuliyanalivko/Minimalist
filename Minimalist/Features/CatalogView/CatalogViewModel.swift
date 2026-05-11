@@ -21,12 +21,16 @@ class CatalogViewModel {
         }
     }
     
-    var view: View {
-        selectedCategory == nil ? .category : .subCategory
-    }
-    
     var subCategories: [SubCategory]? {
         selectedCategory?.subCategories
+    }
+    
+    var itemsToShow: [any CatalogItemConfigurable] {
+        subCategories ?? categories
+    }
+    
+    var view: View {
+        selectedCategory == nil ? .category : .subCategory
     }
     
     let columns = [
@@ -37,8 +41,6 @@ class CatalogViewModel {
     init() {
         // TODO: remove when CategoryService is implemented
         loadMock()
-        
-        selectCategory(categories[0])
     }
     
     // TODO: TODO: remove when CategoryService is implemented
@@ -47,11 +49,19 @@ class CatalogViewModel {
         categories = try! JSONDecoder().decode([Category].self, from: data)
     }
     
-    func selectCategory(_ category: Category) {
+    func select(_ item: any CatalogItemConfigurable) {
+        if view == .category, let category = item as? Category {
+            selectCategory(category)
+        } else if let subCategory = item as? SubCategory {
+            selectSubCategory(subCategory)
+        }
+    }
+    
+    private func selectCategory(_ category: Category) {
         selectedCategoryId = category.id
     }
     
-    func selectSubCategory(_ subCategory: SubCategory) {
+    private func selectSubCategory(_ subCategory: SubCategory) {
         selectedSubCategoryId = subCategory.id
     }
 }

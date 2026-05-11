@@ -6,8 +6,8 @@ struct CatalogCardView: View {
     
     var body: some View {
         VStack {
-            if icon != nil {
-                Image(icon!)
+            if let iconName = icon {
+                Image(iconName)
                     .foregroundStyle(Color.AppColor.primary)
             }
             

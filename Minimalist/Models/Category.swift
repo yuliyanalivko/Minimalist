@@ -1,4 +1,4 @@
-struct Category: Codable, Identifiable, Equatable {
+struct Category: CatalogItemConfigurable {
     let id: String
     let name: String
     let thumbnailUrl: String?

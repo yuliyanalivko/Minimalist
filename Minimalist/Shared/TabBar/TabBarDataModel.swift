@@ -11,6 +11,6 @@ extension TabBarDataModel {
     }
     
     func tabBarItem(at index: Int) -> TabBarItemConfigurable? {
-        return items[safe: index]
+         items[safe: index]
     }
 }

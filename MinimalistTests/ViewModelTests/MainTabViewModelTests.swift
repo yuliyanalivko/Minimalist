@@ -12,36 +12,20 @@ struct MainTabViewModelTests {
 
         #expect(vm.selectedItemIndex == 1)
     }
+  
+    @Test("should return selected item")
+    func selectedItem_returnSelectedItem_validIndex() {
+        let vm = MainTabViewModel()
+
+        #expect(vm.selectedItem?.title == vm.items[0].title)
+    }
     
-    @Test("updates selectedItemIndex to 0 when negative value is passed")
-    func selectedItemIndex_setToFirstIndex_negative() {
+    @Test("should return nil if index is invalid")
+    func selectedItem_returnNil_invalidIndex() {
         let vm = MainTabViewModel()
         
         vm.select(-10)
 
-        #expect(vm.selectedItemIndex == 0)
-    }
-    
-    @Test("updates selectedItemIndex to last index when passed value is too large")
-    func selectedItemIndex_setToLastIndex_tooLarge() {
-        let vm = MainTabViewModel()
-     
-        vm.select(10)
-
-        #expect(vm.selectedItemIndex == vm.items.count - 1)
-    }
-  
-    @Test("should return true for selected tab")
-    func isSelected_selectedIndex_returnTrue() {
-        let vm = MainTabViewModel()
-
-        #expect(vm.isSelected(0))
-    }
-    
-    @Test("should return false for unselected tab")
-    func isSelected_nonSelectedIndex_returnFalse() {
-        let vm = MainTabViewModel()
-
-        #expect(!vm.isSelected(1))
+        #expect(vm.selectedItem == nil)
     }
 }
