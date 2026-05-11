@@ -4,17 +4,12 @@ struct CatalogView: View {
     private let vm = CatalogViewModel()
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: vm.columns, spacing: 16) {
-                ForEach(vm.itemsToShow, id: \.id) { item in
-                    CatalogCardView(title: item.name, icon: item.iconName ?? nil)
-                        .onTapGesture {
-                            vm.select(item)
-                        }
-                }
-            }
+        switch vm.displayMode {
+        case .category:
+            CategoryView(vm: vm)
+        case .subCategory:
+            SubCategoryView(vm: vm)
         }
-        .padding(.horizontal, 20)
     }
 }
 

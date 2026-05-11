@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CatalogCardView: View {
+struct CategoryCardView: View {
     let title: String
     var icon: String?
     
@@ -17,13 +17,10 @@ struct CatalogCardView: View {
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .aspectRatio(1, contentMode: .fit)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(Color.AppColor.backgroundSecondary, lineWidth: 2.5)
-        )
+        .modifier(CardBorder())
     }
 }
 
 #Preview {
-    CatalogCardView(title: "Title")
+    CategoryCardView(title: "Title")
 }

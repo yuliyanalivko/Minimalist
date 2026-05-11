@@ -2,7 +2,7 @@ import SwiftUI
 
 @Observable
 class CatalogViewModel {
-    enum View {
+    enum DisplayMode {
         case category
         case subCategory
     }
@@ -29,7 +29,7 @@ class CatalogViewModel {
         subCategories ?? categories
     }
     
-    var view: View {
+    var displayMode: DisplayMode {
         selectedCategory == nil ? .category : .subCategory
     }
     
@@ -50,7 +50,7 @@ class CatalogViewModel {
     }
     
     func select(_ item: any CatalogItemConfigurable) {
-        if view == .category, let category = item as? Category {
+        if displayMode == .category, let category = item as? Category {
             selectCategory(category)
         } else if let subCategory = item as? SubCategory {
             selectSubCategory(subCategory)
