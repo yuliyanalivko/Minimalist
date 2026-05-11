@@ -37,3 +37,7 @@ struct FlatTabBarView: View {
         
     }
 }
+
+#Preview {
+    FlatTabBarView(viewModel: MainTabViewModel())
+}

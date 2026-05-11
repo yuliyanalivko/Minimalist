@@ -19,20 +19,4 @@ struct AppViewModelModelTests {
 
         #expect(vm.isStarted == true)
     }
-    
-    @Test("showRoundedTabBar is true by default")
-    func showRoundedTabBar_true_byDefault() {
-        let vm = AppViewModel()
-
-        #expect(vm.showRoundedTabBar == true)
-    }
-    
-    @Test("updates showRoundedTabBar value")
-    func showRoundedTabBar_updateValue() {
-        let vm = AppViewModel()
-
-        vm.showRoundedTabBar = false
-
-        #expect(vm.showRoundedTabBar == false)
-    }
 }

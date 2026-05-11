@@ -7,7 +7,7 @@ struct ContentView: View {
     
     var body: some View {
         if vm.isStarted {
-            MainTabView(showRoundedTabBar: vm.showRoundedTabBar)
+            MainTabView()
         } else {
             HomeView(vm: vm)
         }

@@ -1,19 +1,20 @@
 import SwiftUI
 
 struct MainTabView: View {
-    let showRoundedTabBar: Bool
     let vm = MainTabViewModel()
     
     var body: some View {
         ZStack {
             mainContent
+                .safeAreaInset(edge: .bottom) {
+                        Color.clear.frame(height: 80)
+                    }
             
             VStack {
                 Spacer()
                 
-                if showRoundedTabBar {
+                if vm.showRoundedTabBar {
                     RoundedTabBarView(viewModel: vm)
-                        .ignoresSafeArea(edges: .bottom)
                 } else {
                     FlatTabBarView(viewModel: vm)
                         .ignoresSafeArea(edges: .bottom)
@@ -21,15 +22,19 @@ struct MainTabView: View {
             }
         }
     }
-    
+
+    @ViewBuilder
     var mainContent: some View {
         // TODO: add cases for each tab
         switch vm.selectedItemIndex {
-        default: Text(vm.items[vm.selectedItemIndex].title)
+        case 0:
+            CatalogView()
+        default:
+            Text(vm.selectedItem?.title ?? "")
         }
     }
 }
 
 #Preview {
-    MainTabView(showRoundedTabBar: true)
+    MainTabView()
 }
