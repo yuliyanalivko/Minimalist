@@ -6,11 +6,11 @@ protocol TabBarDataModel {
 }
 
 extension TabBarDataModel {
-    func validSelectedItemIndex(_ index: Int) -> Int {
-        max(0, min(index, self.items.count - 1))
-    }
-    
     func isSelected(_ index: Int) -> Bool {
         index == self.selectedItemIndex
+    }
+    
+    func tabBarItem(at index: Int) -> TabBarItemConfigurable? {
+        return items[safe: index]
     }
 }

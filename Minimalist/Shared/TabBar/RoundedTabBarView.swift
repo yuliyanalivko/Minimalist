@@ -18,7 +18,7 @@ struct RoundedTabBarView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .padding(12)
+                .padding(8)
                 .background(viewModel.isSelected(index) ? item.selectedColor : Color.clear)
                 .cornerRadius(40)
                 .foregroundStyle(viewModel.isSelected(index) ? Color.AppColor.buttonTextPrimary : item.unSelectedColor)

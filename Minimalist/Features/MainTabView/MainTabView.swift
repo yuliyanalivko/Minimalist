@@ -1,62 +1,40 @@
 import SwiftUI
 
 struct MainTabView: View {
-    let showRoundedTabBar: Bool
     let vm = MainTabViewModel()
     
     var body: some View {
         ZStack {
             mainContent
+                .safeAreaInset(edge: .bottom) {
+                        Color.clear.frame(height: 80)
+                    }
             
             VStack {
                 Spacer()
                 
-                if showRoundedTabBar {
+                if vm.showRoundedTabBar {
                     RoundedTabBarView(viewModel: vm)
-                        .ignoresSafeArea(edges: .bottom)
                 } else {
                     FlatTabBarView(viewModel: vm)
                         .ignoresSafeArea(edges: .bottom)
                 }
             }
         }
-        
-        @ViewBuilder
-        var view: some View {
-            switch self {
-            case .catalog:
-                CatalogView()
-                
-            case .favorites:
-                Text(self.title)
-                
-            case .cart:
-                Text(self.title)
-                
-            case .settings:
-                Text(self.title)
-            }
-        }
     }
-    
-<<<<<<< HEAD:Minimalist/Features/MainTabView/MainTabView.swift
-    private let viewModel = FlatTabViewModel(
-        tabs: Tab.allCases.map { tab in
-            TabItem(
-                title: tab.title,
-                icon: tab.icon,
-                view: AnyView(tab.view)
-            )
-=======
+
+    @ViewBuilder
     var mainContent: some View {
         // TODO: add cases for each tab
         switch vm.selectedItemIndex {
-        default: Text(vm.items[vm.selectedItemIndex].title)
->>>>>>> main:Minimalist/MainTabView.swift
+        case 0:
+            CatalogView()
+        default:
+            Text(vm.selectedItem?.title ?? "")
         }
     }
 }
 
 #Preview {
-    MainTabView(showRoundedTabBar: true)
+    MainTabView()
 }

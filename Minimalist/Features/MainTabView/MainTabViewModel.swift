@@ -26,6 +26,8 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
         }
     }
     
+    let showRoundedTabBar: Bool = true
+    
     let items: [TabBarItemConfigurable] = Tab.allCases.map { tab in
         TabBarItem(
             title: tab.title,
@@ -35,9 +37,13 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
         )
     }
     
+    var selectedItem: TabBarItemConfigurable? {
+        tabBarItem(at: selectedItemIndex)
+    }
+    
     private(set) var selectedItemIndex: Int = 0
-  
+    
     func select(_ index: Int) {
-        selectedItemIndex = validSelectedItemIndex(index)
+        selectedItemIndex = index
     }
 }

@@ -3,14 +3,9 @@ import SwiftUI
 struct CatalogView: View {
     private let vm = CatalogViewModel()
     
-    private let columns = [
-        GridItem(.flexible(),spacing: 16),
-        GridItem(.flexible(),spacing: 16)
-    ]
-    
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
+            LazyVGrid(columns: vm.columns, spacing: 16) {
                 if vm.view == .category {
                     ForEach(vm.categories, id: \.id) { item in
                         CatalogCardView(title: item.name, icon: item.iconName)
@@ -28,7 +23,7 @@ struct CatalogView: View {
                 }
             }
         }
-        .padding(20)
+        .padding(.horizontal, 20)
     }
 }
 

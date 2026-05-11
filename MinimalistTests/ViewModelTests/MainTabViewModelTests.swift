@@ -4,27 +4,6 @@ import SwiftUI
 
 @MainActor
 struct MainTabViewModelTests {
-    let tabs: [TabBarItem] = [
-        TabBarItem(
-            title: "Home",
-            icon: "house",
-            selectedColor: Color.primary,
-            unSelectedColor: Color.black
-        ),
-        TabBarItem(
-            title: "Cart",
-            icon: "cart",
-            selectedColor: Color.primary,
-            unSelectedColor: Color.black
-        ),
-        TabBarItem(
-            title: "Settings",
-            icon: "gearshape",
-            selectedColor: Color.primary,
-            unSelectedColor: Color.black
-        )
-    ]
-    
     @Test("updates selectedItemIndex")
     func select_updateSelectedItemIndex() {
         let vm = MainTabViewModel()

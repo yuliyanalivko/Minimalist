@@ -29,9 +29,16 @@ class CatalogViewModel {
         selectedCategory?.subCategories
     }
     
+    let columns = [
+        GridItem(.flexible(),spacing: 16),
+        GridItem(.flexible(),spacing: 16)
+    ]
+    
     init() {
         // TODO: remove when CategoryService is implemented
         loadMock()
+        
+        selectCategory(categories[0])
     }
     
     // TODO: TODO: remove when CategoryService is implemented
