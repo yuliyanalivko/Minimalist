@@ -10,7 +10,7 @@ struct SubCategoryView: View {
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .cardBorder()
-                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
                     .listRowSeparator(.hidden)
                     .horizontalScreenPadding()
             }
