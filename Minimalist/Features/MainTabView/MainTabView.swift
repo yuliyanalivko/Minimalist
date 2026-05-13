@@ -6,9 +6,6 @@ struct MainTabView: View {
     var body: some View {
         ZStack {
             mainContent
-                .safeAreaInset(edge: .bottom) {
-                        Color.clear.frame(height: 80)
-                    }
             
             VStack {
                 Spacer()
@@ -29,6 +26,12 @@ struct MainTabView: View {
         switch vm.selectedItemIndex {
         case 0:
             CatalogView()
+        case 1:
+            FavoritesView()
+        case 2:
+            CartView()
+        case 3:
+            SettingsView()
         default:
             Text(vm.selectedItem?.title ?? "")
         }
