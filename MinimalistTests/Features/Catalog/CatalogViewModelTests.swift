@@ -31,25 +31,6 @@ struct CatalogViewModelTests {
         ),
     ]
     
-    @Test("returns View.category when category is not selected")
-    func view_setToCategory_categoryNotSelected() {
-        let vm = CatalogViewModel()
-        
-        vm.allCategories = categories
-        
-        #expect(vm.displayMode == .category)
-    }
-    
-    @Test("returns View.subategory when category is selected")
-    func view_setToSubCategory_categorySelected() {
-        let vm = CatalogViewModel()
-        
-        vm.allCategories = categories
-        vm.select(categories[0])
-
-        #expect(vm.displayMode == .subCategory)
-    }
-    
     @Test("returns all categories when search text is empty")
     func categories_returnAllCategories_emptySearch() {
         let vm = CatalogViewModel()
@@ -84,7 +65,7 @@ struct CatalogViewModelTests {
         let vm = CatalogViewModel()
         
         vm.allCategories = categories
-        vm.select(categories[0])
+        vm.handleCategoryCardClick(category: categories[0])
 
         #expect(vm.subCategories == vm.allCategories[0].subCategories)
     }
@@ -94,7 +75,7 @@ struct CatalogViewModelTests {
         let vm = CatalogViewModel()
         
         vm.allCategories = categories
-        vm.select(categories[0])
+        vm.handleCategoryCardClick(category: categories[0])
         vm.subCategorySearchText = "  "
 
         #expect(vm.subCategories == vm.allCategories[0].subCategories)
@@ -105,7 +86,7 @@ struct CatalogViewModelTests {
         let vm = CatalogViewModel()
         
         vm.allCategories = categories
-        vm.select(categories[0])
+        vm.handleCategoryCardClick(category: categories[0])
         vm.subCategorySearchText = "Kitchen"
 
         #expect(vm.subCategories == [vm.allCategories[0].subCategories[0]])
@@ -120,23 +101,23 @@ struct CatalogViewModelTests {
         #expect(vm.subCategories == nil)
     }
     
-    @Test("returns selectedCategory")
-    func selectCategory_setSelectedCategory() {
+    @Test("sets selectedCategory")
+    func handleCategoryCardClick_setSelectedCategory() {
         let vm = CatalogViewModel()
         
         vm.allCategories = categories
-        vm.select(categories[0])
+        vm.handleCategoryCardClick(category: categories[0])
         
         #expect(vm.selectedCategory == categories[0])
     }
     
-    @Test("returns selectedSubCategory")
-    func subCategories_returnArray_setSelectedSubCategory() {
+    @Test("sets selectedSubCategory")
+    func handleSubCategoryCardClick_setSelectedSubCategory() {
         let vm = CatalogViewModel()
         
         vm.allCategories = categories
-        vm.select(categories[0])
-        vm.select(categories[0].subCategories[0])
+        vm.handleCategoryCardClick(category: categories[0])
+        vm.handleSubCategoryCardClick(subCategory: categories[0].subCategories[0])
         
         #expect(vm.selectedSubCategory == categories[0].subCategories[0])
     }

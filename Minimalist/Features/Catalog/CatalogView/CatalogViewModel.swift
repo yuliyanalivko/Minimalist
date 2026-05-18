@@ -1,12 +1,9 @@
 import SwiftUI
 
 @Observable
-class CatalogViewModel {
-    enum DisplayMode {
-        case category
-        case subCategory
-    }
+class CatalogViewModel: BaseViewModel {
     
+    var router: CatalogRouter = CatalogRouter()
     var categorySearchText: String = ""
     var subCategorySearchText: String = ""
     var allCategories: [Category] = []
@@ -42,14 +39,11 @@ class CatalogViewModel {
         searchItems(in: allCategories, searchText: categorySearchText)
     }
     
-    var displayMode: DisplayMode {
-        selectedCategory == nil ? .category : .subCategory
-    }
-    
     private var selectedCategoryId: String?
     private var selectedSubCategoryId: String?
     
-    init() {
+    override init() {
+        super.init()
         // TODO: remove when CategoryService is implemented
         loadMock()
     }
@@ -60,12 +54,13 @@ class CatalogViewModel {
         allCategories = try! JSONDecoder().decode([Category].self, from: data)
     }
     
-    func select(_ item: any CatalogItemConfigurable) {
-        if displayMode == .category, let category = item as? Category {
-            selectCategory(category)
-        } else if let subCategory = item as? SubCategory {
-            selectSubCategory(subCategory)
-        }
+    func handleCategoryCardClick(category: Category) {
+        selectCategory(category)
+        router.navigate(to: CatalogRoute.subcategory(title: category.name))
+    }
+    
+    func handleSubCategoryCardClick(subCategory: SubCategory) {
+        selectSubCategory(subCategory)
     }
     
     private func selectCategory(_ category: Category) {

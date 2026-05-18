@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainTabView: View {
-    let vm = MainTabViewModel()
+    let viewModel = MainTabViewModel()
     
     var body: some View {
         ZStack {
@@ -10,20 +10,21 @@ struct MainTabView: View {
             VStack {
                 Spacer()
                 
-                if vm.showRoundedTabBar {
-                    RoundedTabBarView(viewModel: vm)
+                if viewModel.showRoundedTabBar {
+                    RoundedTabBarView(viewModel: viewModel)
                 } else {
-                    FlatTabBarView(viewModel: vm)
+                    FlatTabBarView(viewModel: viewModel)
                         .ignoresSafeArea(edges: .bottom)
                 }
             }
         }
+        .tint(.AppColor.primary)
     }
 
     @ViewBuilder
     var mainContent: some View {
         // TODO: add cases for each tab
-        switch vm.selectedItemIndex {
+        switch viewModel.selectedItemIndex {
         case 0:
             CatalogView()
         case 1:
@@ -33,7 +34,7 @@ struct MainTabView: View {
         case 3:
             SettingsView()
         default:
-            Text(vm.selectedItem?.title ?? "")
+            Text(viewModel.selectedItem?.title ?? "")
         }
     }
 }

@@ -1,23 +1,20 @@
 import SwiftUI
 
 struct CategoryView: View {
-    let vm: CatalogViewModel
-    @Environment(CatalogRouter.self) private var router
-    @State private var searchText = ""
+    let viewModel: CatalogViewModel
     
     var body: some View {
-        if !vm.categories.isEmpty {
+        if !viewModel.categories.isEmpty {
             ScrollView {
-                LazyVGrid(columns: vm.columns, spacing: 16) {
-                    ForEach(vm.categories, id: \.id) { item in
+                LazyVGrid(columns: viewModel.columns, spacing: 16) {
+                    ForEach(viewModel.categories, id: \.id) { item in
                         CategoryCardView(title: item.name, icon: item.iconName ?? nil)
                             .onTapGesture {
-                                vm.select(item)
-                                router.navigate(to: CatalogRoute.subcategory(title: item.name))
+                                viewModel.handleCategoryCardClick(category: item)
                             }
                     }
                 }
-                .horizontalScreenPadding()
+                .defaultHorizontalScreenPadding()
                 .verticalScreenSpacing()
             }
         } else {
@@ -27,5 +24,5 @@ struct CategoryView: View {
 }
 
 #Preview {
-    CategoryView(vm: CatalogViewModel())
+    CategoryView(viewModel: CatalogViewModel())
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    let vm: AppViewModel
+    let viewModel: AppViewModel
     
     var body: some View {
         VStack {
@@ -20,7 +20,7 @@ struct HomeView: View {
                 .padding(.bottom, 130)
             
             Button("Start shop") {
-                vm.isStarted = true
+                viewModel.isStarted = true
             }
             .buttonStyle(PrimaryButtonStyle())
             .padding(.bottom, 130)
@@ -32,5 +32,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(vm: AppViewModel())
+    HomeView(viewModel: AppViewModel())
 }
