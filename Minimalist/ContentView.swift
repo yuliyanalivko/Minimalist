@@ -3,13 +3,13 @@ import SwiftData
 
 struct ContentView: View {
     
-    @State private var vm = AppViewModel()
+    @State private var viewModel = AppViewModel()
     
     var body: some View {
-        if vm.isStarted {
+        if viewModel.isStarted {
             MainTabView()
         } else {
-            HomeView(vm: vm)
+            HomeView(viewModel: viewModel)
         }
     }
 }

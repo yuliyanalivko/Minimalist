@@ -1,36 +1,40 @@
 import SwiftUI
 
 struct MainTabView: View {
-    let vm = MainTabViewModel()
+    let viewModel = MainTabViewModel()
     
     var body: some View {
         ZStack {
             mainContent
-                .safeAreaInset(edge: .bottom) {
-                        Color.clear.frame(height: 80)
-                    }
             
             VStack {
                 Spacer()
                 
-                if vm.showRoundedTabBar {
-                    RoundedTabBarView(viewModel: vm)
+                if viewModel.showRoundedTabBar {
+                    RoundedTabBarView(viewModel: viewModel)
                 } else {
-                    FlatTabBarView(viewModel: vm)
+                    FlatTabBarView(viewModel: viewModel)
                         .ignoresSafeArea(edges: .bottom)
                 }
             }
         }
+        .tint(.AppColor.primary)
     }
 
     @ViewBuilder
     var mainContent: some View {
         // TODO: add cases for each tab
-        switch vm.selectedItemIndex {
+        switch viewModel.selectedItemIndex {
         case 0:
             CatalogView()
+        case 1:
+            FavoritesView()
+        case 2:
+            CartView()
+        case 3:
+            SettingsView()
         default:
-            Text(vm.selectedItem?.title ?? "")
+            Text(viewModel.selectedItem?.title ?? "")
         }
     }
 }
