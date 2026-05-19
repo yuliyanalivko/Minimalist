@@ -1,7 +1,6 @@
 import Testing
 @testable import Minimalist
 
-//@MainActor
 struct ItemListViewModelTests {
     
     let items: [Item] = [
