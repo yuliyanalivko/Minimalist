@@ -2,7 +2,7 @@ import Testing
 @testable import Minimalist
 
 @MainActor
-struct CatalogViewModelTests {
+struct CategoryViewModelTests {
     let categories: [Category] = [
         Category(
             id: "1",
@@ -31,9 +31,11 @@ struct CatalogViewModelTests {
         ),
     ]
     
+    let router: CatalogRouter = CatalogRouter()
+    
     @Test("returns all categories when search text is empty")
     func categories_returnAllCategories_emptySearch() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
 
@@ -42,7 +44,7 @@ struct CatalogViewModelTests {
     
     @Test("returns all categories when search text contains only whitespaces")
     func categories_returnAllCategories_whitespaceSearch() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         vm.categorySearchText = "  "
@@ -52,7 +54,7 @@ struct CatalogViewModelTests {
     
     @Test("returns filtered categories when search text is not empty")
     func categories_returnAllCategories_nonemptySearch() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         vm.categorySearchText = "Sofas"
@@ -62,7 +64,7 @@ struct CatalogViewModelTests {
     
     @Test("returns all subcategories when search text is empty")
     func subCategories_returnAllSubCategories_emptySearch() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         vm.handleCategoryCardClick(category: categories[0])
@@ -72,7 +74,7 @@ struct CatalogViewModelTests {
     
     @Test("returns all categories when search text contains only whitespaces")
     func subCategories_returnAllSubCategories_whitespaceSearch() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         vm.handleCategoryCardClick(category: categories[0])
@@ -83,7 +85,7 @@ struct CatalogViewModelTests {
     
     @Test("returns filtered subcategories when search text is not empty")
     func subCategories_returnAllSubCategories_nonemptySearch() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         vm.handleCategoryCardClick(category: categories[0])
@@ -94,7 +96,7 @@ struct CatalogViewModelTests {
     
     @Test("returns nil when category is not selected")
     func subCategories_returnNil_categoryNotSelected() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         
@@ -103,7 +105,7 @@ struct CatalogViewModelTests {
     
     @Test("sets selectedCategory")
     func handleCategoryCardClick_setSelectedCategory() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         vm.handleCategoryCardClick(category: categories[0])
@@ -113,7 +115,7 @@ struct CatalogViewModelTests {
     
     @Test("sets selectedSubCategory")
     func handleSubCategoryCardClick_setSelectedSubCategory() {
-        let vm = CatalogViewModel()
+        let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
         vm.handleCategoryCardClick(category: categories[0])
