@@ -47,7 +47,7 @@ struct CategoryViewModelTests {
         let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
-        vm.categorySearchText = "  "
+        vm.searchText = "  "
 
         #expect(vm.categories == vm.allCategories)
     }
@@ -57,7 +57,7 @@ struct CategoryViewModelTests {
         let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
-        vm.categorySearchText = "Sofas"
+        vm.searchText = "Sofas"
 
         #expect(vm.categories == [vm.allCategories[0]])
     }

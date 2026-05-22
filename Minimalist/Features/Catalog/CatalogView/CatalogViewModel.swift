@@ -14,10 +14,10 @@ class CatalogViewModel: BaseViewModel {
     
     var categorySearchText: String {
         get {
-            _categoryViewModel.categorySearchText
+            _categoryViewModel.searchText
         }
         set {
-            _categoryViewModel.categorySearchText = newValue
+            _categoryViewModel.searchText = newValue
         }
     }
     
@@ -40,5 +40,25 @@ class CatalogViewModel: BaseViewModel {
         
         self._categoryViewModel = CategoryViewModel(router: router)
         self._itemListViewModel = ItemListViewModel(router: router)
+    }
+    
+    func logViewItemListEvent() {
+        guard let selectedCategory = categoryViewModel.selectedCategory else {
+            return
+        }
+        
+        itemListViewModel.logViewItemListEvent(id: selectedCategory.id, name: selectedCategory.name)
+    }
+    
+    func logItemListSearchEvent() {
+        guard let selectedCategory = categoryViewModel.selectedCategory else {
+            return
+        }
+        
+        itemListViewModel.logSearchEvent(categoryName: selectedCategory.name)
+    }
+    
+    func logCategorySearchEvent() {
+        categoryViewModel.logSearchEvent()
     }
 }

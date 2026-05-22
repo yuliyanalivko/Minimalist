@@ -11,6 +11,10 @@ struct CatalogView: View {
                 }
         }
         .environment(viewModel.router)
+        .onAppear{
+            //TODO: replace "Catalog" with route title once the base router is ready
+            AnalyticsManager.shared.trackScreen("Catalog")
+        }
     }
     
     @ViewBuilder
@@ -19,20 +23,15 @@ struct CatalogView: View {
         case .category:
             CategoryView(viewModel: viewModel.categoryViewModel)
                 .navigationTitle(CatalogRoute.category.title)
-                .searchable(
-                    text: $viewModel.categorySearchText,
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Search"
-                )
+                .searchableWithDebounce(text: $viewModel.categorySearchText, action: viewModel.logCategorySearchEvent)
             
         case .itemList:
             ItemListView(viewModel: viewModel.itemListViewModel)
                 .navigationTitle(route.title)
-                .searchable(
-                    text: $viewModel.itemListSearchText,
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Search"
-                )
+                .searchableWithDebounce(text: $viewModel.itemListSearchText, action: viewModel.logItemListSearchEvent)
+                .onAppear {
+                    viewModel.logViewItemListEvent()
+                }
                 .toolbar {
                     //TODO: move to a separate view
                     Button {

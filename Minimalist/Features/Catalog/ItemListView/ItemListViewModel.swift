@@ -39,9 +39,41 @@ class ItemListViewModel: BaseViewModel {
         if let index = allItems.firstIndex(where: { $0.id == item.id }) {
             allItems[index].isFavorited.toggle()
         }
+        
+        logToggleFavoriteEvent(item: item)
     }
     
     func handleItemClick(item: Item) {
         router.navigate(to: CatalogRoute.itemDetails(title: item.name, id: item.id))
+    }
+    
+    func logSearchEvent(categoryName: String) {
+        let searchTerm = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !searchTerm.isEmpty else { return }
+
+        AnalyticsManager.shared.logEvent(
+            .applySearch(
+                searchTerm: searchTerm,
+                categoryName: categoryName
+            )
+        )
+    }
+    
+    func logViewItemListEvent(id: String, name: String) {
+        AnalyticsManager.shared.logEvent(
+            .viewItemList(
+                id: id,
+                name: name
+            )
+        )
+    }
+
+    private func logToggleFavoriteEvent(item: Item) {
+        let event: AnalyticsEvent = item.isFavorited
+        ? .addToWishlist(id: item.id, name: item.name)
+        : .removeFromWishlist(id: item.id, name: item.name)
+        
+        AnalyticsManager.shared.logEvent(event)
     }
 }
