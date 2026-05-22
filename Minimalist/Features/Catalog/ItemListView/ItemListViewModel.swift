@@ -22,13 +22,14 @@ class ItemListViewModel: BaseViewModel {
         let data = itemsMock.data(using: .utf8)!
         allItems = try! JSONDecoder().decode([Item].self, from: data)
         allItems = allItems.map { item in
-            guard let url = item.thumbnailUrl else {
+            guard let thumbnailUrl = item.thumbnailUrl,
+                  let url = URL(string: thumbnailUrl) else {
                 return item
             }
             
             var updatedItem = item
-            
-            updatedItem.thumbnailUrl = resizeImageUrl(url)
+                         
+            updatedItem.thumbnailUrl = url.resized(to: 500).absoluteString
             
             return updatedItem
         }
@@ -42,18 +43,5 @@ class ItemListViewModel: BaseViewModel {
     
     func handleItemClick(item: Item) {
         router.navigate(to: CatalogRoute.itemDetails(title: item.name, id: item.id))
-    }
-    
-    private func resizeImageUrl(_ url: String) -> String {
-        let imageSize: Int = 500
-        let pattern = #/(id/\d+)/\d+/\d+/#
-        
-        let resizedUrl = url.replacing(pattern) { match in
-            let idPart = match.output.1
-            
-            return "\(idPart)/\(imageSize)/\(imageSize)/"
-        }
-        
-        return resizedUrl
     }
 }

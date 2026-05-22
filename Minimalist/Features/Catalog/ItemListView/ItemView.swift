@@ -5,9 +5,13 @@ struct ItemView: View {
     
     var onAddToFavoriteTap: () -> Void
     
+    private var imageSize: CGFloat {
+        UIScreen.main.bounds.width * 0.4
+    }
+    
     var body: some View {
         HStack {
-            Group {
+            ZStack {
                 if let imageUrl = item.thumbnailUrl {
                     AsyncImage(url: URL(string: imageUrl)) { phase in
                         switch phase {
@@ -16,6 +20,7 @@ struct ItemView: View {
                         case .success(let image):
                             image
                                 .resizable()
+                                .scaledToFill()
                         default:
                             ProgressView()
                         }
@@ -25,7 +30,8 @@ struct ItemView: View {
                     imagePlaceholder
                 }
             }
-            .frame(width: 136, height: 136)
+            .frame(width: imageSize, height: imageSize)
+            .aspectRatio(1, contentMode: .fit)
             .background(Color.AppColor.backgroundSecondary)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             
@@ -38,7 +44,7 @@ struct ItemView: View {
                     
                     Spacer()
                     
-                    Image(systemName: "heart.fill")
+                    Image.heart
                         .font(.AppFont.icon)
                         .padding(.leading, 4)
                         .foregroundStyle(item.isFavorited ? Color.AppColor.primary : Color.AppColor.backgroundSecondary)
@@ -78,7 +84,7 @@ struct ItemView: View {
     }
     
     private var imagePlaceholder: some View {
-        Image(systemName: "photo")
+        Image.photo
             .font(.largeTitle)
             .foregroundStyle(Color.AppColor.textSecondary)
     }

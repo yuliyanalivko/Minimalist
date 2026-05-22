@@ -1,5 +1,4 @@
 import SwiftUI
-import System
 
 struct ItemListView: View {
     let viewModel: ItemListViewModel

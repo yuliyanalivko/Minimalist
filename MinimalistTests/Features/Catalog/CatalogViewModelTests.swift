@@ -1,0 +1,68 @@
+import Testing
+@testable import Minimalist
+
+@MainActor
+struct CatalogViewModelTests {
+    
+    @Test("sets up shared router instance correctly")
+    func init_setsUpSharedRouter() async throws {
+        let vm = CatalogViewModel()
+        
+        #expect(vm.categoryViewModel.router === vm.router, "CategoryViewModel should share the main router instance")
+        #expect(vm.itemListViewModel.router === vm.router, "ItemListViewModel should share the main router instance")
+    }
+    
+    @Test("categorySearchText updates the CategoryViewModel.categorySearchText")
+    func categorySearchText_Passthrough() {
+        let vm = CatalogViewModel()
+        
+        vm.categorySearchText = "Sofas"
+        
+        #expect(vm.categoryViewModel.categorySearchText == "Sofas")
+    }
+    
+    @Test("categorySearchText gets the CategoryViewModel.categorySearchText")
+    func categorySearchText_getViewModelSearchText() {
+        let vm = CatalogViewModel()
+        
+        vm.categoryViewModel.categorySearchText = "Sofas"
+        
+        #expect(vm.categorySearchText == "Sofas")
+    }
+    
+    @Test("subCategorySearchText updates the CategoryViewModel.subCategorySearchText")
+    func subCategorySearchText_Passthrough() {
+        let vm = CatalogViewModel()
+        
+        vm.subCategorySearchText = "Sofas"
+        
+        #expect(vm.categoryViewModel.subCategorySearchText == "Sofas")
+    }
+    
+    @Test("subCategorySearchText gets the CategoryViewModel.categorySearchText")
+    func subCategorySearchText_getViewModelSearchText() {
+        let vm = CatalogViewModel()
+        
+        vm.categoryViewModel.subCategorySearchText = "Sofas"
+        
+        #expect(vm.subCategorySearchText == "Sofas")
+    }
+    
+    @Test("itemListSearchText gets the CategoryViewModel.categorySearchText")
+    func itemListSearchText_Passthrough() {
+        let vm = CatalogViewModel()
+        
+        vm.categoryViewModel.subCategorySearchText = "Sofas"
+        
+        #expect(vm.subCategorySearchText == "Sofas")
+    }
+    
+    @Test("itemListSearchText updates the ItemListViewModel state")
+    func itemListSearchText_getViewModelSearchText() {
+        let vm = CatalogViewModel()
+        
+        vm.itemListViewModel.searchText = "Sofas"
+        
+        #expect(vm.itemListSearchText == "Sofas")
+    }
+}

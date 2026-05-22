@@ -1,18 +1,53 @@
 import SwiftUI
 
 @Observable
-class CatalogViewModel {
+class CatalogViewModel: BaseViewModel {
     var router: CatalogRouter
     
-    var categoryViewModel: CategoryViewModel
-    var itemListViewModel: ItemListViewModel
+    var categoryViewModel: CategoryViewModel {
+        _categoryViewModel
+    }
     
-    init() {
+    var itemListViewModel: ItemListViewModel {
+        _itemListViewModel
+    }
+    
+    var categorySearchText: String {
+        get {
+            _categoryViewModel.categorySearchText
+        }
+        set {
+            _categoryViewModel.categorySearchText = newValue
+        }
+    }
+    
+    var subCategorySearchText: String {
+        get {
+            _categoryViewModel.subCategorySearchText
+        }
+        set {
+            _categoryViewModel.subCategorySearchText = newValue
+        }
+    }
+    
+    var itemListSearchText: String {
+        get {
+            _itemListViewModel.searchText
+        }
+        set {
+            _itemListViewModel.searchText = newValue
+        }
+    }
+    
+    private var _categoryViewModel: CategoryViewModel
+    private var _itemListViewModel: ItemListViewModel
+    
+    override init() {
         let router = CatalogRouter()
         
         self.router = router
         
-        self.categoryViewModel = CategoryViewModel(router: router)
-        self.itemListViewModel = ItemListViewModel(router: router)
+        self._categoryViewModel = CategoryViewModel(router: router)
+        self._itemListViewModel = ItemListViewModel(router: router)
     }
 }

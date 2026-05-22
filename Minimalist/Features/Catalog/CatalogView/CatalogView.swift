@@ -20,7 +20,7 @@ struct CatalogView: View {
             CategoryView(viewModel: viewModel.categoryViewModel)
                 .navigationTitle(CatalogRoute.category.title)
                 .searchable(
-                    text: $viewModel.categoryViewModel.categorySearchText,
+                    text: $viewModel.categorySearchText,
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: "Search"
                 )
@@ -29,7 +29,7 @@ struct CatalogView: View {
             SubCategoryView(viewModel: viewModel.categoryViewModel)
                 .navigationTitle(route.title)
                 .searchable(
-                    text: $viewModel.categoryViewModel.subCategorySearchText,
+                    text: $viewModel.subCategorySearchText,
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: "Search"
                 )
@@ -38,7 +38,7 @@ struct CatalogView: View {
             ItemListView(viewModel: viewModel.itemListViewModel)
                 .navigationTitle(route.title)
                 .searchable(
-                    text: $viewModel.itemListViewModel.searchText,
+                    text: $viewModel.itemListSearchText,
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: "Search"
                 )
@@ -46,11 +46,11 @@ struct CatalogView: View {
                     //TODO: move to a separate view
                     Button {
                     } label: {
-                        Image(systemName: "arrow.up.arrow.down")
+                        Image.sort
                     }
                     Button {
                     } label: {
-                        Image(systemName: "line.3.horizontal.decrease")
+                        Image.filter
                     }
                 }
             

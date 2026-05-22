@@ -5,7 +5,7 @@ struct EmptySearchResultView: View {
         VStack {
             Spacer()
             
-            Image(systemName: "exclamationmark.magnifyingglass")
+            Image.magnifyingGlass
                 .resizable()
                 .frame(width: 150, height: 150)
                 .foregroundStyle(Color.AppColor.backgroundSecondary)

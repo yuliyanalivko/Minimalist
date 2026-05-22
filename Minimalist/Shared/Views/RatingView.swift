@@ -10,12 +10,12 @@ struct RatingView: View {
             ForEach(0..<5, id: \.self) { index in
                 let starFill = max(0, min(1, rating - Double(index)))
                 
-                Image(systemName: "star.fill")
+                Image.star
                     .resizable()
                     .frame(width: starSize, height: starSize)
                     .foregroundStyle(Color.AppColor.backgroundSecondary)
                     .overlay(
-                        Image(systemName: "star.fill")
+                        Image.star
                             .font(.system(size: starSize))
                             .foregroundStyle(Color.AppColor.accent)
                             .mask(
@@ -35,7 +35,7 @@ struct RatingView: View {
     private func starRow(filled: Bool) -> some View {
         HStack(spacing: spacing) {
             ForEach(0..<5, id: \.self) { _ in
-                Image(systemName: "star.fill")
+                Image.star
                     .resizable()
                     .frame(width: starSize, height: starSize)
                     .foregroundStyle(filled ? Color.AppColor.accent : Color.AppColor.backgroundSecondary)
