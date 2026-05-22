@@ -25,15 +25,6 @@ struct CatalogView: View {
                     prompt: "Search"
                 )
             
-        case .subcategory:
-            SubCategoryView(viewModel: viewModel.categoryViewModel)
-                .navigationTitle(route.title)
-                .searchable(
-                    text: $viewModel.subCategorySearchText,
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Search"
-                )
-            
         case .itemList:
             ItemListView(viewModel: viewModel.itemListViewModel)
                 .navigationTitle(route.title)

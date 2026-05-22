@@ -21,15 +21,6 @@ class CatalogViewModel: BaseViewModel {
         }
     }
     
-    var subCategorySearchText: String {
-        get {
-            _categoryViewModel.subCategorySearchText
-        }
-        set {
-            _categoryViewModel.subCategorySearchText = newValue
-        }
-    }
-    
     var itemListSearchText: String {
         get {
             _itemListViewModel.searchText

@@ -30,31 +30,13 @@ struct CatalogViewModelTests {
         #expect(vm.categorySearchText == "Sofas")
     }
     
-    @Test("subCategorySearchText updates the CategoryViewModel.subCategorySearchText")
-    func subCategorySearchText_Passthrough() {
-        let vm = CatalogViewModel()
-        
-        vm.subCategorySearchText = "Sofas"
-        
-        #expect(vm.categoryViewModel.subCategorySearchText == "Sofas")
-    }
-    
-    @Test("subCategorySearchText gets the CategoryViewModel.categorySearchText")
-    func subCategorySearchText_getViewModelSearchText() {
-        let vm = CatalogViewModel()
-        
-        vm.categoryViewModel.subCategorySearchText = "Sofas"
-        
-        #expect(vm.subCategorySearchText == "Sofas")
-    }
-    
     @Test("itemListSearchText gets the CategoryViewModel.categorySearchText")
     func itemListSearchText_Passthrough() {
         let vm = CatalogViewModel()
         
-        vm.categoryViewModel.subCategorySearchText = "Sofas"
+        vm.itemListSearchText = "Sofas"
         
-        #expect(vm.subCategorySearchText == "Sofas")
+        #expect(vm.itemListViewModel.searchText == "Sofas")
     }
     
     @Test("itemListSearchText updates the ItemListViewModel state")

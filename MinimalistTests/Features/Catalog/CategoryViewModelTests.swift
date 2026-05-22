@@ -62,47 +62,6 @@ struct CategoryViewModelTests {
         #expect(vm.categories == [vm.allCategories[0]])
     }
     
-    @Test("returns all subcategories when search text is empty")
-    func subCategories_returnAllSubCategories_emptySearch() {
-        let vm = CategoryViewModel(router: router)
-        
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-
-        #expect(vm.subCategories == vm.allCategories[0].subCategories)
-    }
-    
-    @Test("returns all categories when search text contains only whitespaces")
-    func subCategories_returnAllSubCategories_whitespaceSearch() {
-        let vm = CategoryViewModel(router: router)
-        
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-        vm.subCategorySearchText = "  "
-
-        #expect(vm.subCategories == vm.allCategories[0].subCategories)
-    }
-    
-    @Test("returns filtered subcategories when search text is not empty")
-    func subCategories_returnAllSubCategories_nonemptySearch() {
-        let vm = CategoryViewModel(router: router)
-        
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-        vm.subCategorySearchText = "Kitchen"
-
-        #expect(vm.subCategories == [vm.allCategories[0].subCategories[0]])
-    }
-    
-    @Test("returns nil when category is not selected")
-    func subCategories_returnNil_categoryNotSelected() {
-        let vm = CategoryViewModel(router: router)
-        
-        vm.allCategories = categories
-        
-        #expect(vm.subCategories == nil)
-    }
-    
     @Test("sets selectedCategory")
     func handleCategoryCardClick_setSelectedCategory() {
         let vm = CategoryViewModel(router: router)
@@ -111,16 +70,5 @@ struct CategoryViewModelTests {
         vm.handleCategoryCardClick(category: categories[0])
         
         #expect(vm.selectedCategory == categories[0])
-    }
-    
-    @Test("sets selectedSubCategory")
-    func handleSubCategoryCardClick_setSelectedSubCategory() {
-        let vm = CategoryViewModel(router: router)
-        
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-        vm.handleSubCategoryCardClick(subCategory: categories[0].subCategories[0])
-        
-        #expect(vm.selectedSubCategory == categories[0].subCategories[0])
     }
 }

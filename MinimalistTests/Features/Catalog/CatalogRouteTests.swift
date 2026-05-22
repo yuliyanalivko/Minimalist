@@ -5,7 +5,6 @@ struct CatalogRouteTests {
 
     @Test("should return correct title for each route", arguments: [
         (CatalogRoute.category, "Catalog"),
-        (CatalogRoute.subcategory(title: "Sofas"), "Sofas"),
         (CatalogRoute.itemList(title: "Kitchen Sofas"), "Kitchen Sofas"),
         (CatalogRoute.itemDetails(title: "Vindkast", id: "1"), "Vindkast"),
     ])
