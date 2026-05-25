@@ -2,78 +2,43 @@ import SwiftUI
 
 @Observable
 class CatalogViewModel: BaseViewModel {
+    var router: CatalogRouter
     
-    var router: CatalogRouter = CatalogRouter()
-    var categorySearchText: String = ""
-    var subCategorySearchText: String = ""
-    var allCategories: [Category] = []
-    
-    var allSubCategories: [SubCategory]? {
-        selectedCategory?.subCategories
+    var categoryViewModel: CategoryViewModel {
+        _categoryViewModel
     }
     
-    let columns = [
-        GridItem(.flexible(),spacing: 16),
-        GridItem(.flexible(),spacing: 16)
-    ]
+    var itemListViewModel: ItemListViewModel {
+        _itemListViewModel
+    }
     
-    var selectedSubCategory: SubCategory? {
-        allSubCategories?.first {
-            $0.id == selectedSubCategoryId
+    var categorySearchText: String {
+        get {
+            _categoryViewModel.categorySearchText
+        }
+        set {
+            _categoryViewModel.categorySearchText = newValue
         }
     }
     
-    var selectedCategory: Category? {
-        allCategories.first(where: { $0.id == selectedCategoryId })
-    }
-    
-    var subCategories: [SubCategory]? {
-        guard let subCategories = selectedCategory?.subCategories else {
-            return nil
+    var itemListSearchText: String {
+        get {
+            _itemListViewModel.searchText
         }
-        
-        return searchItems(in: subCategories, searchText: subCategorySearchText)
+        set {
+            _itemListViewModel.searchText = newValue
+        }
     }
     
-    var categories: [Category] {
-        searchItems(in: allCategories, searchText: categorySearchText)
-    }
-    
-    private var selectedCategoryId: String?
-    private var selectedSubCategoryId: String?
+    private var _categoryViewModel: CategoryViewModel
+    private var _itemListViewModel: ItemListViewModel
     
     override init() {
-        super.init()
-        // TODO: remove when CategoryService is implemented
-        loadMock()
-    }
-    
-    // TODO: TODO: remove when CategoryService is implemented
-    func loadMock() {
-        let data = categoriesMock.data(using: .utf8)!
-        allCategories = try! JSONDecoder().decode([Category].self, from: data)
-    }
-    
-    func handleCategoryCardClick(category: Category) {
-        selectCategory(category)
-        router.navigate(to: CatalogRoute.subcategory(title: category.name))
-    }
-    
-    func handleSubCategoryCardClick(subCategory: SubCategory) {
-        selectSubCategory(subCategory)
-    }
-    
-    private func selectCategory(_ category: Category) {
-        selectedCategoryId = category.id
-    }
-    
-    private func selectSubCategory(_ subCategory: SubCategory) {
-        selectedSubCategoryId = subCategory.id
-    }
-    
-    private func searchItems<T: CatalogItemConfigurable>(in items: [T], searchText: String) -> [T] {
-        let searchText = searchText.lowercased().trimmingCharacters(in: .whitespaces)
+        let router = CatalogRouter()
         
-        return searchText.isEmpty ? items : items.filter { $0.name.lowercased().contains(searchText) }
+        self.router = router
+        
+        self._categoryViewModel = CategoryViewModel(router: router)
+        self._itemListViewModel = ItemListViewModel(router: router)
     }
 }

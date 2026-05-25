@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CategoryView: View {
-    let viewModel: CatalogViewModel
+    let viewModel: CategoryViewModel
     
     var body: some View {
         if !viewModel.categories.isEmpty {
@@ -24,5 +24,5 @@ struct CategoryView: View {
 }
 
 #Preview {
-    CategoryView(viewModel: CatalogViewModel())
+    CategoryView(viewModel: CategoryViewModel(router: CatalogRouter()))
 }

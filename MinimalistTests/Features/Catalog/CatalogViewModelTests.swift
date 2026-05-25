@@ -3,122 +3,48 @@ import Testing
 
 @MainActor
 struct CatalogViewModelTests {
-    let categories: [Category] = [
-        Category(
-            id: "1",
-            name: "Sofas",
-            thumbnailUrl: nil,
-            subCategories: [
-                SubCategory(
-                    id: "3",
-                    name: "Kitchen sofas",
-                    thumbnailUrl: nil,
-                    iconName: nil
-                ),
-                SubCategory(
-                    id: "4",
-                    name: "Bedroom sofas",
-                    thumbnailUrl: nil,
-                    iconName: nil
-                )
-            ]
-        ),
-        Category(
-            id: "2",
-            name: "Tables",
-            thumbnailUrl: nil,
-            subCategories: []
-        ),
-    ]
     
-    @Test("returns all categories when search text is empty")
-    func categories_returnAllCategories_emptySearch() {
+    @Test("sets up shared router instance correctly")
+    func init_setsUpSharedRouter() async throws {
         let vm = CatalogViewModel()
         
-        vm.allCategories = categories
-
-        #expect(vm.categories == vm.allCategories)
+        #expect(vm.categoryViewModel.router === vm.router, "CategoryViewModel should share the main router instance")
+        #expect(vm.itemListViewModel.router === vm.router, "ItemListViewModel should share the main router instance")
     }
     
-    @Test("returns all categories when search text contains only whitespaces")
-    func categories_returnAllCategories_whitespaceSearch() {
+    @Test("categorySearchText updates the CategoryViewModel.categorySearchText")
+    func categorySearchText_Passthrough() {
         let vm = CatalogViewModel()
         
-        vm.allCategories = categories
-        vm.categorySearchText = "  "
-
-        #expect(vm.categories == vm.allCategories)
-    }
-    
-    @Test("returns filtered categories when search text is not empty")
-    func categories_returnAllCategories_nonemptySearch() {
-        let vm = CatalogViewModel()
-        
-        vm.allCategories = categories
         vm.categorySearchText = "Sofas"
-
-        #expect(vm.categories == [vm.allCategories[0]])
+        
+        #expect(vm.categoryViewModel.categorySearchText == "Sofas")
     }
     
-    @Test("returns all subcategories when search text is empty")
-    func subCategories_returnAllSubCategories_emptySearch() {
+    @Test("categorySearchText gets the CategoryViewModel.categorySearchText")
+    func categorySearchText_getViewModelSearchText() {
         let vm = CatalogViewModel()
         
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-
-        #expect(vm.subCategories == vm.allCategories[0].subCategories)
+        vm.categoryViewModel.categorySearchText = "Sofas"
+        
+        #expect(vm.categorySearchText == "Sofas")
     }
     
-    @Test("returns all categories when search text contains only whitespaces")
-    func subCategories_returnAllSubCategories_whitespaceSearch() {
+    @Test("itemListSearchText gets the CategoryViewModel.categorySearchText")
+    func itemListSearchText_Passthrough() {
         let vm = CatalogViewModel()
         
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-        vm.subCategorySearchText = "  "
-
-        #expect(vm.subCategories == vm.allCategories[0].subCategories)
+        vm.itemListSearchText = "Sofas"
+        
+        #expect(vm.itemListViewModel.searchText == "Sofas")
     }
     
-    @Test("returns filtered subcategories when search text is not empty")
-    func subCategories_returnAllSubCategories_nonemptySearch() {
+    @Test("itemListSearchText updates the ItemListViewModel state")
+    func itemListSearchText_getViewModelSearchText() {
         let vm = CatalogViewModel()
         
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-        vm.subCategorySearchText = "Kitchen"
-
-        #expect(vm.subCategories == [vm.allCategories[0].subCategories[0]])
-    }
-    
-    @Test("returns nil when category is not selected")
-    func subCategories_returnNil_categoryNotSelected() {
-        let vm = CatalogViewModel()
+        vm.itemListViewModel.searchText = "Sofas"
         
-        vm.allCategories = categories
-        
-        #expect(vm.subCategories == nil)
-    }
-    
-    @Test("sets selectedCategory")
-    func handleCategoryCardClick_setSelectedCategory() {
-        let vm = CatalogViewModel()
-        
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-        
-        #expect(vm.selectedCategory == categories[0])
-    }
-    
-    @Test("sets selectedSubCategory")
-    func handleSubCategoryCardClick_setSelectedSubCategory() {
-        let vm = CatalogViewModel()
-        
-        vm.allCategories = categories
-        vm.handleCategoryCardClick(category: categories[0])
-        vm.handleSubCategoryCardClick(subCategory: categories[0].subCategories[0])
-        
-        #expect(vm.selectedSubCategory == categories[0].subCategories[0])
+        #expect(vm.itemListSearchText == "Sofas")
     }
 }

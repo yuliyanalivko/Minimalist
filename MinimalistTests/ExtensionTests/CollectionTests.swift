@@ -25,4 +25,28 @@ struct CollectionTests {
         
         #expect(collection[safe: 1] == 2)
     }
+    
+    struct MockProduct: Equatable {
+        let name: String
+    }
+    
+    private let collection = [
+        MockProduct(name: "Garden Sofa"),
+        MockProduct(name: "Table Lamp")
+    ]
+    
+    @Test("returns allItems when search text is empty")
+    func filtered_returnAllItems_emptySearch() {
+        #expect(collection.filtered(by: "", key: \.name) == collection)
+    }
+    
+    @Test("returns allItems when search text is not empty")
+    func filtered_returnFilteredItems_nonemptySearch() {
+        #expect(collection.filtered(by: "sofa", key: \.name) == [MockProduct(name: "Garden Sofa")])
+    }
+    
+    @Test("returns allItems when search text contains only whitespaces")
+    func filtered_returnFilteredItems_whitespacesSearch() {
+        #expect(collection.filtered(by: "   ", key: \.name) == collection)
+    }
 }
