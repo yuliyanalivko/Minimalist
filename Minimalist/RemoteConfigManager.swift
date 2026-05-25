@@ -30,7 +30,11 @@ class RemoteConfigManager {
     
     private func configureSettings() {
         let settings = RemoteConfigSettings()
+#if DEBUG
         settings.minimumFetchInterval = 0
+#else
+        settings.minimumFetchInterval = 3600
+#endif
         remoteConfig.configSettings = settings
     }
     
