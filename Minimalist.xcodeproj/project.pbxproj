@@ -10,6 +10,7 @@
 		2F3020062FBDEA50003E8BF7 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3020052FBDEA50003E8BF7 /* FirebaseAnalytics */; };
 		2F3020082FBDEA50003E8BF7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3020072FBDEA50003E8BF7 /* FirebaseFirestore */; };
 		2FE8EC0D2FC09C80009F2376 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE8EC0C2FC09C80009F2376 /* FirebaseCrashlytics */; };
+		2FE8EEF52FC43044009F2376 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE8EEF42FC43044009F2376 /* FirebaseRemoteConfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 				2FE8EC0D2FC09C80009F2376 /* FirebaseCrashlytics in Frameworks */,
 				2F3020062FBDEA50003E8BF7 /* FirebaseAnalytics in Frameworks */,
 				2F3020082FBDEA50003E8BF7 /* FirebaseFirestore in Frameworks */,
+				2FE8EEF52FC43044009F2376 /* FirebaseRemoteConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,6 +135,7 @@
 				2F3020052FBDEA50003E8BF7 /* FirebaseAnalytics */,
 				2F3020072FBDEA50003E8BF7 /* FirebaseFirestore */,
 				2FE8EC0C2FC09C80009F2376 /* FirebaseCrashlytics */,
+				2FE8EEF42FC43044009F2376 /* FirebaseRemoteConfig */,
 			);
 			productName = Minimalist;
 			productReference = 2FA4ADF42F9FA75600272BB9 /* Minimalist.app */;
@@ -653,6 +656,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2F3020042FBDEA50003E8BF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
+		};
+		2FE8EEF42FC43044009F2376 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3020042FBDEA50003E8BF7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

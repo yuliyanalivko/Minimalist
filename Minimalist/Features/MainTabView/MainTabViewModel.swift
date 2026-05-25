@@ -26,7 +26,9 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
         }
     }
     
-    let showRoundedTabBar: Bool = true
+    var showRoundedTabBar: Bool {
+        RemoteConfigManager.shared.isRoundTabBarEnabled
+    }
     
     let items: [TabBarItemConfigurable] = Tab.allCases.map { tab in
         TabBarItem(
