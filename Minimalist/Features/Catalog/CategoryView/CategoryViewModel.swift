@@ -16,7 +16,7 @@ class CategoryViewModel: BaseViewModel {
         allCategories.first(where: { $0.id == selectedCategoryId })
     }
     
-    var categories: [Category] {
+    var displayedCategories: [Category] {
         allCategories.filtered(by: searchText, key: \.name)
     }
     
@@ -49,7 +49,7 @@ class CategoryViewModel: BaseViewModel {
         
         guard !searchTerm.isEmpty else { return }
         
-        AnalyticsManager.shared.logEvent(
+        logEvent(
             .applySearch(
                 searchTerm: searchTerm,
                 categoryName: nil,

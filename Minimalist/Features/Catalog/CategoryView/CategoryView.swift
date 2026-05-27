@@ -4,10 +4,10 @@ struct CategoryView: View {
     let viewModel: CategoryViewModel
     
     var body: some View {
-        if !viewModel.categories.isEmpty {
+        if !viewModel.displayedCategories.isEmpty {
             ScrollView {
                 LazyVGrid(columns: viewModel.columns, spacing: 16) {
-                    ForEach(viewModel.categories, id: \.id) { item in
+                    ForEach(viewModel.displayedCategories, id: \.id) { item in
                         CategoryCardView(title: item.name, icon: item.iconName ?? nil)
                             .onTapGesture {
                                 viewModel.handleCategoryCardClick(category: item)

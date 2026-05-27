@@ -25,4 +25,12 @@ import SwiftUI
     func clearError() {
         error = nil
     }
+    
+    func trackScreen(_ screenName: String) {
+        AnalyticsManager.shared.trackScreen(screenName)
+    }
+    
+    func logEvent(_ event: AnalyticsEvent) {
+        AnalyticsManager.shared.logEvent(event)
+    }
 }

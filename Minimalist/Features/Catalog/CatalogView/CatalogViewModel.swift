@@ -61,4 +61,10 @@ class CatalogViewModel: BaseViewModel {
     func logCategorySearchEvent() {
         categoryViewModel.logSearchEvent()
     }
+    
+    func trackCatalogScreen() {
+        //TODO: replace "Catalog" with route title once the base router is ready
+        trackScreen("Catalog")
+
+    }
 }

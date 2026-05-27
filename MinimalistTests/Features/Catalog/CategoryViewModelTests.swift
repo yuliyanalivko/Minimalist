@@ -3,6 +3,15 @@ import Testing
 
 @MainActor
 struct CategoryViewModelTests {
+    class SpyViewModel: CategoryViewModel {
+
+        private(set) var loggedEvents: [AnalyticsEvent] = []
+
+        override func logEvent(_ event: AnalyticsEvent) {
+            loggedEvents.append(event)
+        }
+    }
+    
     let categories: [Category] = [
         Category(
             id: "1",
@@ -39,7 +48,7 @@ struct CategoryViewModelTests {
         
         vm.allCategories = categories
 
-        #expect(vm.categories == vm.allCategories)
+        #expect(vm.displayedCategories == vm.allCategories)
     }
     
     @Test("returns all categories when search text contains only whitespaces")
@@ -49,7 +58,7 @@ struct CategoryViewModelTests {
         vm.allCategories = categories
         vm.searchText = "  "
 
-        #expect(vm.categories == vm.allCategories)
+        #expect(vm.displayedCategories == vm.allCategories)
     }
     
     @Test("returns filtered categories when search text is not empty")
@@ -59,7 +68,7 @@ struct CategoryViewModelTests {
         vm.allCategories = categories
         vm.searchText = "Sofas"
 
-        #expect(vm.categories == [vm.allCategories[0]])
+        #expect(vm.displayedCategories == [vm.allCategories[0]])
     }
     
     @Test("sets selectedCategory")
@@ -70,5 +79,18 @@ struct CategoryViewModelTests {
         vm.handleCategoryCardClick(category: categories[0])
         
         #expect(vm.selectedCategory == categories[0])
+    }
+    
+    
+    
+    @Test("calls logEvent with the correct search event")
+    func logSearchEvent_callLogEvent() {
+        let vm = SpyViewModel(router: router)
+
+        vm.searchText = " sof "
+        
+        vm.logSearchEvent()
+        
+        #expect(vm.loggedEvents == [AnalyticsEvent.applySearch(searchTerm: "sof", categoryName: nil)])
     }
 }

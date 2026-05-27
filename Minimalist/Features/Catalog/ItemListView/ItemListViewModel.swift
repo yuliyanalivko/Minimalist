@@ -6,7 +6,7 @@ class ItemListViewModel: BaseViewModel {
     var allItems: [Item] = []
     var searchText: String = ""
     
-    var items: [Item] {
+    var displayedItems: [Item] {
         allItems.filtered(by: searchText, key: \.name)
     }
     
@@ -38,9 +38,10 @@ class ItemListViewModel: BaseViewModel {
     func toggleFavorite(_ item: Item) {
         if let index = allItems.firstIndex(where: { $0.id == item.id }) {
             allItems[index].isFavorited.toggle()
+
+            logToggleFavoriteEvent(item: allItems[index])
         }
         
-        logToggleFavoriteEvent(item: item)
     }
     
     func handleItemClick(item: Item) {
@@ -52,7 +53,7 @@ class ItemListViewModel: BaseViewModel {
         
         guard !searchTerm.isEmpty else { return }
 
-        AnalyticsManager.shared.logEvent(
+        logEvent(
             .applySearch(
                 searchTerm: searchTerm,
                 categoryName: categoryName
@@ -61,7 +62,7 @@ class ItemListViewModel: BaseViewModel {
     }
     
     func logViewItemListEvent(id: String, name: String) {
-        AnalyticsManager.shared.logEvent(
+        logEvent(
             .viewItemList(
                 id: id,
                 name: name
@@ -74,6 +75,6 @@ class ItemListViewModel: BaseViewModel {
         ? .addToWishlist(id: item.id, name: item.name)
         : .removeFromWishlist(id: item.id, name: item.name)
         
-        AnalyticsManager.shared.logEvent(event)
+        logEvent(event)
     }
 }

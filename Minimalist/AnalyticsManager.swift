@@ -17,17 +17,17 @@ final class AnalyticsManager {
     }
 }
 
-enum AnalyticsEvent {
+enum AnalyticsEvent: Equatable {
     case viewItemList(id: String, name: String)
     case viewItem(id: String, name: String, categoryName: String, subCategoryName: String?)
-    case applyFilter(filters: [FilterType: Any], categoryName: String)
+    case applyFilter(filters: [FilterType: FilterValue], categoryName: String)
     case applySearch(searchTerm: String, categoryName: String?)
     case addToWishlist(id: String, name: String)
     case removeFromWishlist(id: String, name: String)
-    case addToCart(id: String, name: String, price: Double)
-    case removeFromCart(id: String, name: String, price: Double)
-    case beginCheckout(totalPrice: Double, items: [AnalyticsItem])
-    case purchase(totalPrice: Double, items: [AnalyticsItem])
+    case addToCart(id: String, name: String)
+    case removeFromCart(id: String, name: String)
+    case beginCheckout(items: [AnalyticsItem])
+    case purchase(items: [AnalyticsItem])
     
     enum FilterType: String {
         case category = "category"
@@ -35,10 +35,21 @@ enum AnalyticsEvent {
         case rating = "rating"
     }
     
-    struct AnalyticsItem {
+    enum FilterValue: Equatable {
+        case string(String)
+        case double(Double)
+        
+        var value: Any {
+            switch self {
+            case .string(let text): return text
+            case .double(let number): return number
+            }
+        }
+    }
+    
+    struct AnalyticsItem: Equatable {
         let id: String
         let name: String
-        let price: Double
         let quantity: Int
     }
     
@@ -104,7 +115,7 @@ enum AnalyticsEvent {
             ]
             
             for (key, value) in filters {
-                parameters["filter_\(key)"] = value
+                parameters["filter_\(key)"] = value.value
             }
             
             return parameters
@@ -132,53 +143,58 @@ enum AnalyticsEvent {
                 AnalyticsParameterItemName: name
             ]
             
-        case .addToCart(let id, let name, let price):
+        case .addToCart(let id, let name):
             return [
                 AnalyticsParameterItemID: id,
                 AnalyticsParameterItemName: name,
-                AnalyticsParameterPrice: price
             ]
             
-        case .removeFromCart(let id, let name, let price):
+        case .removeFromCart(let id, let name):
             return [
                 AnalyticsParameterItemID: id,
                 AnalyticsParameterItemName: name,
-                AnalyticsParameterPrice: price
             ]
             
-        case .beginCheckout(let totalPrice, let items):
+        case .beginCheckout(let items):
             let items = items.map { item in
                 [
                     AnalyticsParameterItemID: item.id,
                     AnalyticsParameterItemName: item.name,
-                    AnalyticsParameterPrice: item.price,
                     AnalyticsParameterQuantity: item.quantity
                 ]
             }
             
-            var parameters: [String: Any] = [
-                AnalyticsParameterValue: totalPrice,
+            let parameters: [String: Any] = [
                 AnalyticsParameterItems: items
             ]
             
             return parameters
             
-        case .purchase(let totalPrice, let items):
+        case .purchase(let items):
             let items = items.map { item in
                 [
                     AnalyticsParameterItemID: item.id,
                     AnalyticsParameterItemName: item.name,
-                    AnalyticsParameterPrice: item.price,
                     AnalyticsParameterQuantity: item.quantity
                 ]
             }
             
-            var parameters: [String: Any] = [
-                AnalyticsParameterValue: totalPrice,
+            let parameters: [String: Any] = [
                 AnalyticsParameterItems: items
             ]
             
             return parameters
         }
+    }
+}
+
+extension AnalyticsEvent.FilterValue: ExpressibleByFloatLiteral, ExpressibleByStringLiteral {
+    
+    init(floatLiteral value: Double) {
+        self = .double(value)
+    }
+    
+    init(stringLiteral value: String) {
+        self = .string(value)
     }
 }

@@ -12,8 +12,7 @@ struct CatalogView: View {
         }
         .environment(viewModel.router)
         .onAppear{
-            //TODO: replace "Catalog" with route title once the base router is ready
-            AnalyticsManager.shared.trackScreen("Catalog")
+            viewModel.trackCatalogScreen()
         }
     }
     

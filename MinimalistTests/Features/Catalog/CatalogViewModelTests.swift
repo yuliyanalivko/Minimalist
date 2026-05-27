@@ -4,6 +4,15 @@ import Testing
 @MainActor
 struct CatalogViewModelTests {
     
+    class SpyViewModel: CatalogViewModel {
+
+        private(set) var trackedScreens: [String] = []
+
+        override func trackScreen(_ screenName: String) {
+            trackedScreens.append(screenName)
+        }
+    }
+    
     @Test("sets up shared router instance correctly")
     func init_setsUpSharedRouter() async throws {
         let vm = CatalogViewModel()
@@ -46,5 +55,14 @@ struct CatalogViewModelTests {
         vm.itemListViewModel.searchText = "Sofas"
         
         #expect(vm.itemListSearchText == "Sofas")
+    }
+    
+    @Test("calls trackScreen with the correct screenName")
+    func trackCatalogScreen_callLogEvent() {
+        let vm = SpyViewModel()
+        
+        vm.trackCatalogScreen()
+        
+        #expect(vm.trackedScreens == ["Catalog"])
     }
 }

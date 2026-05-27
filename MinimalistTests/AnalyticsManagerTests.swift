@@ -78,29 +78,27 @@ struct AnalyticsManagerTests {
     
     @Test("addToCart event maps fields correctly")
     func addToCart() {
-        let event = AnalyticsEvent.addToCart(id: "1", name: "Vindkast", price: 49.99)
+        let event = AnalyticsEvent.addToCart(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventAddToCart)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
         #expect(event.parameters[AnalyticsParameterItemName] as? String == "Vindkast")
-        #expect(event.parameters[AnalyticsParameterPrice] as? Double == 49.99)
     }
     
     @Test("removeFromCart event maps fields correctly")
     func removeFromCart() {
-        let event = AnalyticsEvent.removeFromCart(id: "1", name: "Vindkast", price: 49.99)
+        let event = AnalyticsEvent.removeFromCart(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventRemoveFromCart)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
         #expect(event.parameters[AnalyticsParameterItemName] as? String == "Vindkast")
-        #expect(event.parameters[AnalyticsParameterPrice] as? Double == 49.99)
     }
     
     @Test("beginCheckout event maps fields correctly")
     func beginCheckout() {
-        let event = AnalyticsEvent.beginCheckout(totalPrice: 149.97, items: [
-            AnalyticsEvent.AnalyticsItem(id: "1", name: "Vindkast", price: 49.99, quantity: 1),
-            AnalyticsEvent.AnalyticsItem(id: "2", name: "Grinsbyn", price: 49.99, quantity: 2)
+        let event = AnalyticsEvent.beginCheckout(items: [
+            AnalyticsEvent.AnalyticsItem(id: "1", name: "Vindkast", quantity: 1),
+            AnalyticsEvent.AnalyticsItem(id: "2", name: "Grinsbyn", quantity: 2)
         ])
         
         let items = event.parameters[AnalyticsParameterItems] as? [[String: Any]]
@@ -108,14 +106,11 @@ struct AnalyticsManagerTests {
         let secondItem = items?.last
         
         #expect(event.name == AnalyticsEventBeginCheckout)
-        #expect(event.parameters[AnalyticsParameterValue] as? Double == 149.97)
         #expect(firstItem?[AnalyticsParameterItemID] as? String == "1")
         #expect(firstItem?[AnalyticsParameterItemName] as? String == "Vindkast")
-        #expect(firstItem?[AnalyticsParameterPrice] as? Double == 49.99)
         #expect(firstItem?[AnalyticsParameterQuantity] as? Int == 1)
         #expect(secondItem?[AnalyticsParameterItemID] as? String == "2")
         #expect(secondItem?[AnalyticsParameterItemName] as? String == "Grinsbyn")
-        #expect(secondItem?[AnalyticsParameterPrice] as? Double == 49.99)
         #expect(secondItem?[AnalyticsParameterQuantity] as? Int == 2)
     }
 }
