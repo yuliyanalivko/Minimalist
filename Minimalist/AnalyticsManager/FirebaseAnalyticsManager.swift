@@ -1,8 +1,8 @@
 import Foundation
 import FirebaseAnalytics
 
-final class AnalyticsManager {
-    static let shared = AnalyticsManager()
+final class FirebaseAnalyticsManager: ScreenTracking, EventTracking {
+    static let shared = FirebaseAnalyticsManager()
     
     private init() {}
     
@@ -12,12 +12,12 @@ final class AnalyticsManager {
         ])
     }
     
-    func logEvent(_ event: AnalyticsEvent) {
+    func logEvent(_ event: FirebaseAnalyticsEvent) {
         Analytics.logEvent(event.name, parameters: event.parameters)
     }
 }
 
-enum AnalyticsEvent: Equatable {
+enum FirebaseAnalyticsEvent: AnalyticsEvent, Equatable {
     case viewItemList(id: String, name: String)
     case viewItem(id: String, name: String, categoryName: String, subCategoryName: String?)
     case applyFilter(filters: [FilterType: FilterValue], categoryName: String)
@@ -186,9 +186,9 @@ enum AnalyticsEvent: Equatable {
             return parameters
         }
     }
-}
+    }
 
-extension AnalyticsEvent.FilterValue: ExpressibleByFloatLiteral, ExpressibleByStringLiteral {
+extension FirebaseAnalyticsEvent.FilterValue: ExpressibleByFloatLiteral, ExpressibleByStringLiteral {
     
     init(floatLiteral value: Double) {
         self = .double(value)

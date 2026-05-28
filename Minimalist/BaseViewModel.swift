@@ -30,7 +30,7 @@ import SwiftUI
         AnalyticsManager.shared.trackScreen(screenName)
     }
     
-    func logEvent(_ event: AnalyticsEvent) {
+    func logEvent(_ event: some AnalyticsEvent) {
         AnalyticsManager.shared.logEvent(event)
     }
 }

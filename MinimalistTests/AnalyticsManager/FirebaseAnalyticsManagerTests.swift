@@ -3,11 +3,11 @@ import Foundation
 import FirebaseAnalytics
 @testable import Minimalist
 
-struct AnalyticsManagerTests {
+struct FirebaseAnalyticsManagerTests {
     
     @Test("viewItemList event maps fields correctly")
     func viewItemList() {
-        let event = AnalyticsEvent.viewItemList(
+        let event = FirebaseAnalyticsEvent.viewItemList(
             id: "1",
             name: "Lamps",
         )
@@ -19,7 +19,7 @@ struct AnalyticsManagerTests {
     
     @Test("viewItem event maps fields correctly")
     func viewItem() {
-        let event = AnalyticsEvent.viewItem(
+        let event = FirebaseAnalyticsEvent.viewItem(
             id: "1",
             name: "Vindkast",
             categoryName: "Lamps",
@@ -35,7 +35,7 @@ struct AnalyticsManagerTests {
     
     @Test("applyFilter event maps fields correctly")
     func applyFilter() {
-        let event = AnalyticsEvent.applyFilter(
+        let event = FirebaseAnalyticsEvent.applyFilter(
             filters: [
                 .price: 49.99,
                 .rating: 4.5
@@ -51,7 +51,7 @@ struct AnalyticsManagerTests {
     
     @Test("applySearch event maps fields correctly")
     func applySearch() {
-        let event = AnalyticsEvent.applySearch(searchTerm: "Sed", categoryName: "Lamps")
+        let event = FirebaseAnalyticsEvent.applySearch(searchTerm: "Sed", categoryName: "Lamps")
         
         #expect(event.name == AnalyticsEventSearch)
         #expect(event.parameters[AnalyticsParameterSearchTerm] as? String == "Sed")
@@ -60,7 +60,7 @@ struct AnalyticsManagerTests {
     
     @Test("addToWishlist event maps fields correctly")
     func addToWishlist() {
-        let event = AnalyticsEvent.addToWishlist(id: "1", name: "Vindkast")
+        let event = FirebaseAnalyticsEvent.addToWishlist(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventAddToWishlist)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -69,7 +69,7 @@ struct AnalyticsManagerTests {
     
     @Test("removeFromWishlist event maps fields correctly")
     func removeFromWishlist() {
-        let event = AnalyticsEvent.removeFromWishlist(id: "1", name: "Vindkast")
+        let event = FirebaseAnalyticsEvent.removeFromWishlist(id: "1", name: "Vindkast")
         
         #expect(event.name == "remove_from_wishlist")
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -78,7 +78,7 @@ struct AnalyticsManagerTests {
     
     @Test("addToCart event maps fields correctly")
     func addToCart() {
-        let event = AnalyticsEvent.addToCart(id: "1", name: "Vindkast")
+        let event = FirebaseAnalyticsEvent.addToCart(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventAddToCart)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -87,7 +87,7 @@ struct AnalyticsManagerTests {
     
     @Test("removeFromCart event maps fields correctly")
     func removeFromCart() {
-        let event = AnalyticsEvent.removeFromCart(id: "1", name: "Vindkast")
+        let event = FirebaseAnalyticsEvent.removeFromCart(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventRemoveFromCart)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -96,9 +96,9 @@ struct AnalyticsManagerTests {
     
     @Test("beginCheckout event maps fields correctly")
     func beginCheckout() {
-        let event = AnalyticsEvent.beginCheckout(items: [
-            AnalyticsEvent.AnalyticsItem(id: "1", name: "Vindkast", quantity: 1),
-            AnalyticsEvent.AnalyticsItem(id: "2", name: "Grinsbyn", quantity: 2)
+        let event = FirebaseAnalyticsEvent.beginCheckout(items: [
+            FirebaseAnalyticsEvent.AnalyticsItem(id: "1", name: "Vindkast", quantity: 1),
+            FirebaseAnalyticsEvent.AnalyticsItem(id: "2", name: "Grinsbyn", quantity: 2)
         ])
         
         let items = event.parameters[AnalyticsParameterItems] as? [[String: Any]]

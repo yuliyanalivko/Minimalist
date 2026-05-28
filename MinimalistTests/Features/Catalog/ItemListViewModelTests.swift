@@ -6,9 +6,9 @@ struct ItemListViewModelTests {
     
     class SpyViewModel: ItemListViewModel {
 
-        private(set) var loggedEvents: [AnalyticsEvent] = []
+        private(set) var loggedEvents: [any AnalyticsEvent] = []
 
-        override func logEvent(_ event: AnalyticsEvent) {
+        override func logEvent(_ event: some AnalyticsEvent) {
             loggedEvents.append(event)
         }
     }
@@ -56,7 +56,7 @@ struct ItemListViewModelTests {
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(vm.allItems[0].isFavorited)
-        #expect(vm.loggedEvents == [AnalyticsEvent.addToWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name)])
+        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.addToWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name))
     }
     
     @Test("set isFavorite to false and log event")
@@ -68,7 +68,7 @@ struct ItemListViewModelTests {
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(!vm.allItems[0].isFavorited)
-        #expect(vm.loggedEvents == [AnalyticsEvent.removeFromWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name)])
+        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.removeFromWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name))
     }
     
     @Test("returns allItems when search text is empty")
@@ -119,7 +119,7 @@ struct ItemListViewModelTests {
         
         vm.logSearchEvent(categoryName: "Tables")
         
-        #expect(vm.loggedEvents == [AnalyticsEvent.applySearch(searchTerm: "tab", categoryName: "Tables")])
+        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.applySearch(searchTerm: "tab", categoryName: "Tables"))
     }
     
     @Test("calls logEvent with the correct viewItemList event")
@@ -128,6 +128,6 @@ struct ItemListViewModelTests {
         
         vm.logViewItemListEvent(id: "1", name: "Tables")
         
-        #expect(vm.loggedEvents == [AnalyticsEvent.viewItemList(id: "1", name: "Tables")])
+        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.viewItemList(id: "1", name: "Tables"))
     }
 }
