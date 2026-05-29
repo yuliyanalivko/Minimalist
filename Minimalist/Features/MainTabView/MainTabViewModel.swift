@@ -26,7 +26,7 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
         }
     }
     
-    let showRoundedTabBar: Bool = true
+    private(set) var showRoundedTabBar: Bool
     
     let items: [TabBarItemConfigurable] = Tab.allCases.map { tab in
         TabBarItem(
@@ -42,6 +42,10 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
     }
     
     private(set) var selectedItemIndex: Int = 0
+    
+    override init() {
+        showRoundedTabBar = RemoteConfigManager.shared.isRoundTabBarEnabled
+    }
     
     func select(_ index: Int) {
         selectedItemIndex = index
