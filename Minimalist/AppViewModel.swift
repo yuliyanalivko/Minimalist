@@ -15,6 +15,7 @@ class AppViewModel: BaseViewModel {
         currentState = .initializing
         
         FirebaseApp.configure()
+        await RemoteConfigManager.shared.fetchAndActivate()
         
         currentState = .readyToProceed
     }

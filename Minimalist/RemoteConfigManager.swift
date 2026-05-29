@@ -25,6 +25,8 @@ class RemoteConfigManager {
             applyValues()
         } catch {
             print("Remote Config fetch failed: \(error.localizedDescription)")
+            
+            AnalyticsManager.shared.logEvent(FirebaseAnalyticsEvent.remoteConfigFetchFailed(description: error.localizedDescription))
         }
     }
     

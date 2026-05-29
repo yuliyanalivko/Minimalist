@@ -28,6 +28,7 @@ enum FirebaseAnalyticsEvent: AnalyticsEvent, Equatable {
     case removeFromCart(id: String, name: String)
     case beginCheckout(items: [AnalyticsItem])
     case purchase(items: [AnalyticsItem])
+    case remoteConfigFetchFailed(description: String)
     
     enum FilterType: String {
         case category = "category"
@@ -85,6 +86,9 @@ enum FirebaseAnalyticsEvent: AnalyticsEvent, Equatable {
             
         case .purchase:
             return AnalyticsEventPurchase
+            
+        case .remoteConfigFetchFailed:
+            return "remote_config_fetch_fail"
         }
     }
     
@@ -184,9 +188,14 @@ enum FirebaseAnalyticsEvent: AnalyticsEvent, Equatable {
             ]
             
             return parameters
+            
+        case .remoteConfigFetchFailed(let description):
+            return [
+                "error_message": String(description.prefix(100))
+            ]
         }
     }
-    }
+}
 
 extension FirebaseAnalyticsEvent.FilterValue: ExpressibleByFloatLiteral, ExpressibleByStringLiteral {
     
