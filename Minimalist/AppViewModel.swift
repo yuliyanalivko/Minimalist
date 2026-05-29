@@ -1,6 +1,25 @@
 import SwiftUI
+import Firebase
+
+enum AppLoadingState {
+    case initializing
+    case readyToProceed
+    case started
+}
 
 @Observable
 class AppViewModel: BaseViewModel {
-    var isStarted: Bool = false
+    var currentState: AppLoadingState = .initializing
+    
+    func configureSDKs() async {
+        currentState = .initializing
+        
+        FirebaseApp.configure()
+        
+        currentState = .readyToProceed
+    }
+    
+    func startTheApp() {
+        currentState = .started
+    }
 }

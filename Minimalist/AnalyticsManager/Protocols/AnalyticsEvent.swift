@@ -1,1 +1,1 @@
-protocol AnalyticsEvent: Equatable {}
+protocol AnalyticsEvent {}

@@ -6,10 +6,18 @@ struct ContentView: View {
     @State private var viewModel = AppViewModel()
     
     var body: some View {
-        if viewModel.isStarted {
-            MainTabView()
-        } else {
-            HomeView(viewModel: viewModel)
+        Group {
+            switch viewModel.currentState {
+            case .initializing:
+                HomeView(viewModel: viewModel, showStartButton: false)
+            case .readyToProceed:
+                HomeView(viewModel: viewModel)
+            case .started:
+                MainTabView()
+            }
+        }
+        .task {
+            await viewModel.configureSDKs()
         }
     }
 }
