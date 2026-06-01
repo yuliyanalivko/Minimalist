@@ -4,19 +4,39 @@ import SwiftUI
 
 struct AppViewModelModelTests {
     
-    @Test("isStarted is false by default")
-    func isStatrted_false_byDefault() {
-        let vm = AppViewModel()
-
-        #expect(vm.isStarted == false)
+    let vm = AppViewModel()
+    
+    final class FirebaseMock: FirebaseConfiguring {
+        
+        private(set) var configureCalled = false
+        
+        func configure() {
+            configureCalled = true
+        }
     }
     
-    @Test("updates isStarted value")
-    func isStarted_updateValue() {
-        let vm = AppViewModel()
-
-        vm.isStarted = true
-
-        #expect(vm.isStarted == true)
+    @Test("verify the initial state of the currentState is .initializing")
+    func currentState_initValue_initializing() {
+        #expect(vm.currentState == .initializing)
+    }
+    
+    @MainActor
+    @Test("should set currentState to .readyToProceed")
+    func configureSDKs_setCurrentStateToReadyToProcess() async {
+        let firebase = FirebaseMock()
+        let vm = AppViewModel(firebase: firebase)
+        
+        await vm.configureSDKs()
+        
+        #expect(vm.currentState == .readyToProceed)
+        #expect(firebase.configureCalled)
+    }
+    
+    @Test("should set currentState to .started")
+    func startTheApp_setCurrentStateToStarted() {
+        vm.currentState = .readyToProceed
+        vm.startTheApp()
+        
+        #expect(vm.currentState == .started)
     }
 }

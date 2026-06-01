@@ -5,11 +5,13 @@ import FirebaseRemoteConfig
 class RemoteConfigManager {
     enum ParameterKey: String {
         case isRoundTabBarEnabled = "is_round_tab_bar_enabled"
+        case isTestingNotificationsEnabled = "is_testing_notifications_enabled"
     }
     
     static let shared = RemoteConfigManager()
     
     var isRoundTabBarEnabled: Bool = true
+    var isTestingNotificationsEnabled: Bool = false
     
     private var remoteConfig = RemoteConfig.remoteConfig()
     
@@ -42,13 +44,15 @@ class RemoteConfigManager {
     
     private func setDefaults() {
         let defaults: [String: NSObject] = [
-            ParameterKey.isRoundTabBarEnabled.rawValue: true as NSObject
+            ParameterKey.isRoundTabBarEnabled.rawValue: true as NSObject,
+            ParameterKey.isTestingNotificationsEnabled.rawValue: true as NSObject
         ]
         remoteConfig.setDefaults(defaults)
     }
     
     private func applyValues() {
         self.isRoundTabBarEnabled = remoteConfig[ParameterKey.isRoundTabBarEnabled.rawValue].boolValue
+        self.isTestingNotificationsEnabled = remoteConfig[ParameterKey.isTestingNotificationsEnabled.rawValue].boolValue
     }
     
     private func addOnConfigUpdateListener() {

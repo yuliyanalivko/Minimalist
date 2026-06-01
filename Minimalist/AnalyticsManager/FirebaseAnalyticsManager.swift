@@ -1,4 +1,3 @@
-import Foundation
 import FirebaseAnalytics
 
 final class FirebaseAnalyticsManager: ScreenTracking, EventTracking {
