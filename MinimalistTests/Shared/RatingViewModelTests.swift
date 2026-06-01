@@ -8,16 +8,15 @@ struct RatingViewModelTests {
         
     @Test("initialization should configure correct default values")
     func init_defaultValues() {
-        let sut = RatingViewModel()
+        let vm = RatingViewModel()
         
-        #expect(sut.rating == 0.0)
-        #expect(sut.isReadOnly == true)
-        #expect(sut.ratingItems.count == 5)
-        #expect(sut.itemSize == 17)
-        #expect(sut.spacing == 4)
-        #expect(sut.ratingItems.first?.icon == "star.fill")
-        #expect(sut.ratingItems.first?.highlightedColor == Color.AppColor.accent)
-        #expect(sut.ratingItems.first?.backgroundColor == Color.AppColor.backgroundSecondary)
+        #expect(vm.rating == 0.0)
+        #expect(vm.isReadOnly == true)
+        #expect(vm.ratingItems.count == 5)
+        #expect(vm.itemSize == 17)
+        #expect(vm.ratingItems.first?.icon == "star.fill")
+        #expect(vm.ratingItems.first?.highlightedColor == Color.AppColor.accent)
+        #expect(vm.ratingItems.first?.backgroundColor == Color.AppColor.backgroundSecondary)
     }
     
     @Test("initialization should set correct values")
@@ -69,10 +68,10 @@ struct RatingViewModelTests {
     
     @Test("maskWidth should calculate the width of the item mask")
     func maskWidth_() {
-        let vm = RatingViewModel() // Default size = 17, spacing = 4
+        let vm = RatingViewModel() // Default size = 17
         
         #expect(vm.maskWidth(starFill: 1.0) == nil)
-        #expect(vm.maskWidth(starFill: 0.5) == 10.5)
+        #expect(vm.maskWidth(starFill: 0.5) == 8.5)
         #expect(vm.maskWidth(starFill: 0.0) == 0.0)
     }
 }

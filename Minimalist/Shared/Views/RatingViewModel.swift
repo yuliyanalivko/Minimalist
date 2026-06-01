@@ -4,7 +4,6 @@ import SwiftUI
 class RatingViewModel: RatingDataModel {
     var rating: Double = 0
     var isReadOnly: Bool = true
-    
     var ratingItems: [RatingItem]
     
     let itemSize: CGFloat = 17
@@ -21,7 +20,7 @@ class RatingViewModel: RatingDataModel {
             repeating: RatingItem(
                 icon: "star.fill",
                 highlightedColor: Color.AppColor.accent,
-                backgroundColor: .gray
+                backgroundColor: Color.AppColor.backgroundSecondary
             ),
             count: 5
         )
