@@ -9,22 +9,13 @@ enum AppLoadingState {
 @Observable
 class AppViewModel: BaseViewModel {
     var currentState: AppLoadingState = .initializing
-    
-    private let firebase: FirebaseConfiguring
-    
-    init(firebase: FirebaseConfiguring = FirebaseConfigurator()) {
-        self.firebase = firebase
-    }
-    
+
     func configureSDKs() async {
         currentState = .initializing
-        
-        firebase.configure()
         
         await RemoteConfigManager.shared.fetchAndActivate()
         
 #if DEBUG
-        
         if RemoteConfigManager.shared.isTestingNotificationsEnabled {
             await NotificationManager.shared.requestAuthorization()
         }
