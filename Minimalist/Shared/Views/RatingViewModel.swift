@@ -8,7 +8,6 @@ class RatingViewModel: RatingDataModel {
     var ratingItems: [RatingItem]
     
     let itemSize: CGFloat = 17
-    let spacing: CGFloat = 4
     
     init(
         rating: Double = 0,
@@ -22,7 +21,7 @@ class RatingViewModel: RatingDataModel {
             repeating: RatingItem(
                 icon: "star.fill",
                 highlightedColor: Color.AppColor.accent,
-                backgroundColor: Color.AppColor.backgroundSecondary
+                backgroundColor: .gray
             ),
             count: 5
         )

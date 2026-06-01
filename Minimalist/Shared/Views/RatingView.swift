@@ -16,7 +16,7 @@ struct RatingView: View {
     }
     
     var body: some View {
-        HStack(spacing: viewModel.spacing) {
+        HStack(spacing: 4) {
             ForEach(Array(viewModel.ratingItems.enumerated()), id: \.offset) { (index, item) in
                 let starFill = viewModel.starFill(index)
                 
@@ -26,7 +26,8 @@ struct RatingView: View {
                     .foregroundStyle(item.backgroundColor)
                     .overlay(
                         Image(systemName: item.icon)
-                            .font(.system(size: viewModel.itemSize))
+                            .resizable()
+                            .frame(width: viewModel.itemSize, height: viewModel.itemSize)
                             .foregroundStyle(item.highlightedColor)
                             .mask(
                                 HStack(spacing: 0) {
@@ -44,48 +45,34 @@ struct RatingView: View {
             }
         }
     }
-    
-    private func starRow(filled: Bool) -> some View {
-        HStack(spacing: viewModel.spacing) {
-            ForEach(0 ..< viewModel.ratingItems.count, id: \.self) { index in
-                let item = viewModel.ratingItems[index]
-                
-                Image(systemName: item.icon)
-                    .resizable()
-                    .frame(width: viewModel.itemSize, height: viewModel.itemSize)
-                    .foregroundStyle(filled ? item.highlightedColor : item.backgroundColor)
-            }
-        }
-        .clipped()
-    }
 }
 
 #Preview {
     RatingView(rating: 3.5, isReadOnly: false, ratingItems: [
         RatingItem(
             icon: "heart.fill",
-            highlightedColor: Color.red,
-            backgroundColor: Color.AppColor.backgroundSecondary
+            highlightedColor: .red,
+            backgroundColor: .gray
         ),
         RatingItem(
             icon: "sun.min.fill",
-            highlightedColor: Color.yellow,
-            backgroundColor: Color.AppColor.backgroundSecondary
+            highlightedColor: .yellow,
+            backgroundColor: .gray
         ),
         RatingItem(
             icon: "leaf.fill",
-            highlightedColor: Color.green,
-            backgroundColor: Color.AppColor.backgroundSecondary
+            highlightedColor: .green,
+            backgroundColor: .gray
         ),
         RatingItem(
             icon: "cloud.rain.fill",
-            highlightedColor: Color.blue,
-            backgroundColor: Color.AppColor.backgroundSecondary
+            highlightedColor: .blue,
+            backgroundColor: .gray
         ),
         RatingItem(
             icon: "pawprint.fill",
-            highlightedColor: Color.purple,
-            backgroundColor: Color.AppColor.backgroundSecondary
+            highlightedColor: .purple,
+            backgroundColor: .gray
         )
     ])
 }

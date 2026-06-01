@@ -5,7 +5,6 @@ protocol RatingDataModel {
     var isReadOnly: Bool { get }
     var ratingItems: [RatingItem] { get }
     var itemSize: CGFloat { get }
-    var spacing: CGFloat { get }
     
     func setRating(_ ratingItemIndex: Int) 
 }
@@ -16,6 +15,6 @@ extension RatingDataModel {
     }
     
     func maskWidth(starFill: Double) -> CGFloat? {
-        starFill == 1 ? nil : (itemSize + spacing) * starFill
+        starFill == 1 ? nil : itemSize * starFill
     }
 }
