@@ -1,5 +1,5 @@
-final class TestingAnalyticsManager: ScreenTracking, EventTracking {
-    static let shared = TestingAnalyticsManager()
+final class TestingAnalyticsProvider: ScreenTracking, EventTracking {
+    static let shared = TestingAnalyticsProvider()
     
     private init() {}
     

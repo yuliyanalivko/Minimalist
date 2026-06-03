@@ -56,7 +56,16 @@ struct ItemListViewModelTests {
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(vm.allItems[0].isFavorited)
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.addToWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name))
+        
+        guard let event = vm.loggedEvents.first as? AddToWishlist else {
+            Issue.record("Expected the first logged event to be AddToWishlist")
+           
+            return
+        }
+        
+        #expect(event.name == FirebaseEventName.addToWishlist)
+        #expect(event.parameters[FirebaseParamName.itemId] as? String == vm.allItems[0].id)
+        #expect(event.parameters[FirebaseParamName.itemName] as? String == vm.allItems[0].name)
     }
     
     @Test("set isFavorite to false and log event")
@@ -68,7 +77,16 @@ struct ItemListViewModelTests {
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(!vm.allItems[0].isFavorited)
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.removeFromWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name))
+        
+        guard let event = vm.loggedEvents.first as? RemoveFromWishlist else {
+            Issue.record("Expected the first logged event to be RemoveFromWishlist")
+           
+            return
+        }
+        
+        #expect(event.name == FirebaseEventName.removeFromWishlist)
+        #expect(event.parameters[FirebaseParamName.itemId] as? String == vm.allItems[0].id)
+        #expect(event.parameters[FirebaseParamName.itemName] as? String == vm.allItems[0].name)
     }
     
     @Test("returns allItems when search text is empty")
@@ -119,7 +137,15 @@ struct ItemListViewModelTests {
         
         vm.logSearchEvent(categoryName: "Tables")
         
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.applySearch(searchTerm: "tab", categoryName: "Tables"))
+        guard let event = vm.loggedEvents.first as? ApplySearch else {
+            Issue.record("Expected the first logged event to be ApplySearch")
+           
+            return
+        }
+        
+        #expect(event.name == FirebaseEventName.applySearch)
+        #expect(event.parameters[FirebaseParamName.searchTerm] as? String == "tab")
+        #expect(event.parameters[FirebaseParamName.categoryName] as? String == "Tables")
     }
     
     @Test("calls logEvent with the correct viewItemList event")
@@ -128,6 +154,14 @@ struct ItemListViewModelTests {
         
         vm.logViewItemListEvent(id: "1", name: "Tables")
         
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.viewItemList(id: "1", name: "Tables"))
+        guard let event = vm.loggedEvents.first as? ViewItemList else {
+            Issue.record("Expected the first logged event to be ViewItemList")
+           
+            return
+        }
+        
+        #expect(event.name == FirebaseEventName.viewItemList)
+        #expect(event.parameters[FirebaseParamName.listId] as? String == "1")
+        #expect(event.parameters[FirebaseParamName.listName] as? String == "Tables")
     }
 }

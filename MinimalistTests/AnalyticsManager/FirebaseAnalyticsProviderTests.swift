@@ -3,11 +3,11 @@ import Foundation
 import FirebaseAnalytics
 @testable import Minimalist
 
-struct FirebaseAnalyticsManagerTests {
+struct FirebaseAnalyticsProviderTests {
     
     @Test("viewItemList event maps fields correctly")
     func viewItemList() {
-        let event = FirebaseAnalyticsEvent.viewItemList(
+        let event = ViewItemList(
             id: "1",
             name: "Lamps",
         )
@@ -19,7 +19,7 @@ struct FirebaseAnalyticsManagerTests {
     
     @Test("viewItem event maps fields correctly")
     func viewItem() {
-        let event = FirebaseAnalyticsEvent.viewItem(
+        let event = ViewItem(
             id: "1",
             name: "Vindkast",
             categoryName: "Lamps",
@@ -27,18 +27,18 @@ struct FirebaseAnalyticsManagerTests {
         )
         
         #expect(event.name == AnalyticsEventViewItem)
-        #expect(event.parameters[AnalyticsParameterItemListID] as? String == "1")
-        #expect(event.parameters[AnalyticsParameterItemListName] as? String == "Vindkast")
+        #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
+        #expect(event.parameters[AnalyticsParameterItemName] as? String == "Vindkast")
         #expect(event.parameters[AnalyticsParameterItemCategory] as? String == "Lamps")
         #expect(event.parameters[AnalyticsParameterItemCategory2] as? String == "Pendent lamps")
     }
     
     @Test("applyFilter event maps fields correctly")
     func applyFilter() {
-        let event = FirebaseAnalyticsEvent.applyFilter(
+        let event = ApplyFilter(
             filters: [
-                .price: 49.99,
-                .rating: 4.5
+                .price(49.99),
+                .rating(4.5)
             ],
             categoryName: "Lamps"
         )
@@ -51,7 +51,7 @@ struct FirebaseAnalyticsManagerTests {
     
     @Test("applySearch event maps fields correctly")
     func applySearch() {
-        let event = FirebaseAnalyticsEvent.applySearch(searchTerm: "Sed", categoryName: "Lamps")
+        let event = ApplySearch(searchTerm: "Sed", categoryName: "Lamps")
         
         #expect(event.name == AnalyticsEventSearch)
         #expect(event.parameters[AnalyticsParameterSearchTerm] as? String == "Sed")
@@ -60,7 +60,7 @@ struct FirebaseAnalyticsManagerTests {
     
     @Test("addToWishlist event maps fields correctly")
     func addToWishlist() {
-        let event = FirebaseAnalyticsEvent.addToWishlist(id: "1", name: "Vindkast")
+        let event = AddToWishlist(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventAddToWishlist)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -69,7 +69,7 @@ struct FirebaseAnalyticsManagerTests {
     
     @Test("removeFromWishlist event maps fields correctly")
     func removeFromWishlist() {
-        let event = FirebaseAnalyticsEvent.removeFromWishlist(id: "1", name: "Vindkast")
+        let event = RemoveFromWishlist(id: "1", name: "Vindkast")
         
         #expect(event.name == "remove_from_wishlist")
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -78,7 +78,7 @@ struct FirebaseAnalyticsManagerTests {
     
     @Test("addToCart event maps fields correctly")
     func addToCart() {
-        let event = FirebaseAnalyticsEvent.addToCart(id: "1", name: "Vindkast")
+        let event = AddToCart(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventAddToCart)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -87,7 +87,7 @@ struct FirebaseAnalyticsManagerTests {
     
     @Test("removeFromCart event maps fields correctly")
     func removeFromCart() {
-        let event = FirebaseAnalyticsEvent.removeFromCart(id: "1", name: "Vindkast")
+        let event = RemoveFromCart(id: "1", name: "Vindkast")
         
         #expect(event.name == AnalyticsEventRemoveFromCart)
         #expect(event.parameters[AnalyticsParameterItemID] as? String == "1")
@@ -96,9 +96,9 @@ struct FirebaseAnalyticsManagerTests {
     
     @Test("beginCheckout event maps fields correctly")
     func beginCheckout() {
-        let event = FirebaseAnalyticsEvent.beginCheckout(items: [
-            FirebaseAnalyticsEvent.AnalyticsItem(id: "1", name: "Vindkast", quantity: 1),
-            FirebaseAnalyticsEvent.AnalyticsItem(id: "2", name: "Grinsbyn", quantity: 2)
+        let event = BeginCheckout(items: [
+            AnalyticsItem(id: "1", name: "Vindkast", quantity: 1),
+            AnalyticsItem(id: "2", name: "Grinsbyn", quantity: 2)
         ])
         
         let items = event.parameters[AnalyticsParameterItems] as? [[String: Any]]

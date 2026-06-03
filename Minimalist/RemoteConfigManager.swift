@@ -26,7 +26,7 @@ class RemoteConfigManager {
             _ = try await remoteConfig.fetchAndActivate()
             applyValues()
         } catch {
-            AnalyticsManager.shared.logEvent(FirebaseAnalyticsEvent.remoteConfigFetchFailed(description: error.localizedDescription))
+            AnalyticsManager.shared.logEvent(RemoteConfigFetchFailed(errorMessage: error.localizedDescription))
         }
     }
     

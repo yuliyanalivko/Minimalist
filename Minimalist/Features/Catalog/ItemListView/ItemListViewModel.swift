@@ -54,7 +54,7 @@ class ItemListViewModel: BaseViewModel {
         guard !searchTerm.isEmpty else { return }
 
         logEvent(
-            FirebaseAnalyticsEvent.applySearch(
+            ApplySearch(
                 searchTerm: searchTerm,
                 categoryName: categoryName
             )
@@ -63,7 +63,7 @@ class ItemListViewModel: BaseViewModel {
     
     func logViewItemListEvent(id: String, name: String) {
         logEvent(
-            FirebaseAnalyticsEvent.viewItemList(
+            ViewItemList(
                 id: id,
                 name: name
             )
@@ -72,8 +72,8 @@ class ItemListViewModel: BaseViewModel {
 
     private func logToggleFavoriteEvent(item: Item) {
         let event: FirebaseAnalyticsEvent = item.isFavorited
-        ? .addToWishlist(id: item.id, name: item.name)
-        : .removeFromWishlist(id: item.id, name: item.name)
+        ? AddToWishlist(id: item.id, name: item.name)
+        : RemoveFromWishlist(id: item.id, name: item.name)
         
         logEvent(event)
     }

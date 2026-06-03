@@ -36,11 +36,20 @@ struct AnalyticsManagerTests {
         let firebaseEvetTrackerMock = MockEventTracker<FirebaseAnalyticsEvent>()
         let stringEventTrackerMock = MockEventTracker<String>()
         let manager = AnalyticsManager(providers: [firebaseEvetTrackerMock, stringEventTrackerMock])
-        let event = FirebaseAnalyticsEvent.addToCart(id: "1", name: "Sofa")
+        let event = AddToCart(id: "1", name: "Sofa")
 
         manager.logEvent(event)
         
-        #expect(firebaseEvetTrackerMock.loggedEvent == event)
+        guard let event = firebaseEvetTrackerMock.loggedEvent as? AddToCart else {
+            Issue.record("Expected the first logged event to be AddToCart")
+           
+            return
+        }
+        
+        #expect(event.name == FirebaseEventName.addToCart)
+        #expect(event.parameters[FirebaseParamName.itemId] as? String == "1")
+        #expect(event.parameters[FirebaseParamName.itemName] as? String == "Sofa")
+        
         #expect(stringEventTrackerMock.loggedEvent == nil)
     }
 }

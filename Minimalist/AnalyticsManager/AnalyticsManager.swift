@@ -1,14 +1,15 @@
 final class AnalyticsManager {
     
     static let shared = AnalyticsManager(providers: [
-        FirebaseAnalyticsManager.shared,
+        FirebaseAnalyticsProvider.shared,
+        TestingAnalyticsProvider.shared
     ])
     
     let providers: [any AnalyticsTracking]
     
     init(providers: [any AnalyticsTracking]) {
         self.providers = if RemoteConfigManager.shared.isTestingNotificationsEnabled {
-            providers + [TestingAnalyticsManager.shared]
+            providers + [TestingAnalyticsProvider.shared]
         } else {
             providers
         }
@@ -25,12 +26,11 @@ final class AnalyticsManager {
     }
     
     func logEvent<T: AnalyticsEvent>(_ event: T) {
-        providers.forEach({ provider in
-            guard let provider = provider as? any EventTracking<T> else {
+        providers.forEach { provider in
+            guard let provider = provider as? any AnyEventTracking else {
                 return
             }
-            
-            provider.logEvent(event)
-        })
+            provider.tryLog(event)
+        }
     }
 }

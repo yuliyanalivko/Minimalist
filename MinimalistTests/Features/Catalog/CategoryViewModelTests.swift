@@ -4,9 +4,9 @@ import Testing
 @MainActor
 struct CategoryViewModelTests {
     class SpyViewModel: CategoryViewModel {
-
+        
         private(set) var loggedEvents: [any AnalyticsEvent] = []
-
+        
         override func logEvent(_ event: some AnalyticsEvent) {
             loggedEvents.append(event)
         }
@@ -47,7 +47,7 @@ struct CategoryViewModelTests {
         let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
-
+        
         #expect(vm.displayedCategories == vm.allCategories)
     }
     
@@ -57,7 +57,7 @@ struct CategoryViewModelTests {
         
         vm.allCategories = categories
         vm.searchText = "  "
-
+        
         #expect(vm.displayedCategories == vm.allCategories)
     }
     
@@ -67,7 +67,7 @@ struct CategoryViewModelTests {
         
         vm.allCategories = categories
         vm.searchText = "Sofas"
-
+        
         #expect(vm.displayedCategories == [vm.allCategories[0]])
     }
     
@@ -86,11 +86,19 @@ struct CategoryViewModelTests {
     @Test("calls logEvent with the correct search event")
     func logSearchEvent_callLogEvent() {
         let vm = SpyViewModel(router: router)
-
+        
         vm.searchText = " sof "
         
         vm.logSearchEvent()
         
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.applySearch(searchTerm: "sof", categoryName: nil))
+        guard let event = vm.loggedEvents.first as? ApplySearch else {
+            Issue.record("Expected the first logged event to be ApplySearch")
+           
+            return
+        }
+        
+        #expect(event.name == FirebaseEventName.applySearch)
+        #expect(event.parameters[FirebaseParamName.searchTerm] as? String == "sof")
+        #expect(event.parameters[FirebaseParamName.categoryName] == nil)
     }
 }
