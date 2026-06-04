@@ -1,5 +1,6 @@
 import Foundation
 import FirebaseRemoteConfig
+import Firebase
 
 @Observable
 class RemoteConfigManager {
@@ -13,7 +14,13 @@ class RemoteConfigManager {
     var isRoundTabBarEnabled: Bool = true
     var isTestingNotificationsEnabled: Bool = false
     
-    private var remoteConfig = RemoteConfig.remoteConfig()
+    private var remoteConfig: RemoteConfig? {
+        guard FirebaseApp.app() != nil else {
+            return nil
+        }
+        
+        return RemoteConfig.remoteConfig()
+    }
     
     private init() {
         configureSettings()
@@ -23,10 +30,10 @@ class RemoteConfigManager {
     
     func fetchAndActivate() async {
         do {
-            _ = try await remoteConfig.fetchAndActivate()
+            _ = try await remoteConfig?.fetchAndActivate()
             applyValues()
         } catch {
-            AnalyticsManager.shared.logEvent(RemoteConfigFetchFailed(errorMessage: error.localizedDescription))
+            AppConfigurationManager.shared.analyticsManager?.logEvent(RemoteConfigFetchFailed(errorMessage: error.localizedDescription))
         }
     }
     
@@ -37,7 +44,7 @@ class RemoteConfigManager {
 #else
         settings.minimumFetchInterval = 3600
 #endif
-        remoteConfig.configSettings = settings
+        remoteConfig?.configSettings = settings
     }
     
     private func setDefaults() {
@@ -45,23 +52,27 @@ class RemoteConfigManager {
             ParameterKey.isRoundTabBarEnabled.rawValue: true as NSObject,
             ParameterKey.isTestingNotificationsEnabled.rawValue: true as NSObject
         ]
-        remoteConfig.setDefaults(defaults)
+        remoteConfig?.setDefaults(defaults)
     }
     
     private func applyValues() {
+        guard let remoteConfig = remoteConfig else {
+            return
+        }
+        
         self.isRoundTabBarEnabled = remoteConfig[ParameterKey.isRoundTabBarEnabled.rawValue].boolValue
         self.isTestingNotificationsEnabled = remoteConfig[ParameterKey.isTestingNotificationsEnabled.rawValue].boolValue
     }
     
     private func addOnConfigUpdateListener() {
-        remoteConfig.addOnConfigUpdateListener { _, error in
+        remoteConfig?.addOnConfigUpdateListener { _, error in
             guard error == nil else {
                 print("Error listening for config updates: \(error?.localizedDescription ?? "Unknown error")")
                 
                 return
             }
             
-            self.remoteConfig.activate { [weak self] _, error in
+            self.remoteConfig?.activate { [weak self] _, error in
                 guard error == nil else {
                     print("Error updating config: \(error?.localizedDescription ?? "Unknown error")")
                     

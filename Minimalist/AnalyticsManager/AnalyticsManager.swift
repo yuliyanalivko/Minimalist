@@ -1,18 +1,13 @@
 final class AnalyticsManager {
     
-    static let shared = AnalyticsManager(providers: [
-        FirebaseAnalyticsProvider.shared,
-        TestingAnalyticsProvider.shared
-    ])
-    
-    let providers: [any AnalyticsTracking]
+    private(set) var providers: [any AnalyticsTracking]
     
     init(providers: [any AnalyticsTracking]) {
-        self.providers = if RemoteConfigManager.shared.isTestingNotificationsEnabled {
-            providers + [TestingAnalyticsProvider.shared]
-        } else {
-            providers
-        }
+        self.providers = providers
+    }
+    
+    func updateProviders(_ providers: [any AnalyticsTracking]) {
+        self.providers = providers
     }
     
     func trackScreen(_ screenName: String) {

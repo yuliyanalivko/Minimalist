@@ -6,26 +6,18 @@ struct AppViewModelModelTests {
     
     let vm = AppViewModel()
 
-    @Test("verify the initial state of the currentState is .initializing")
-    func currentState_initValue_initializing() {
-        #expect(vm.currentState == .initializing)
+    @Test("verify the initial state of the isStarted is false")
+    func isStarted_initValue_initializing() {
+        #expect(vm.isStarted == false)
     }
     
     @MainActor
-    @Test("should set currentState to .readyToProceed")
-    func configureSDKs_setCurrentStateToReadyToProcess() async {
+    @Test("should set isStarted to true")
+    func startTheApp_setIsStartedToTrue() async {
         let vm = AppViewModel()
         
-        await vm.configureSDKs()
+        await vm.startTheApp()
         
-        #expect(vm.currentState == .readyToProceed)
-    }
-    
-    @Test("should set currentState to .started")
-    func startTheApp_setCurrentStateToStarted() {
-        vm.currentState = .readyToProceed
-        vm.startTheApp()
-        
-        #expect(vm.currentState == .started)
+        #expect(vm.isStarted)
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import Firebase
 
 enum AppLoadingState {
     case initializing
@@ -8,23 +9,9 @@ enum AppLoadingState {
 
 @Observable
 class AppViewModel: BaseViewModel {
-    var currentState: AppLoadingState = .initializing
-
-    func configureSDKs() async {
-        currentState = .initializing
-        
-        await RemoteConfigManager.shared.fetchAndActivate()
-        
-#if DEBUG
-        if RemoteConfigManager.shared.isTestingNotificationsEnabled {
-            await NotificationManager.shared.requestAuthorization()
-        }
-#endif
-        
-        currentState = .readyToProceed
-    }
+    var isStarted: Bool = false
     
     func startTheApp() {
-        currentState = .started
+        isStarted = true
     }
 }

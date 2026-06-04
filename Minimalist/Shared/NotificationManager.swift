@@ -1,16 +1,27 @@
 import Foundation
 import UserNotifications
 
+protocol NotificationCenterProtocol: AnyObject {
+    var delegate: UNUserNotificationCenterDelegate? { get set }
+    func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool
+    func add(_ request: UNNotificationRequest) async throws
+}
+
+extension UNUserNotificationCenter: NotificationCenterProtocol {}
+
 final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationManager()
     
-    private override init() {
+    private let notificationCenter: NotificationCenterProtocol
+    
+    init(center: NotificationCenterProtocol = UNUserNotificationCenter.current()) {
+        notificationCenter = center
         super.init()
-        UNUserNotificationCenter.current().delegate = self
+        notificationCenter.delegate = self
     }
     
-    func requestAuthorization() async {
-        _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert])
+    func requestAuthorization() async -> Bool {
+        (try? await notificationCenter.requestAuthorization(options: [.alert])) ?? false
     }
     
     func showNotification(title: String, message: String) {
@@ -21,7 +32,9 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
-        UNUserNotificationCenter.current().add(request)
+        Task {
+            try? await notificationCenter.add(request)
+        }
     }
     
     func userNotificationCenter(

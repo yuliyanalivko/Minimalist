@@ -5,6 +5,8 @@ import SwiftUI
     
     private(set) var error: Error?
     
+    private let analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager
+    
     var errorMessage: String? {
         error?.localizedDescription
     }
@@ -27,10 +29,10 @@ import SwiftUI
     }
     
     func trackScreen(_ screenName: String) {
-        AnalyticsManager.shared.trackScreen(screenName)
+        analyticsManager?.trackScreen(screenName)
     }
     
     func logEvent(_ event: some AnalyticsEvent) {
-        AnalyticsManager.shared.logEvent(event)
+        analyticsManager?.logEvent(event)
     }
 }
