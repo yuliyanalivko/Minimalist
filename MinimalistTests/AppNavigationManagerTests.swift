@@ -2,12 +2,12 @@ import Testing
 import Foundation
 @testable import Minimalist
 
-struct MockConfigurator: SDKConfigurator {
-    func configure() {}
-}
-
 @MainActor
 struct AppConfigurationManagerTests {
+    
+    struct MockConfigurator: SDKConfigurator {
+        func configure() {}
+    }
     
     func configurationManager() -> AppConfigurationManager {
         let vm = AppConfigurationManager.shared
@@ -16,24 +16,33 @@ struct AppConfigurationManagerTests {
         return vm
     }
     
-    @Test("Should ignore SDKs configuration and only updates state on preview")
-    func initializeSDKs_preview() async {
-        setenv("XCODE_RUNNING_FOR_PREVIEWS", "1", 1)
+    func waitForInitialization(vm: AppConfigurationManager, timeout: Int = 5) async throws {
+        for _ in 0..<timeout {
+            if vm.isInitialized { return }
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        #expect(vm.isInitialized)
+    }
+    
+    @Test("Should configure SDKs and update state")
+    func initializeSDKs_updateState() async throws {
         let vm = configurationManager()
         
         await vm.initializeSDKs()
         
-        #expect(vm.isInitialized == true)
-        #expect(vm.analyticsManager == nil)
+        try await waitForInitialization(vm: vm)
         
-        unsetenv("XCODE_RUNNING_FOR_PREVIEWS")
+        #expect(vm.isInitialized == true)
+        #expect(vm.analyticsManager != nil)
     }
     
     @Test("Should update analytics manager providers")
-    func updateAnalyticsManagerProviders_managerIsSet_setProviders() async {
+    func updateAnalyticsManagerProviders_managerIsSet_setProviders() async throws {
         let vm = configurationManager()
         
         await vm.initializeSDKs()
+        
+        try await waitForInitialization(vm: vm)
         
         struct MockAnalyticsProvider: AnalyticsTracking {}
         
@@ -48,7 +57,7 @@ struct AppConfigurationManagerTests {
         let vm = configurationManager()
         
         struct MockAnalyticsProvider: AnalyticsTracking {}
-
+        
         vm.updateAnalyticsManagerProviders([MockAnalyticsProvider()])
         
         #expect(vm.analyticsManager == nil)

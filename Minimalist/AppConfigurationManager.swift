@@ -29,23 +29,33 @@ final class AppConfigurationManager {
     private init() {}
     
     func initializeSDKs() async {
-        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-        
-        guard !isPreview else {
-            self.isInitialized = true
-            return
+        Task {
+            await performInitialization()
         }
-        configureFirebase()
-        
-        await RemoteConfigManager.shared.fetchAndActivate()
-        
-        await configureAnalytics()        
-        
-        self.isInitialized = true
     }
     
     func updateAnalyticsManagerProviders(_ providers: [AnalyticsTracking]) {
         analyticsManager?.updateProviders(providers)
+    }
+    
+    private func performInitialization() async {
+        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+        
+        guard !isPreview else {
+            self.isInitialized = true
+            
+            return
+        }
+        
+        configureFirebase()
+        
+        await RemoteConfigManager.shared.fetchAndActivate()
+        
+        await configureAnalytics()
+        
+        await MainActor.run {
+            self.isInitialized = true
+        }
     }
     
     private func configureFirebase() {

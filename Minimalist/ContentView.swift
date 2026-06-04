@@ -9,10 +9,10 @@ struct ContentView: View {
     
     var body: some View {
         if configurationManager.isInitialized && viewModel.isStarted {
-                MainTabView()
-            } else {
-                HomeView(viewModel: viewModel, showStartButton: configurationManager.isInitialized)
-            }
+            MainTabView()
+        } else {
+            HomeView(viewModel: viewModel, showStartButton: configurationManager.isInitialized)
+        }
     }
 }
 
