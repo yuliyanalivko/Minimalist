@@ -38,24 +38,28 @@ final class AppConfigurationManager {
         analyticsManager?.updateProviders(providers)
     }
     
-    private func performInitialization() async {
+    private nonisolated func performInitialization() async {
         let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
         
         guard !isPreview else {
-            self.isInitialized = true
-            
+            await setIsInitialized(false)
             return
         }
         
-        configureFirebase()
+        await MainActor.run {
+            configureFirebase()
+        }
         
         await RemoteConfigManager.shared.fetchAndActivate()
         
         await configureAnalytics()
         
-        await MainActor.run {
-            self.isInitialized = true
-        }
+        await setIsInitialized(true)
+    }
+    
+    @MainActor
+    private func setIsInitialized(_ value: Bool) {
+        isInitialized = value
     }
     
     private func configureFirebase() {
@@ -74,4 +78,11 @@ final class AppConfigurationManager {
 #endif
         analyticsManager = AnalyticsManager(providers: providers)
     }
+    
+#if DEBUG
+    func resetForTesting() {
+        isInitialized = false
+        analyticsManager = nil
+    }
+#endif
 }

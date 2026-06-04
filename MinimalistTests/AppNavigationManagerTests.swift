@@ -2,8 +2,13 @@ import Testing
 import Foundation
 @testable import Minimalist
 
+@Suite("App Configuration Manager Tests", .serialized)
 @MainActor
 struct AppConfigurationManagerTests {
+    
+    init() {
+        AppConfigurationManager.shared.resetForTesting()
+    }
     
     struct MockConfigurator: SDKConfigurator {
         func configure() {}
