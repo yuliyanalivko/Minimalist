@@ -64,6 +64,9 @@ class CatalogViewModel: BaseViewModel {
     
     func trackCatalogScreen() {
         //TODO: replace "Catalog" with route title once the base router is ready
-        trackScreen("Catalog")
+        logEvent(AnalyticsEvent(
+            name: .screenView,
+            parameters: [.screenName: "Catalog"]
+        ))
     }
 }

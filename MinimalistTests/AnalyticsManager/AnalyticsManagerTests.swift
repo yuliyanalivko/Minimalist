@@ -1,25 +1,17 @@
 import Testing
 @testable import Minimalist
 
-final class MockScreenTracker: AnalyticsTracking, ScreenTracking {
-    var trackedScreenName: String?
+class MockProviderA: AnalyticsTracking {
+    var loggedEvent: AnalyticsEvent?
     
-    func trackScreen(_ screenName: String) {
-        trackedScreenName = screenName
-    }
-}
-
-final class MockEventTracker<ExpectedEvent>: AnalyticsTracking, EventTracking {
-    typealias Event = ExpectedEvent
-    var loggedEvent: ExpectedEvent?
-    
-    func logEvent(_ event: ExpectedEvent) {
+    func logEvent(_ event: AnalyticsEvent) {
         loggedEvent = event
     }
 }
 
-struct MockProviderA: AnalyticsTracking, Equatable {}
-struct MockProviderB: AnalyticsTracking, Equatable {}
+class MockProviderB: AnalyticsTracking {
+    func logEvent(_ event: AnalyticsEvent) {}
+}
 
 struct AnalyticsManagerTests {
     
@@ -30,7 +22,7 @@ struct AnalyticsManagerTests {
         let provider = MockProviderA()
         manager.updateProviders([provider])
         
-        #expect(manager.providers.first as? MockProviderA == provider)
+        #expect(manager.providers.first as? MockProviderA === provider)
     }
     
     @Test("Should add new provider when new provider type is unique")
@@ -71,36 +63,22 @@ struct AnalyticsManagerTests {
         #expect(manager.providers.count == 1)
     }
     
-    @Test("Tracking a screen routes to the correct provider")
-    func trackScreen_triggerRightProvider() {
-        let mockScreenTracker = MockScreenTracker()
-        let manager = AnalyticsManager(providers: [mockScreenTracker])
-        let expectedScreen = "Home"
-        
-        manager.trackScreen(expectedScreen)
-        
-        #expect(mockScreenTracker.trackedScreenName == expectedScreen)
-    }
-    
-    @Test("Logging an event to a matching event provider")
-    func logEvent_triggerRightProvider() {
-        let firebaseEvetTrackerMock = MockEventTracker<FirebaseAnalyticsEvent>()
-        let stringEventTrackerMock = MockEventTracker<String>()
-        let manager = AnalyticsManager(providers: [firebaseEvetTrackerMock, stringEventTrackerMock])
-        let event = AddToCart(id: "1", name: "Sofa")
+    @Test("SHould log an event to the provider")
+    func logEvent_triggerProvider() {
+        let provider = MockProviderA()
+        let manager = AnalyticsManager(providers: [provider])
+        let event = AnalyticsEvent(name: .addToCart, parameters: [.itemId: "1", .itemName: "Sofa"])
         
         manager.logEvent(event)
         
-        guard let event = firebaseEvetTrackerMock.loggedEvent as? AddToCart else {
-            Issue.record("Expected the first logged event to be AddToCart")
-            
+        guard let parameters = event.parameters else {
+            Issue.record("Expected parameters not to be nil")
+           
             return
         }
         
-        #expect(event.name == FirebaseEventName.addToCart)
-        #expect(event.parameters[FirebaseParamName.itemId] as? String == "1")
-        #expect(event.parameters[FirebaseParamName.itemName] as? String == "Sofa")
-        
-        #expect(stringEventTrackerMock.loggedEvent == nil)
+        #expect(event.name == AnalyticsEventName.addToCart.rawValue)
+        #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == "1")
+        #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == "Sofa")
     }
 }

@@ -14,6 +14,10 @@ struct AppConfigurationManagerTests {
         func configure() {}
     }
     
+    struct MockProvider: AnalyticsTracking {
+        func logEvent(_ event: AnalyticsEvent) {}
+    }
+    
     func configurationManager() -> AppConfigurationManager {
         let vm = AppConfigurationManager.shared
         vm.firebaseConfigurator = MockConfigurator()
@@ -49,21 +53,17 @@ struct AppConfigurationManagerTests {
         
         try await waitForInitialization(vm: vm)
         
-        struct MockAnalyticsProvider: AnalyticsTracking {}
-        
-        vm.updateAnalyticsManagerProviders([MockAnalyticsProvider()])
+        vm.updateAnalyticsManagerProviders([MockProvider()])
         
         #expect(vm.analyticsManager != nil)
-        #expect(vm.analyticsManager?.providers.first is MockAnalyticsProvider)
+        #expect(vm.analyticsManager?.providers.first is MockProvider)
     }
     
     @Test("Should not update providers when analytics manager is nil")
     func updateAnalyticsManagerProviders_managerNil_ignoreUpdate() {
         let vm = configurationManager()
         
-        struct MockAnalyticsProvider: AnalyticsTracking {}
-        
-        vm.updateAnalyticsManagerProviders([MockAnalyticsProvider()])
+        vm.updateAnalyticsManagerProviders([MockProvider()])
         
         #expect(vm.analyticsManager == nil)
     }

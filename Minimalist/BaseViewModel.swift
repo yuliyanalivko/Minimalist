@@ -28,11 +28,7 @@ import SwiftUI
         error = nil
     }
     
-    func trackScreen(_ screenName: String) {
-        analyticsManager?.trackScreen(screenName)
-    }
-    
-    func logEvent(_ event: some AnalyticsEvent) {
+    func logEvent(_ event: AnalyticsEvent) {
         analyticsManager?.logEvent(event)
     }
 }

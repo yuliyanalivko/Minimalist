@@ -1,6 +1,7 @@
 import SwiftUI
 import FirebaseRemoteConfig
 import Firebase
+import Combine
 
 protocol SDKConfigurator {
     func configure()
@@ -15,16 +16,15 @@ struct FirebaseConfigurator: SDKConfigurator {
 }
 
 @MainActor
-@Observable
-final class AppConfigurationManager {
-    
+final class AppConfigurationManager: ObservableObject {
+  
+    @Published private(set) var isInitialized = false
+
     static let shared = AppConfigurationManager()
     
     var firebaseConfigurator: SDKConfigurator = FirebaseConfigurator()
     
     private(set) var analyticsManager: AnalyticsManager?
-    
-    private(set) var isInitialized = false
     
     private init() {}
     
@@ -39,13 +39,6 @@ final class AppConfigurationManager {
     }
     
     private nonisolated func performInitialization() async {
-        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-        
-        guard !isPreview else {
-            await setIsInitialized(false)
-            return
-        }
-        
         await MainActor.run {
             configureFirebase()
         }

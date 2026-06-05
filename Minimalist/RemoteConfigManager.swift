@@ -33,7 +33,12 @@ class RemoteConfigManager {
             _ = try await remoteConfig?.fetchAndActivate()
             applyValues()
         } catch {
-            AppConfigurationManager.shared.analyticsManager?.logEvent(RemoteConfigFetchFailed(errorMessage: error.localizedDescription))
+            AppConfigurationManager.shared.analyticsManager?.logEvent(
+                AnalyticsEvent(
+                    name: .remoteConfigFetchFailed,
+                    parameters: [.errorMessage: error.localizedDescription]
+                )
+            )
         }
     }
     

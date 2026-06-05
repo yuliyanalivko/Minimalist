@@ -24,10 +24,13 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         (try? await notificationCenter.requestAuthorization(options: [.alert])) ?? false
     }
     
-    func showNotification(title: String, message: String) {
+    func showNotification(title: String, message: String?) {
         let content = UNMutableNotificationContent()
         content.title = title
-        content.body = message
+        
+        if let message = message {
+            content.body = message
+        }
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)

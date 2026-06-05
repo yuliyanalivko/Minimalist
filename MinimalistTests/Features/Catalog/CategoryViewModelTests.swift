@@ -5,9 +5,9 @@ import Testing
 struct CategoryViewModelTests {
     class SpyViewModel: CategoryViewModel {
         
-        private(set) var loggedEvents: [any AnalyticsEvent] = []
+        private(set) var loggedEvents: [AnalyticsEvent] = []
         
-        override func logEvent(_ event: some AnalyticsEvent) {
+        override func logEvent(_ event: AnalyticsEvent) {
             loggedEvents.append(event)
         }
     }
@@ -91,14 +91,15 @@ struct CategoryViewModelTests {
         
         vm.logSearchEvent()
         
-        guard let event = vm.loggedEvents.first as? ApplySearch else {
-            Issue.record("Expected the first logged event to be ApplySearch")
-           
+        guard let name = vm.loggedEvents.first?.name,
+        let parameters = vm.loggedEvents.first?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
             return
         }
         
-        #expect(event.name == FirebaseEventName.applySearch)
-        #expect(event.parameters[FirebaseParamName.searchTerm] as? String == "sof")
-        #expect(event.parameters[FirebaseParamName.categoryName] == nil)
+        #expect(name == AnalyticsEventName.applySearch.rawValue)
+        #expect(parameters[AnalyticsParamName.searchTerm.rawValue] as? String == "sof")
+        #expect(parameters[AnalyticsParamName.categoryName.rawValue] == nil)
     }
 }

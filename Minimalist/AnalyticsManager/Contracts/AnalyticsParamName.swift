@@ -1,0 +1,16 @@
+enum AnalyticsParamName: String {
+    case screenName = "screen_name"
+    case itemId = "item_id"
+    case itemName = "item_name"
+    case listId = "list_id"
+    case listName = "list_name"
+    case categoryName = "category"
+    case subCategoryName = "subcategory"
+    case searchTerm = "search_term"
+    case quantity = "quantity"
+    case errorMessage = "error_message"
+    case items = "items"
+    case filterCategory = "filter_category"
+    case filterPrice = "filter_price"
+    case filterRating = "filter_rating"
+}

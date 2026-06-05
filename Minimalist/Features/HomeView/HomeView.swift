@@ -21,7 +21,7 @@ struct HomeView: View {
             
             Spacer()
                 .frame(minHeight: 40, idealHeight: 130, maxHeight: 130)
-            
+
             Button("Start shop") {
                 viewModel.startTheApp()
             }
