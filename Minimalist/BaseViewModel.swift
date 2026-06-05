@@ -5,10 +5,14 @@ import SwiftUI
     
     private(set) var error: Error?
     
-    private let analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager
+    private let analyticsManager: AnalyticsManager?
     
     var errorMessage: String? {
         error?.localizedDescription
+    }
+    
+    init(analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager) {
+        self.analyticsManager = analyticsManager
     }
     
     /// Sets the current error state for the view model.

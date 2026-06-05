@@ -33,13 +33,12 @@ class CatalogViewModel: BaseViewModel {
     private var _categoryViewModel: CategoryViewModel
     private var _itemListViewModel: ItemListViewModel
     
-    override init() {
+    init() {
         let router = CatalogRouter()
-        
         self.router = router
-        
         self._categoryViewModel = CategoryViewModel(router: router)
         self._itemListViewModel = ItemListViewModel(router: router)
+        super.init()
     }
     
     func logViewItemListEvent() {

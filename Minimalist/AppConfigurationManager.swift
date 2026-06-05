@@ -14,7 +14,6 @@ struct FirebaseConfigurator: SDKConfigurator {
     }
 }
 
-@MainActor
 @Observable
 final class AppConfigurationManager {
     
@@ -29,7 +28,7 @@ final class AppConfigurationManager {
     private init() {}
     
     func initializeSDKs() async {
-        Task {
+        Task { @MainActor in
             await performInitialization()
         }
     }
@@ -38,26 +37,23 @@ final class AppConfigurationManager {
         analyticsManager?.updateProviders(providers)
     }
     
-    private nonisolated func performInitialization() async {
+    private func performInitialization() async {
         let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
         
         guard !isPreview else {
-            await setIsInitialized(false)
+            setIsInitialized(false)
             return
         }
         
-        await MainActor.run {
-            configureFirebase()
-        }
+        configureFirebase()
         
         await RemoteConfigManager.shared.fetchAndActivate()
         
         await configureAnalytics()
         
-        await setIsInitialized(true)
+        setIsInitialized(true)
     }
     
-    @MainActor
     private func setIsInitialized(_ value: Bool) {
         isInitialized = value
     }

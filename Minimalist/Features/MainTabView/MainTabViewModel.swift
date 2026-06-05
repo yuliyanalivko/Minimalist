@@ -43,8 +43,9 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
     
     private(set) var selectedItemIndex: Int = 0
     
-    override init() {
+    init() {
         showRoundedTabBar = RemoteConfigManager.shared.isRoundTabBarEnabled
+        super.init()
     }
     
     func select(_ index: Int) {
