@@ -15,21 +15,20 @@ struct FirebaseConfigurator: SDKConfigurator {
     }
 }
 
-@MainActor
-final class AppConfigurationManager: ObservableObject {
-  
-    @Published private(set) var isInitialized = false
-
-    static let shared = AppConfigurationManager()
+@Observable
+final class AppConfigurationManager {
+    
     
     var firebaseConfigurator: SDKConfigurator = FirebaseConfigurator()
     
     private(set) var analyticsManager: AnalyticsManager?
     
+    private(set) var isInitialized = false    
+    
     private init() {}
     
     func initializeSDKs() async {
-        Task {
+        Task { @MainActor in
             await performInitialization()
         }
     }
@@ -38,19 +37,16 @@ final class AppConfigurationManager: ObservableObject {
         analyticsManager?.updateProviders(providers)
     }
     
-    private nonisolated func performInitialization() async {
-        await MainActor.run {
-            configureFirebase()
-        }
+    private func performInitialization() async {
+        configureFirebase()
         
         await RemoteConfigManager.shared.fetchAndActivate()
         
         await configureAnalytics()
         
-        await setIsInitialized(true)
+        setIsInitialized(true)
     }
     
-    @MainActor
     private func setIsInitialized(_ value: Bool) {
         isInitialized = value
     }
