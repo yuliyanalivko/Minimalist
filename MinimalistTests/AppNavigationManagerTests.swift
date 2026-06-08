@@ -6,10 +6,6 @@ import Foundation
 @MainActor
 struct AppConfigurationManagerTests {
     
-    init() {
-        AppConfigurationManager.shared.resetForTesting()
-    }
-    
     struct MockConfigurator: SDKConfigurator {
         func configure() {}
     }
@@ -61,7 +57,7 @@ struct AppConfigurationManagerTests {
     
     @Test("Should not update providers when analytics manager is nil")
     func updateAnalyticsManagerProviders_managerNil_ignoreUpdate() {
-        let vm = configurationManager()
+        let vm = AppConfigurationManager()
         
         vm.updateAnalyticsManagerProviders([MockProvider()])
         

@@ -5,7 +5,7 @@ struct ContentView: View {
     
     @State private var viewModel = AppViewModel()
     
-    @ObservedObject private var configurationManager: AppConfigurationManager = AppConfigurationManager.shared
+    private var configurationManager: AppConfigurationManager = AppConfigurationManager.shared
     
     var body: some View {
         if configurationManager.isInitialized && viewModel.isStarted {

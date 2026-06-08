@@ -18,6 +18,7 @@ struct FirebaseConfigurator: SDKConfigurator {
 @Observable
 final class AppConfigurationManager {
     
+    static let shared = AppConfigurationManager()
     
     var firebaseConfigurator: SDKConfigurator = FirebaseConfigurator()
     
@@ -25,7 +26,7 @@ final class AppConfigurationManager {
     
     private(set) var isInitialized = false    
     
-    private init() {}
+    init() {}
     
     func initializeSDKs() async {
         Task { @MainActor in
@@ -66,12 +67,5 @@ final class AppConfigurationManager {
         }
 #endif
         analyticsManager = AnalyticsManager(providers: providers)
-    }
-    
-#if DEBUG
-    func resetForTesting() {
-        isInitialized = false
-        analyticsManager = nil
-    }
-#endif
+    }    
 }
