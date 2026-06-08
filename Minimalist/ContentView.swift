@@ -5,19 +5,13 @@ struct ContentView: View {
     
     @State private var viewModel = AppViewModel()
     
+    private var configurationManager: AppConfigurationManager = AppConfigurationManager.shared
+    
     var body: some View {
-        Group {
-            switch viewModel.currentState {
-            case .initializing:
-                HomeView(viewModel: viewModel, showStartButton: false)
-            case .readyToProceed:
-                HomeView(viewModel: viewModel)
-            case .started:
-                MainTabView()
-            }
-        }
-        .task {
-            await viewModel.configureSDKs()
+        if configurationManager.isInitialized && viewModel.isStarted {
+            MainTabView()
+        } else {
+            HomeView(viewModel: viewModel, showStartButton: configurationManager.isInitialized)
         }
     }
 }

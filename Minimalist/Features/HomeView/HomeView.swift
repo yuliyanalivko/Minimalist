@@ -21,14 +21,14 @@ struct HomeView: View {
             
             Spacer()
                 .frame(minHeight: 40, idealHeight: 130, maxHeight: 130)
-            
+
             Button("Start shop") {
                 viewModel.startTheApp()
             }
             .buttonStyle(PrimaryButtonStyle())
             .opacity(showStartButton ? 1 : 0)
             .disabled(!showStartButton)
-            
+                        
             Spacer()
                 .frame(minHeight: 40, idealHeight: 130, maxHeight: 130)
             

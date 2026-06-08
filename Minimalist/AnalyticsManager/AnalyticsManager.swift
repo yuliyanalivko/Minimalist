@@ -1,36 +1,32 @@
 final class AnalyticsManager {
     
-    static let shared = AnalyticsManager(providers: [
-        FirebaseAnalyticsManager.shared,
-    ])
-    
-    let providers: [any AnalyticsTracking]
+    private(set) var providers: [any AnalyticsTracking]
     
     init(providers: [any AnalyticsTracking]) {
-        self.providers = if RemoteConfigManager.shared.isTestingNotificationsEnabled {
-            providers + [TestingAnalyticsManager.shared]
-        } else {
-            providers
+        self.providers = providers
+    }
+    
+    func updateProviders(_ providers: [any AnalyticsTracking]) {
+        self.providers = providers
+    }
+    
+    func addProvider(_ provider: any AnalyticsTracking) {
+        guard !providers.contains(where: {
+            type(of: $0) == type(of: provider)
+        }) else {
+            return
         }
+        
+        providers.append(provider)
     }
     
-    func trackScreen(_ screenName: String) {
-        providers.forEach({ provider in
-            guard let provider = provider as? ScreenTracking else {
-                return
-            }
-            
-            provider.trackScreen(screenName)
-        })
+    func removeProvider(ofType providerType: AnalyticsTracking.Type) {
+        providers.removeAll { type(of: $0) == providerType }
     }
     
-    func logEvent<T: AnalyticsEvent>(_ event: T) {
-        providers.forEach({ provider in
-            guard let provider = provider as? any EventTracking<T> else {
-                return
-            }
-            
-            provider.logEvent(event)
-        })
+    func logEvent(_ event: AnalyticsEvent) {
+        providers.forEach {
+            $0.logEvent(event)
+        }
     }
 }

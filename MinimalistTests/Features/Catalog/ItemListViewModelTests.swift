@@ -5,10 +5,10 @@ import Testing
 struct ItemListViewModelTests {
     
     class SpyViewModel: ItemListViewModel {
-
-        private(set) var loggedEvents: [any AnalyticsEvent] = []
-
-        override func logEvent(_ event: some AnalyticsEvent) {
+        
+        private(set) var loggedEvents: [AnalyticsEvent] = []
+        
+        override func logEvent(_ event: AnalyticsEvent) {
             loggedEvents.append(event)
         }
     }
@@ -56,7 +56,17 @@ struct ItemListViewModelTests {
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(vm.allItems[0].isFavorited)
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.addToWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name))
+        
+        guard let name = vm.loggedEvents.first?.name,
+              let parameters = vm.loggedEvents.first?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(name == AnalyticsEventName.addToWishlist.rawValue)
+        #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == vm.allItems[0].id)
+        #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == vm.allItems[0].name)
     }
     
     @Test("set isFavorite to false and log event")
@@ -68,7 +78,17 @@ struct ItemListViewModelTests {
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(!vm.allItems[0].isFavorited)
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.removeFromWishlist(id: vm.allItems[0].id, name: vm.allItems[0].name))
+        
+        guard let name = vm.loggedEvents.first?.name,
+              let parameters = vm.loggedEvents.first?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(name == AnalyticsEventName.removeFromWishlist.rawValue)
+        #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == vm.allItems[0].id)
+        #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == vm.allItems[0].name)
     }
     
     @Test("returns allItems when search text is empty")
@@ -114,12 +134,21 @@ struct ItemListViewModelTests {
     @Test("calls logEvent with the correct search event")
     func logSearchEvent_callLogEvent() {
         let vm = SpyViewModel(router: CatalogRouter())
-
+        
         vm.searchText = " tab "
         
         vm.logSearchEvent(categoryName: "Tables")
         
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.applySearch(searchTerm: "tab", categoryName: "Tables"))
+        guard let name = vm.loggedEvents.first?.name,
+              let parameters = vm.loggedEvents.first?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(name == AnalyticsEventName.applySearch.rawValue)
+        #expect(parameters[AnalyticsParamName.searchTerm.rawValue] as? String == "tab")
+        #expect(parameters[AnalyticsParamName.categoryName.rawValue] as? String == "Tables")
     }
     
     @Test("calls logEvent with the correct viewItemList event")
@@ -128,6 +157,15 @@ struct ItemListViewModelTests {
         
         vm.logViewItemListEvent(id: "1", name: "Tables")
         
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.viewItemList(id: "1", name: "Tables"))
+        guard let name = vm.loggedEvents.first?.name,
+              let parameters = vm.loggedEvents.first?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(name == AnalyticsEventName.viewItemList.rawValue)
+        #expect(parameters[AnalyticsParamName.listId.rawValue] as? String == "1")
+        #expect(parameters[AnalyticsParamName.listName.rawValue] as? String == "Tables")
     }
 }

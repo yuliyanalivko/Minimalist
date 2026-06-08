@@ -5,8 +5,14 @@ import SwiftUI
     
     private(set) var error: Error?
     
+    private let analyticsManager: AnalyticsManager?
+    
     var errorMessage: String? {
         error?.localizedDescription
+    }
+    
+    init(analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager) {
+        self.analyticsManager = analyticsManager
     }
     
     /// Sets the current error state for the view model.
@@ -26,11 +32,7 @@ import SwiftUI
         error = nil
     }
     
-    func trackScreen(_ screenName: String) {
-        AnalyticsManager.shared.trackScreen(screenName)
-    }
-    
-    func logEvent(_ event: some AnalyticsEvent) {
-        AnalyticsManager.shared.logEvent(event)
+    func logEvent(_ event: AnalyticsEvent) {
+        analyticsManager?.logEvent(event)
     }
 }

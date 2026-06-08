@@ -4,10 +4,10 @@ import Testing
 @MainActor
 struct CategoryViewModelTests {
     class SpyViewModel: CategoryViewModel {
-
-        private(set) var loggedEvents: [any AnalyticsEvent] = []
-
-        override func logEvent(_ event: some AnalyticsEvent) {
+        
+        private(set) var loggedEvents: [AnalyticsEvent] = []
+        
+        override func logEvent(_ event: AnalyticsEvent) {
             loggedEvents.append(event)
         }
     }
@@ -47,7 +47,7 @@ struct CategoryViewModelTests {
         let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
-
+        
         #expect(vm.displayedCategories == vm.allCategories)
     }
     
@@ -57,7 +57,7 @@ struct CategoryViewModelTests {
         
         vm.allCategories = categories
         vm.searchText = "  "
-
+        
         #expect(vm.displayedCategories == vm.allCategories)
     }
     
@@ -67,7 +67,7 @@ struct CategoryViewModelTests {
         
         vm.allCategories = categories
         vm.searchText = "Sofas"
-
+        
         #expect(vm.displayedCategories == [vm.allCategories[0]])
     }
     
@@ -86,11 +86,20 @@ struct CategoryViewModelTests {
     @Test("calls logEvent with the correct search event")
     func logSearchEvent_callLogEvent() {
         let vm = SpyViewModel(router: router)
-
+        
         vm.searchText = " sof "
         
         vm.logSearchEvent()
         
-        #expect(vm.loggedEvents.first as? FirebaseAnalyticsEvent == FirebaseAnalyticsEvent.applySearch(searchTerm: "sof", categoryName: nil))
+        guard let name = vm.loggedEvents.first?.name,
+        let parameters = vm.loggedEvents.first?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(name == AnalyticsEventName.applySearch.rawValue)
+        #expect(parameters[AnalyticsParamName.searchTerm.rawValue] as? String == "sof")
+        #expect(parameters[AnalyticsParamName.categoryName.rawValue] == nil)
     }
 }

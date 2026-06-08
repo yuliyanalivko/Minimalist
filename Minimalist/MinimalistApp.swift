@@ -1,26 +1,15 @@
 import SwiftUI
 import SwiftData
-import Firebase
 
 @main
 struct MinimalistApp: App {
     
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .task {
+                    await AppConfigurationManager.shared.initializeSDKs()
+                }
         }
-    }
-}
-
-
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
-    ) -> Bool {
-        FirebaseApp.configure()
-        return true
     }
 }

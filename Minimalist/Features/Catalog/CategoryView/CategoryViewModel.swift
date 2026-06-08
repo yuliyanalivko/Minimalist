@@ -49,11 +49,9 @@ class CategoryViewModel: BaseViewModel {
         
         guard !searchTerm.isEmpty else { return }
         
-        logEvent(
-            FirebaseAnalyticsEvent.applySearch(
-                searchTerm: searchTerm,
-                categoryName: nil,
-            )
-        )
+        logEvent(AnalyticsEvent(
+            name: .applySearch,
+            parameters: [.searchTerm: searchTerm]
+        ))
     }
 }
