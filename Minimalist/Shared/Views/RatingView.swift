@@ -1,17 +1,19 @@
 import SwiftUI
 
 struct RatingView: View {
-    let viewModel: RatingDataModel
-    
-    init(viewModel: RatingDataModel) {
-        self.viewModel = viewModel
+    @State private var viewModel: RatingViewModel
+
+    init(viewModel: RatingViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
-    
-    init(rating: Double, isReadOnly: Bool = true, ratingItems: [RatingItem]? = nil) {
-        self.viewModel = RatingViewModel(
-            rating: rating,
-            isReadOnly: isReadOnly,
-            ratingItems: ratingItems
+
+    init(
+        rating: Double
+    ) {
+        _viewModel = State(
+            initialValue: RatingViewModel(
+                rating: rating
+            )
         )
     }
     
@@ -48,7 +50,7 @@ struct RatingView: View {
 }
 
 #Preview {
-    RatingView(rating: 3.5, isReadOnly: false, ratingItems: [
+    let vm = RatingViewModel(rating: 3.5, isReadOnly: false, ratingItems: [
         RatingItem(
             icon: "heart.fill",
             highlightedColor: .red,
@@ -75,4 +77,5 @@ struct RatingView: View {
             backgroundColor: .gray
         )
     ])
+    RatingView(viewModel: vm)
 }
