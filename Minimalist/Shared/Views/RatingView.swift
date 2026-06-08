@@ -1,20 +1,15 @@
 import SwiftUI
 
 struct RatingView: View {
-    @State private var viewModel: RatingViewModel
 
+    private var viewModel: RatingViewModel
+    
     init(viewModel: RatingViewModel) {
-        _viewModel = State(initialValue: viewModel)
+        self.viewModel = viewModel
     }
-
-    init(
-        rating: Double
-    ) {
-        _viewModel = State(
-            initialValue: RatingViewModel(
-                rating: rating
-            )
-        )
+    
+    init(rating: Double) {
+        self.viewModel = RatingViewModel(rating: rating)
     }
     
     var body: some View {

@@ -9,6 +9,9 @@ struct ItemView: View {
         UIScreen.main.bounds.width * 0.4
     }
     
+    let vm = RatingViewModel(rating: 4.5, isReadOnly: false)
+    @State var rating: Double = 0
+    
     var body: some View {
         HStack {
             ZStack {
@@ -56,9 +59,12 @@ struct ItemView: View {
                 Text(item.subcategory?.name ?? "")
                     .font(.AppFont.caption)
                     .padding(.bottom, 10)
-                
-                RatingView(rating: item.rating)
+                Text("\(rating)")
+                RatingView(viewModel: vm)
                     .padding(.bottom, 10)
+                    .onChange(of: vm.rating) { _, newValue in
+                        rating = newValue
+                    }
                 
                 Text("\(item.price, specifier: "%.2f") $")
                     .font(.AppFont.headline)
