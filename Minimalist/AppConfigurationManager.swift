@@ -78,9 +78,3 @@ final class AppConfigurationManager {
         analyticsManager = AnalyticsManager(providers: providers)
     }
 }
-extension Duration {
-    var totalSeconds: Double {
-        let pairs = self.components
-        return Double(pairs.seconds) + (Double(pairs.attoseconds) / 1e18)
-    }
-}

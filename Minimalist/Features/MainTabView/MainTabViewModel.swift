@@ -44,7 +44,7 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
     private(set) var selectedItemIndex: Int = 0
     
     init() {
-        showRoundedTabBar = RemoteConfigManager.shared.isRoundTabBarEnabled
+        showRoundedTabBar = RemoteConfigManager().isRoundTabBarEnabled
         super.init()
     }
     

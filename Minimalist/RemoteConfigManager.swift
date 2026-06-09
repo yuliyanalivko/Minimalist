@@ -20,14 +20,18 @@ class RemoteConfigManager: RemoteConfigManaging {
     var isTestingNotificationsEnabled: Bool = false
     
     private var remoteConfig: RemoteConfig? {
-        guard FirebaseApp.app() != nil else {
+        guard firebaseApp != nil else {
             return nil
         }
         
         return RemoteConfig.remoteConfig()
     }
     
-    init() {
+    private(set) var firebaseApp: FirebaseApp?
+    
+    init(firebaseApp: FirebaseApp? = FirebaseApp.app()) {
+        self.firebaseApp = firebaseApp
+        
         configureSettings()
         setDefaults()
         addOnConfigUpdateListener()
