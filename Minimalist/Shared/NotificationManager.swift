@@ -9,7 +9,11 @@ protocol NotificationCenterProtocol: AnyObject {
 
 extension UNUserNotificationCenter: NotificationCenterProtocol {}
 
-final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
+protocol NotificationManaging {
+    func requestAuthorization() async -> Bool
+}
+
+final class NotificationManager: NSObject, UNUserNotificationCenterDelegate, NotificationManaging {
     static let shared = NotificationManager()
     
     private let notificationCenter: NotificationCenterProtocol

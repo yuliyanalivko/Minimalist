@@ -20,15 +20,24 @@ final class AppConfigurationManager {
     
     static let shared = AppConfigurationManager()
     
-    var firebaseConfigurator: SDKConfigurator = FirebaseConfigurator()
-    
+    private(set) var firebaseConfigurator: SDKConfigurator
+    private(set) var remoteConfigManager: RemoteConfigManaging
+    private(set) var notificationManager: NotificationManaging
     private(set) var analyticsManager: AnalyticsManager?
     
-    private(set) var isInitialized = false    
+    private(set) var isInitialized = false
     
-    init() {}
+    init(
+        firebaseConfigurator: SDKConfigurator = FirebaseConfigurator(),
+        remoteConfigManager: RemoteConfigManaging = RemoteConfigManager(),
+        notificationManager: NotificationManaging = NotificationManager.shared
+    ) {
+        self.firebaseConfigurator = firebaseConfigurator
+        self.remoteConfigManager = remoteConfigManager
+        self.notificationManager = notificationManager
+    }
     
-    func initializeSDKs() async {
+    func initializeSDKs() {
         Task { @MainActor in
             await performInitialization()
         }
@@ -41,7 +50,7 @@ final class AppConfigurationManager {
     private func performInitialization() async {
         configureFirebase()
         
-        await RemoteConfigManager.shared.fetchAndActivate()
+        await remoteConfigManager.fetchAndActivate()
         
         await configureAnalytics()
         
@@ -57,15 +66,21 @@ final class AppConfigurationManager {
     }
     
     private func configureAnalytics() async {
-        var providers: [AnalyticsTracking] = [FirebaseAnalyticsProvider.shared]
+        var providers: [AnalyticsTracking] = [FirebaseAnalyticsProvider()]
 #if DEBUG
-        let isTestingNotificationsEnabled = RemoteConfigManager.shared.isTestingNotificationsEnabled
-        let isNotificationsEnabled = await NotificationManager.shared.requestAuthorization()
+        let isTestingNotificationsEnabled = remoteConfigManager.isTestingNotificationsEnabled
+        let isNotificationsEnabled = await notificationManager.requestAuthorization()
         
         if isTestingNotificationsEnabled && isNotificationsEnabled {
-            providers.append(TestingAnalyticsProvider.shared)
+            providers.append(TestingAnalyticsProvider())
         }
 #endif
         analyticsManager = AnalyticsManager(providers: providers)
-    }    
+    }
+}
+extension Duration {
+    var totalSeconds: Double {
+        let pairs = self.components
+        return Double(pairs.seconds) + (Double(pairs.attoseconds) / 1e18)
+    }
 }

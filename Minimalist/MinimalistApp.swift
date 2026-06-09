@@ -8,7 +8,7 @@ struct MinimalistApp: App {
         WindowGroup {
             ContentView()
                 .task {
-                    await AppConfigurationManager.shared.initializeSDKs()
+                    AppConfigurationManager.shared.initializeSDKs()
                 }
         }
     }

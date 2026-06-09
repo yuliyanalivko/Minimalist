@@ -2,14 +2,19 @@ import Foundation
 import FirebaseRemoteConfig
 import Firebase
 
+protocol RemoteConfigManaging {
+    var isTestingNotificationsEnabled: Bool { get }
+    var isRoundTabBarEnabled: Bool { get }
+    
+    func fetchAndActivate() async
+}
+
 @Observable
-class RemoteConfigManager {
+class RemoteConfigManager: RemoteConfigManaging {
     enum ParameterKey: String {
         case isRoundTabBarEnabled = "is_round_tab_bar_enabled"
         case isTestingNotificationsEnabled = "is_testing_notifications_enabled"
     }
-    
-    static let shared = RemoteConfigManager()
     
     var isRoundTabBarEnabled: Bool = true
     var isTestingNotificationsEnabled: Bool = false
@@ -22,7 +27,7 @@ class RemoteConfigManager {
         return RemoteConfig.remoteConfig()
     }
     
-    private init() {
+    init() {
         configureSettings()
         setDefaults()
         addOnConfigUpdateListener()
