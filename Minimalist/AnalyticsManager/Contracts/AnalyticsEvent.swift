@@ -4,8 +4,19 @@ struct AnalyticsEvent {
     
     init(name: AnalyticsEventName, parameters: [AnalyticsParamName: Any]? = nil) {
         self.name = name.rawValue
-        self.parameters = parameters.map { dict in
-            Dictionary(uniqueKeysWithValues: dict.map { ($0.key.rawValue, $0.value) })
+        
+        guard let parameters = parameters else {
+            self.parameters = nil
+            
+            return
         }
+        
+        var dict: [String: Any] = [:]
+        
+        for (key, value) in parameters {
+            dict[key.rawValue] = value
+        }
+        
+        self.parameters = dict
     }
 }

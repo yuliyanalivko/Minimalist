@@ -1,12 +1,20 @@
 final class TestingAnalyticsProvider: AnalyticsTracking {
-    static let shared = TestingAnalyticsProvider()
     
-    private init() {}
+    private(set) var consumer: AnalyticsTracking
+    
+    init(consumer: AnalyticsTracking = NotificationManager()) {
+        self.consumer = consumer
+    }
 
     func logEvent(_ event: AnalyticsEvent) {
-        let message = event.parameters.map { "\($0)" }
-        
-        NotificationManager.shared.showNotification(title: event.name, message: message)
+        consumer.logEvent(event)
     }
 }
 
+extension NotificationManager: AnalyticsTracking {
+    func logEvent(_ event: AnalyticsEvent) {
+        let message = event.parameters.map { "\($0)" }
+        
+        self.showNotification(title: event.name, message: message)
+    }
+}
