@@ -4,15 +4,6 @@ import Testing
 @MainActor
 struct ItemListViewModelTests {
     
-    class SpyViewModel: ItemListViewModel {
-        
-        private(set) var loggedEvents: [AnalyticsEvent] = []
-        
-        override func logEvent(_ event: AnalyticsEvent) {
-            loggedEvents.append(event)
-        }
-    }
-    
     let items: [Item] = [
         Item(
             id: "1",
@@ -50,15 +41,18 @@ struct ItemListViewModelTests {
     
     @Test("set isFavorite to true and log event")
     func toggleFavorite_setToTrue() {
-        let vm = SpyViewModel(router: CatalogRouter())
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
         
         vm.allItems = items
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(vm.allItems[0].isFavorited)
         
-        guard let name = vm.loggedEvents.first?.name,
-              let parameters = vm.loggedEvents.first?.parameters else {
+        guard let name = consumer.loggedEvent?.name,
+              let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
             
             return
@@ -71,16 +65,18 @@ struct ItemListViewModelTests {
     
     @Test("set isFavorite to false and log event")
     func toggleFavorite_setToFalse() {
-        let vm = SpyViewModel(router: CatalogRouter())
-        
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
         vm.allItems = items
         vm.allItems[0].isFavorited = true
         vm.toggleFavorite(vm.allItems[0])
         
         #expect(!vm.allItems[0].isFavorited)
         
-        guard let name = vm.loggedEvents.first?.name,
-              let parameters = vm.loggedEvents.first?.parameters else {
+        guard let name = consumer.loggedEvent?.name,
+              let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
             
             return
@@ -133,14 +129,17 @@ struct ItemListViewModelTests {
     
     @Test("calls logEvent with the correct search event")
     func logSearchEvent_callLogEvent() {
-        let vm = SpyViewModel(router: CatalogRouter())
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
         
         vm.searchText = " tab "
         
         vm.logSearchEvent(categoryName: "Tables")
         
-        guard let name = vm.loggedEvents.first?.name,
-              let parameters = vm.loggedEvents.first?.parameters else {
+        guard let name = consumer.loggedEvent?.name,
+              let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
             
             return
@@ -153,12 +152,15 @@ struct ItemListViewModelTests {
     
     @Test("calls logEvent with the correct viewItemList event")
     func logViewItemListEvent_callLogEvent() {
-        let vm = SpyViewModel(router: CatalogRouter())
-        
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
+
         vm.logViewItemListEvent(id: "1", name: "Tables")
         
-        guard let name = vm.loggedEvents.first?.name,
-              let parameters = vm.loggedEvents.first?.parameters else {
+        guard let name = consumer.loggedEvent?.name,
+              let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
             
             return

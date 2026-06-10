@@ -1,16 +1,15 @@
 import SwiftUI
 
 struct CartView: View {
-    @State var router = CartRouter()
+    @State var viewModel: CartViewModel
     
     var body: some View {
-        NavigationStack(path: $router.path) {
+        NavigationStack(path: $viewModel.router.path) {
             screen(for: .cart)
                 .navigationDestination(for: CartRoute.self) { route in
                     screen(for: route)
                 }
         }
-        .environment(router)
     }
     
     @ViewBuilder
@@ -24,5 +23,5 @@ struct CartView: View {
 }
 
 #Preview {
-    CartView()
+    CartView(viewModel: CartViewModel(router: .init()))
 }

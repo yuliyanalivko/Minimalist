@@ -56,7 +56,7 @@ struct ItemView: View {
                 Text(item.subcategory?.name ?? "")
                     .font(.AppFont.caption)
                     .padding(.bottom, 10)
-                
+
                 RatingView(rating: item.rating)
                     .padding(.bottom, 10)
                 

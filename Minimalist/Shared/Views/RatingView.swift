@@ -1,50 +1,76 @@
 import SwiftUI
 
 struct RatingView: View {
-    let rating: Double
-    private let starSize: CGFloat = 17
-    private let spacing: CGFloat = 4
+
+    private var viewModel: RatingViewModel
+    
+    init(viewModel: RatingViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    init(rating: Double) {
+        self.viewModel = RatingViewModel(rating: rating)
+    }
     
     var body: some View {
-        HStack(spacing: spacing) {
-            ForEach(0..<5, id: \.self) { index in
-                let starFill = max(0, min(1, rating - Double(index)))
+        HStack(spacing: 4) {
+            ForEach(Array(viewModel.ratingItems.enumerated()), id: \.offset) { (index, item) in
+                let starFill = viewModel.starFill(index)
                 
-                Image.star
+                Image(systemName: item.icon)
                     .resizable()
-                    .frame(width: starSize, height: starSize)
-                    .foregroundStyle(Color.AppColor.backgroundSecondary)
+                    .frame(width: viewModel.itemSize, height: viewModel.itemSize)
+                    .foregroundStyle(item.backgroundColor)
                     .overlay(
-                        Image.star
-                            .font(.system(size: starSize))
-                            .foregroundStyle(Color.AppColor.accent)
+                        Image(systemName: item.icon)
+                            .resizable()
+                            .frame(width: viewModel.itemSize, height: viewModel.itemSize)
+                            .foregroundStyle(item.highlightedColor)
                             .mask(
                                 HStack(spacing: 0) {
                                     Rectangle()
-                                        .frame(width: starFill == 1 ? nil : (starSize + spacing) * starFill)
+                                        .frame(width: viewModel.maskWidth(starFill: starFill))
                                     if starFill < 1 {
                                         Spacer(minLength: 0)
                                     }
                                 }
                             )
                     )
+                    .onTapGesture {
+                        viewModel.setRating(index)
+                    }
             }
         }
-    }
-    
-    private func starRow(filled: Bool) -> some View {
-        HStack(spacing: spacing) {
-            ForEach(0..<5, id: \.self) { _ in
-                Image.star
-                    .resizable()
-                    .frame(width: starSize, height: starSize)
-                    .foregroundStyle(filled ? Color.AppColor.accent : Color.AppColor.backgroundSecondary)
-            }
-        }
-        .clipped()
     }
 }
 
 #Preview {
-    RatingView(rating: 3.5)
+    let vm = RatingViewModel(rating: 3.5, isReadOnly: false, ratingItems: [
+        RatingItem(
+            icon: "heart.fill",
+            highlightedColor: .red,
+            backgroundColor: .gray
+        ),
+        RatingItem(
+            icon: "sun.min.fill",
+            highlightedColor: .yellow,
+            backgroundColor: .gray
+        ),
+        RatingItem(
+            icon: "leaf.fill",
+            highlightedColor: .green,
+            backgroundColor: .gray
+        ),
+        RatingItem(
+            icon: "cloud.rain.fill",
+            highlightedColor: .blue,
+            backgroundColor: .gray
+        ),
+        RatingItem(
+            icon: "pawprint.fill",
+            highlightedColor: .purple,
+            backgroundColor: .gray
+        )
+    ])
+    RatingView(viewModel: vm)
 }

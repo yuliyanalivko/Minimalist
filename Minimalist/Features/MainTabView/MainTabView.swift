@@ -2,37 +2,40 @@ import SwiftUI
 
 struct MainTabView: View {
     let viewModel = MainTabViewModel()
-    
+
     var body: some View {
         ZStack {
             mainContent
+                .contentMargins(.bottom, viewModel.isKeyboardVisible ? 0 : 100, for: .scrollContent)
             
             VStack {
                 Spacer()
-                
                 if viewModel.showRoundedTabBar {
                     RoundedTabBarView(viewModel: viewModel)
                 } else {
                     FlatTabBarView(viewModel: viewModel)
-                        .ignoresSafeArea(edges: .bottom)
                 }
             }
+            .ignoresSafeArea(.keyboard)
+            
         }
         .tint(.AppColor.primary)
+        .onReceive(viewModel.keyboardPublisher) {
+            viewModel.isKeyboardVisible = $0
+        }
     }
-
+    
     @ViewBuilder
     var mainContent: some View {
-        // TODO: add cases for each tab
         switch viewModel.selectedItemIndex {
         case 0:
-            CatalogView()
+            CatalogView(viewModel: viewModel.catalogViewModel)
         case 1:
-            FavoritesView()
+            FavoritesView(viewModel: viewModel.favoritesViewModel)
         case 2:
-            CartView()
+            CartView(viewModel: viewModel.cartViewModel)
         case 3:
-            SettingsView()
+            SettingsView(viewModel: viewModel.settingsViewModel)
         default:
             Text(viewModel.selectedItem?.title ?? "")
         }

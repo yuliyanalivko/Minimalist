@@ -1,9 +1,8 @@
 import SwiftUI
 
 @Observable
-class CategoryViewModel: BaseViewModel {
+class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     
-    var router: CatalogRouter
     var searchText: String = ""
     var allCategories: [Category] = []
     
@@ -22,9 +21,14 @@ class CategoryViewModel: BaseViewModel {
     
     private var selectedCategoryId: String?
     
-    init(router: CatalogRouter) {
-        self.router = router
-        super.init()
+    override init(router: CatalogRouter) {
+        super.init(router: router)
+        // TODO: remove when CategoryService is implemented
+        loadMock()
+    }
+    
+    override init(router: CatalogRouter, analyticsManager: AnalyticsManager) {
+        super.init(router: router, analyticsManager: analyticsManager)
         // TODO: remove when CategoryService is implemented
         loadMock()
     }

@@ -3,14 +3,6 @@ import Testing
 
 @MainActor
 struct CategoryViewModelTests {
-    class SpyViewModel: CategoryViewModel {
-        
-        private(set) var loggedEvents: [AnalyticsEvent] = []
-        
-        override func logEvent(_ event: AnalyticsEvent) {
-            loggedEvents.append(event)
-        }
-    }
     
     let categories: [Category] = [
         Category(
@@ -85,14 +77,17 @@ struct CategoryViewModelTests {
     
     @Test("calls logEvent with the correct search event")
     func logSearchEvent_callLogEvent() {
-        let vm = SpyViewModel(router: router)
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = CategoryViewModel(router: router, analyticsManager: analyticsManager)
         
         vm.searchText = " sof "
         
         vm.logSearchEvent()
         
-        guard let name = vm.loggedEvents.first?.name,
-        let parameters = vm.loggedEvents.first?.parameters else {
+        guard let name = consumer.loggedEvent?.name,
+        let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
             
             return

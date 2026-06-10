@@ -1,6 +1,1 @@
-import SwiftUI
-
-@Observable
-class CatalogRouter: Router {
-    var path = NavigationPath()
-}
+typealias CatalogRouter = NavigationRouter<CatalogRoute>

@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum CartRoute: Hashable {
+enum CartRoute: Routable {
     case cart
     
     var title: String {
