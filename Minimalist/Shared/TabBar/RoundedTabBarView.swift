@@ -31,8 +31,7 @@ struct RoundedTabBarView: View {
         }
         .padding(4)
         .frame(maxWidth: .infinity)
-        .background(Color.AppColor.backgroundSecondary)
-        .cornerRadius(40)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 40))
         .padding(.horizontal, 16)
     }
 }

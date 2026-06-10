@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum FavoritesRoute: Hashable {
+enum FavoritesRoute: Routable {
     case favorites
     
     var title: String {

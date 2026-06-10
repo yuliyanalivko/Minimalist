@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum SettingsRoute: Hashable {
+enum SettingsRoute: Routable {
     case settings
     
     var title: String {

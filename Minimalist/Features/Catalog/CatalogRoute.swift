@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum CatalogRoute: Hashable {
+enum CatalogRoute: Routable {
     case category
     case itemList(title: String)
     case itemDetails(title: String, id: String)

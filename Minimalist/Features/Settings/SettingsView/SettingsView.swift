@@ -1,16 +1,15 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State var router = SettingsRouter()
+    @State var viewModel: SettingsViewModel
     
     var body: some View {
-        NavigationStack(path: $router.path) {
+        NavigationStack(path: $viewModel.router.path) {
             screen(for: .settings)
                 .navigationDestination(for: SettingsRoute.self) { route in
                     screen(for: route)
                 }
         }
-        .environment(router)
     }
     
     @ViewBuilder
@@ -24,5 +23,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(viewModel: SettingsViewModel(router: .init()))
 }
