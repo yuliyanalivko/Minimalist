@@ -3,7 +3,7 @@ import Testing
 
 @MainActor
 struct CatalogViewModelTests {
-    
+
     @Test("sets up shared router instance correctly")
     func init_setsUpSharedRouter() async throws {
         let vm = CatalogViewModel()
@@ -18,14 +18,14 @@ struct CatalogViewModelTests {
         
         vm.categorySearchText = "Sofas"
         
-        #expect(vm.categoryViewModel.categorySearchText == "Sofas")
+        #expect(vm.categoryViewModel.searchText == "Sofas")
     }
     
     @Test("categorySearchText gets the CategoryViewModel.categorySearchText")
     func categorySearchText_getViewModelSearchText() {
         let vm = CatalogViewModel()
         
-        vm.categoryViewModel.categorySearchText = "Sofas"
+        vm.categoryViewModel.searchText = "Sofas"
         
         #expect(vm.categorySearchText == "Sofas")
     }

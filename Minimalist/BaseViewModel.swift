@@ -5,8 +5,14 @@ import SwiftUI
     
     private(set) var error: Error?
     
+    private let analyticsManager: AnalyticsManager?
+    
     var errorMessage: String? {
         error?.localizedDescription
+    }
+    
+    init(analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager) {
+        self.analyticsManager = analyticsManager
     }
     
     /// Sets the current error state for the view model.
@@ -24,5 +30,9 @@ import SwiftUI
     
     func clearError() {
         error = nil
+    }
+    
+    func logEvent(_ event: AnalyticsEvent) {
+        analyticsManager?.logEvent(event)
     }
 }

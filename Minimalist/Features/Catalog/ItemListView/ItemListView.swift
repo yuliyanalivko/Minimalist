@@ -4,9 +4,9 @@ struct ItemListView: View {
     let viewModel: ItemListViewModel
     
     var body: some View {
-        if !viewModel.items.isEmpty {
+        if !viewModel.displayedItems.isEmpty {
             List {
-                ForEach(viewModel.items, id: \.id) { item in
+                ForEach(viewModel.displayedItems, id: \.id) { item in
                     ItemView(
                         item: item,
                         onAddToFavoriteTap: {

@@ -3,6 +3,15 @@ import Testing
 
 @MainActor
 struct CategoryViewModelTests {
+    class SpyViewModel: CategoryViewModel {
+        
+        private(set) var loggedEvents: [AnalyticsEvent] = []
+        
+        override func logEvent(_ event: AnalyticsEvent) {
+            loggedEvents.append(event)
+        }
+    }
+    
     let categories: [Category] = [
         Category(
             id: "1",
@@ -38,8 +47,8 @@ struct CategoryViewModelTests {
         let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
-
-        #expect(vm.categories == vm.allCategories)
+        
+        #expect(vm.displayedCategories == vm.allCategories)
     }
     
     @Test("returns all categories when search text contains only whitespaces")
@@ -47,9 +56,9 @@ struct CategoryViewModelTests {
         let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
-        vm.categorySearchText = "  "
-
-        #expect(vm.categories == vm.allCategories)
+        vm.searchText = "  "
+        
+        #expect(vm.displayedCategories == vm.allCategories)
     }
     
     @Test("returns filtered categories when search text is not empty")
@@ -57,9 +66,9 @@ struct CategoryViewModelTests {
         let vm = CategoryViewModel(router: router)
         
         vm.allCategories = categories
-        vm.categorySearchText = "Sofas"
-
-        #expect(vm.categories == [vm.allCategories[0]])
+        vm.searchText = "Sofas"
+        
+        #expect(vm.displayedCategories == [vm.allCategories[0]])
     }
     
     @Test("sets selectedCategory")
@@ -70,5 +79,27 @@ struct CategoryViewModelTests {
         vm.handleCategoryCardClick(category: categories[0])
         
         #expect(vm.selectedCategory == categories[0])
+    }
+    
+    
+    
+    @Test("calls logEvent with the correct search event")
+    func logSearchEvent_callLogEvent() {
+        let vm = SpyViewModel(router: router)
+        
+        vm.searchText = " sof "
+        
+        vm.logSearchEvent()
+        
+        guard let name = vm.loggedEvents.first?.name,
+        let parameters = vm.loggedEvents.first?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(name == AnalyticsEventName.applySearch.rawValue)
+        #expect(parameters[AnalyticsParamName.searchTerm.rawValue] as? String == "sof")
+        #expect(parameters[AnalyticsParamName.categoryName.rawValue] == nil)
     }
 }

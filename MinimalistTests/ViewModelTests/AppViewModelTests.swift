@@ -4,19 +4,20 @@ import SwiftUI
 
 struct AppViewModelModelTests {
     
-    @Test("isStarted is false by default")
-    func isStatrted_false_byDefault() {
-        let vm = AppViewModel()
+    let vm = AppViewModel()
 
+    @Test("verify the initial state of the isStarted is false")
+    func isStarted_initValue_initializing() {
         #expect(vm.isStarted == false)
     }
     
-    @Test("updates isStarted value")
-    func isStarted_updateValue() {
+    @MainActor
+    @Test("should set isStarted to true")
+    func startTheApp_setIsStartedToTrue() async {
         let vm = AppViewModel()
-
-        vm.isStarted = true
-
-        #expect(vm.isStarted == true)
+        
+        await vm.startTheApp()
+        
+        #expect(vm.isStarted)
     }
 }

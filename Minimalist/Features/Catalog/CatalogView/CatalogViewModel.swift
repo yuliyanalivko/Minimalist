@@ -14,10 +14,10 @@ class CatalogViewModel: BaseViewModel {
     
     var categorySearchText: String {
         get {
-            _categoryViewModel.categorySearchText
+            _categoryViewModel.searchText
         }
         set {
-            _categoryViewModel.categorySearchText = newValue
+            _categoryViewModel.searchText = newValue
         }
     }
     
@@ -33,12 +33,39 @@ class CatalogViewModel: BaseViewModel {
     private var _categoryViewModel: CategoryViewModel
     private var _itemListViewModel: ItemListViewModel
     
-    override init() {
+    init() {
         let router = CatalogRouter()
-        
         self.router = router
-        
         self._categoryViewModel = CategoryViewModel(router: router)
         self._itemListViewModel = ItemListViewModel(router: router)
+        super.init()
+    }
+    
+    func logViewItemListEvent() {
+        guard let selectedCategory = categoryViewModel.selectedCategory else {
+            return
+        }
+        
+        itemListViewModel.logViewItemListEvent(id: selectedCategory.id, name: selectedCategory.name)
+    }
+    
+    func logItemListSearchEvent() {
+        guard let selectedCategory = categoryViewModel.selectedCategory else {
+            return
+        }
+        
+        itemListViewModel.logSearchEvent(categoryName: selectedCategory.name)
+    }
+    
+    func logCategorySearchEvent() {
+        categoryViewModel.logSearchEvent()
+    }
+    
+    func trackCatalogScreen() {
+        //TODO: replace "Catalog" with route title once the base router is ready
+        logEvent(AnalyticsEvent(
+            name: .screenView,
+            parameters: [.screenName: "Catalog"]
+        ))
     }
 }

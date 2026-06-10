@@ -5,11 +5,13 @@ struct ContentView: View {
     
     @State private var viewModel = AppViewModel()
     
+    private var configurationManager: AppConfigurationManager = AppConfigurationManager.shared
+    
     var body: some View {
-        if viewModel.isStarted {
+        if configurationManager.isInitialized && viewModel.isStarted {
             MainTabView()
         } else {
-            HomeView(viewModel: viewModel)
+            HomeView(viewModel: viewModel, showStartButton: configurationManager.isInitialized)
         }
     }
 }

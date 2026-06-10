@@ -4,7 +4,7 @@ import SwiftUI
 class CategoryViewModel: BaseViewModel {
     
     var router: CatalogRouter
-    var categorySearchText: String = ""
+    var searchText: String = ""
     var allCategories: [Category] = []
     
     let columns = [
@@ -16,8 +16,8 @@ class CategoryViewModel: BaseViewModel {
         allCategories.first(where: { $0.id == selectedCategoryId })
     }
     
-    var categories: [Category] {
-        allCategories.filtered(by: categorySearchText, key: \.name)
+    var displayedCategories: [Category] {
+        allCategories.filtered(by: searchText, key: \.name)
     }
     
     private var selectedCategoryId: String?
@@ -42,5 +42,16 @@ class CategoryViewModel: BaseViewModel {
 
     private func selectCategory(_ category: Category) {
         selectedCategoryId = category.id
+    }
+    
+    func logSearchEvent() {
+        let searchTerm = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !searchTerm.isEmpty else { return }
+        
+        logEvent(AnalyticsEvent(
+            name: .applySearch,
+            parameters: [.searchTerm: searchTerm]
+        ))
     }
 }

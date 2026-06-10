@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     let viewModel: AppViewModel
+    var showStartButton: Bool = true
     
     var body: some View {
         VStack {
@@ -17,20 +18,26 @@ struct HomeView: View {
             
             Text("furniture store")
                 .font(.AppFont.body)
-                .padding(.bottom, 130)
             
+            Spacer()
+                .frame(minHeight: 40, idealHeight: 130, maxHeight: 130)
+
             Button("Start shop") {
-                viewModel.isStarted = true
+                viewModel.startTheApp()
             }
             .buttonStyle(PrimaryButtonStyle())
-            .padding(.bottom, 130)
+            .opacity(showStartButton ? 1 : 0)
+            .disabled(!showStartButton)
+                        
+            Spacer()
+                .frame(minHeight: 40, idealHeight: 130, maxHeight: 130)
+            
         }
-        .frame(maxWidth: .infinity)
         .frame(maxHeight: .infinity, alignment: .bottom)
         .padding(16)
     }
 }
 
 #Preview {
-    HomeView(viewModel: AppViewModel())
+    HomeView(viewModel: AppViewModel(), showStartButton: false)
 }
