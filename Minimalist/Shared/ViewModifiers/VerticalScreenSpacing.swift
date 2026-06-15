@@ -6,9 +6,6 @@ struct VerticalScreenSpacing: ViewModifier {
             .safeAreaInset(edge: .top) {
                 Color.clear.frame(height: 20)
             }
-            .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: 100)
-            }
     }
 }
 

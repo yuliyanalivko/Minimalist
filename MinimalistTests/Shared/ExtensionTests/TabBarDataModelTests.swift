@@ -6,12 +6,12 @@ import SwiftUI
 struct TabBarDataModelTests {
     
     struct TabBarDataModelMock: TabBarDataModel {
-        let items: [TabBarItemConfigurable] = [
-            TabBarItem(
+        let items: [SelectableListItemRepresentable] = [
+            SelectableListItem(
                 title: "Favorite",
                 icon: "heart",
-                selectedColor: Color.orange,
-                unSelectedColor: Color.blue
+                highlightedColor: Color.orange,
+                inactiveColor: Color.blue
             )
         ]
         
@@ -42,13 +42,13 @@ struct TabBarDataModelTests {
     func tabBarItem_returnItem_validIndex() {
         let vm = TabBarDataModelMock()
 
-        #expect(vm.tabBarItem(at: 0)!.title == vm.items[0].title)
+        #expect(vm.item(at: 0)!.title == vm.items[0].title)
     }
     
     @Test("return nil if invalid index is passed")
     func tabBarItem_returnNil_invalidIndex() {
         let vm = TabBarDataModelMock()
 
-        #expect(vm.tabBarItem(at: 10) == nil)
+        #expect(vm.item(at: 10) == nil)
     }
 }

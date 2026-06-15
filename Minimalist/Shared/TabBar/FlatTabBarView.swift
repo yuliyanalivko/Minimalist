@@ -12,11 +12,11 @@ struct FlatTabBarView: View {
                     Image(systemName: item.icon)
                         .font(.AppFont.icon)
                     
-                    Text(item.title)
+                    Text(item.title ?? "")
                         .font(.AppFont.caption)
                         .padding(.top, 5)
                 }
-                .foregroundStyle(viewModel.isSelected(index) ? item.selectedColor : item.unSelectedColor)
+                .foregroundStyle(viewModel.isSelected(index) ? item.highlightedColor : item.inactiveColor)
                 .onTapGesture {
                     viewModel.select(index)
                 }

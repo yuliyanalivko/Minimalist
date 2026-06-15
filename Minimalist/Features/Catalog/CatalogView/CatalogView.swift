@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CatalogView: View {
-    @State var viewModel: CatalogViewModel = CatalogViewModel()
+    @State var viewModel: CatalogViewModel
     
     var body: some View {
         NavigationStack(path: $viewModel.router.path) {
@@ -51,5 +51,5 @@ struct CatalogView: View {
 }
 
 #Preview {
-    CatalogView()
+    CatalogView(viewModel: CatalogViewModel(router: .init()))
 }

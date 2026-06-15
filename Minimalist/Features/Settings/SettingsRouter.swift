@@ -1,6 +1,1 @@
-import SwiftUI
-
-@Observable
-class SettingsRouter: Router {
-    var path = NavigationPath()
-}
+typealias SettingsRouter = NavigationRouter<SettingsRoute>

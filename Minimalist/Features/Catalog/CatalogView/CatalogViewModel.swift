@@ -1,8 +1,7 @@
 import SwiftUI
 
 @Observable
-class CatalogViewModel: BaseViewModel {
-    var router: CatalogRouter
+class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     
     var categoryViewModel: CategoryViewModel {
         _categoryViewModel
@@ -33,12 +32,18 @@ class CatalogViewModel: BaseViewModel {
     private var _categoryViewModel: CategoryViewModel
     private var _itemListViewModel: ItemListViewModel
     
-    init() {
-        let router = CatalogRouter()
-        self.router = router
+    override init(router: CatalogRouter) {
         self._categoryViewModel = CategoryViewModel(router: router)
         self._itemListViewModel = ItemListViewModel(router: router)
-        super.init()
+        
+        super.init(router: router)
+    }
+    
+    override init(router: CatalogRouter, analyticsManager: AnalyticsManager) {
+        self._categoryViewModel = CategoryViewModel(router: router)
+        self._itemListViewModel = ItemListViewModel(router: router)
+        
+        super.init(router: router, analyticsManager: analyticsManager)
     }
     
     func logViewItemListEvent() {

@@ -1,16 +1,15 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    @State var router = FavoritesRouter()
+    @State var viewModel: FavoritesViewModel
     
     var body: some View {
-        NavigationStack(path: $router.path) {
+        NavigationStack(path: $viewModel.router.path) {
             screen(for: .favorites)
                 .navigationDestination(for: FavoritesRoute.self) { route in
                     screen(for: route)
                 }
         }
-        .environment(router)
     }
     
     @ViewBuilder
@@ -24,5 +23,5 @@ struct FavoritesView: View {
 }
 
 #Preview {
-    FavoritesView()
+    FavoritesView(viewModel: FavoritesViewModel(router: .init()))
 }

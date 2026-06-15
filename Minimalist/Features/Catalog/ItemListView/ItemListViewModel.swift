@@ -1,8 +1,7 @@
 import SwiftUI
 
 @Observable
-class ItemListViewModel: BaseViewModel {
-    var router: CatalogRouter
+class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     var allItems: [Item] = []
     var searchText: String = ""
     
@@ -10,9 +9,14 @@ class ItemListViewModel: BaseViewModel {
         allItems.filtered(by: searchText, key: \.name)
     }
     
-    init(router: CatalogRouter) {
-        self.router = router
-        super.init()
+    override init(router: CatalogRouter) {
+        super.init(router: router)
+        // TODO: remove later
+        loadMock()
+    }
+    
+    override init(router: CatalogRouter, analyticsManager: AnalyticsManager) {
+        super.init(router: router, analyticsManager: analyticsManager)
         // TODO: remove later
         loadMock()
     }

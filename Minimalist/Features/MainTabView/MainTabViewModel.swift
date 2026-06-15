@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 @Observable
 class MainTabViewModel: BaseViewModel, TabBarDataModel {
@@ -25,26 +26,49 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
             }
         }
     }
+
+    let catalogRouter = CatalogRouter()
+    let favoritesRouter = FavoritesRouter()
+    let cartRouter = CartRouter()
+    let settingsRouter = SettingsRouter()
+
+    var catalogViewModel: CatalogViewModel
+    var favoritesViewModel: FavoritesViewModel
+    var cartViewModel: CartViewModel
+    var settingsViewModel: SettingsViewModel
+
+    var isKeyboardVisible = false
+
+    var keyboardPublisher: AnyPublisher<Bool, Never> {
+        Publishers.Merge(
+            NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification).map { _ in true },
+            NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification).map { _ in false }
+        ).eraseToAnyPublisher()
+    }
     
-    private(set) var showRoundedTabBar: Bool
-    
-    let items: [TabBarItemConfigurable] = Tab.allCases.map { tab in
-        TabBarItem(
+    let items: [SelectableListItemRepresentable] = Tab.allCases.map { tab in
+        SelectableListItem(
             title: tab.title,
             icon: tab.icon,
-            selectedColor: Color.AppColor.primary,
-            unSelectedColor: Color.AppColor.textSecondary
+            highlightedColor: Color.AppColor.primary,
+            inactiveColor: Color.AppColor.textSecondary
         )
     }
     
-    var selectedItem: TabBarItemConfigurable? {
-        tabBarItem(at: selectedItemIndex)
+    var selectedItem: SelectableListItemRepresentable? {
+        item(at: selectedItemIndex)
     }
+    
+    private(set) var showRoundedTabBar: Bool
     
     private(set) var selectedItemIndex: Int = 0
     
     init() {
         showRoundedTabBar = RemoteConfigManager().isRoundTabBarEnabled
+        catalogViewModel = CatalogViewModel(router: catalogRouter)
+        favoritesViewModel = FavoritesViewModel(router: favoritesRouter)
+        cartViewModel = CartViewModel(router: cartRouter)
+        settingsViewModel = SettingsViewModel(router: settingsRouter)
         super.init()
     }
     
