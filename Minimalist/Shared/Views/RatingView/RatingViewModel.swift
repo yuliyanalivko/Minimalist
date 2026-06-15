@@ -4,31 +4,31 @@ import SwiftUI
 class RatingViewModel: RatingDataModel {
     var rating: Double = 0
     var isReadOnly: Bool = true
-    var ratingItems: [RatingItem]
+    var items: [SelectableListItemRepresentable]
     
     let itemSize: CGFloat = 17
     
     init(
         rating: Double = 0,
         isReadOnly: Bool = true,
-        ratingItems: [RatingItem]? = nil
+        items: [SelectableListItemRepresentable]? = nil
     ) {
         self.rating = rating
         self.isReadOnly = isReadOnly
         
-        self.ratingItems = ratingItems ?? Array(
-            repeating: RatingItem(
+        self.items = items ?? Array(
+            repeating: SelectableListItem(
                 icon: "star.fill",
                 highlightedColor: Color.AppColor.accent,
-                backgroundColor: Color.AppColor.backgroundSecondary
+                inactiveColor: Color.AppColor.backgroundSecondary
             ),
             count: 5
         )
     }
     
-    func setRating(_ ratingItemIndex: Int) {
+    func select(_ index: Int) {
         if !isReadOnly {
-            rating = Double(ratingItemIndex + 1)
+            rating = Double(index + 1)
         }
     }
 }

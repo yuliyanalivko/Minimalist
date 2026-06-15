@@ -46,17 +46,17 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
         ).eraseToAnyPublisher()
     }
     
-    let items: [TabBarItemConfigurable] = Tab.allCases.map { tab in
-        TabBarItem(
+    let items: [SelectableListItemRepresentable] = Tab.allCases.map { tab in
+        SelectableListItem(
             title: tab.title,
             icon: tab.icon,
-            selectedColor: Color.AppColor.primary,
-            unSelectedColor: Color.AppColor.textSecondary
+            highlightedColor: Color.AppColor.primary,
+            inactiveColor: Color.AppColor.textSecondary
         )
     }
     
-    var selectedItem: TabBarItemConfigurable? {
-        tabBarItem(at: selectedItemIndex)
+    var selectedItem: SelectableListItemRepresentable? {
+        item(at: selectedItemIndex)
     }
     
     private(set) var showRoundedTabBar: Bool

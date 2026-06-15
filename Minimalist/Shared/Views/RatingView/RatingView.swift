@@ -2,9 +2,9 @@ import SwiftUI
 
 struct RatingView: View {
 
-    private var viewModel: RatingViewModel
+    private var viewModel: RatingDataModel
     
-    init(viewModel: RatingViewModel) {
+    init(viewModel: RatingDataModel) {
         self.viewModel = viewModel
     }
     
@@ -14,13 +14,13 @@ struct RatingView: View {
     
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(Array(viewModel.ratingItems.enumerated()), id: \.offset) { (index, item) in
-                let starFill = viewModel.starFill(index)
+            ForEach(Array(viewModel.items.enumerated()), id: \.offset) { index, item in
+                let itemFill = viewModel.itemFill(index)
                 
                 Image(systemName: item.icon)
                     .resizable()
                     .frame(width: viewModel.itemSize, height: viewModel.itemSize)
-                    .foregroundStyle(item.backgroundColor)
+                    .foregroundStyle(item.inactiveColor)
                     .overlay(
                         Image(systemName: item.icon)
                             .resizable()
@@ -29,15 +29,15 @@ struct RatingView: View {
                             .mask(
                                 HStack(spacing: 0) {
                                     Rectangle()
-                                        .frame(width: viewModel.maskWidth(starFill: starFill))
-                                    if starFill < 1 {
+                                        .frame(width: viewModel.maskWidth(itemFill: itemFill))
+                                    if itemFill < 1 {
                                         Spacer(minLength: 0)
                                     }
                                 }
                             )
                     )
                     .onTapGesture {
-                        viewModel.setRating(index)
+                        viewModel.select(index)
                     }
             }
         }
@@ -45,31 +45,31 @@ struct RatingView: View {
 }
 
 #Preview {
-    let vm = RatingViewModel(rating: 3.5, isReadOnly: false, ratingItems: [
-        RatingItem(
+    let vm = RatingViewModel(rating: 3.5, isReadOnly: false, items: [
+        SelectableListItem(
             icon: "heart.fill",
             highlightedColor: .red,
-            backgroundColor: .gray
+            inactiveColor: .gray
         ),
-        RatingItem(
+        SelectableListItem(
             icon: "sun.min.fill",
             highlightedColor: .yellow,
-            backgroundColor: .gray
+            inactiveColor: .gray
         ),
-        RatingItem(
+        SelectableListItem(
             icon: "leaf.fill",
             highlightedColor: .green,
-            backgroundColor: .gray
+            inactiveColor: .gray
         ),
-        RatingItem(
+        SelectableListItem(
             icon: "cloud.rain.fill",
             highlightedColor: .blue,
-            backgroundColor: .gray
+            inactiveColor: .gray
         ),
-        RatingItem(
+        SelectableListItem(
             icon: "pawprint.fill",
             highlightedColor: .purple,
-            backgroundColor: .gray
+            inactiveColor: .gray
         )
     ])
     RatingView(viewModel: vm)
