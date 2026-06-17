@@ -126,6 +126,16 @@ struct ItemReviewsViewModelTests {
 
         #expect(vm.isFullViewOpened)
     }
+    
+    @Test("Should not present full review sheet on review click when review message is nil")
+    func handleReviewClick_setsIsPresentedFalse() {
+        let vm = ItemReviewsViewModel(reviews: reviews)
+        vm.selectedIndex = 2
+
+        vm.handleReviewClick()
+
+        #expect(!vm.isFullViewOpened)
+    }
 
     @Test("Should disable both navigation buttons for a single review")
     func navigationButtons_areDisabledForSingleReview() {

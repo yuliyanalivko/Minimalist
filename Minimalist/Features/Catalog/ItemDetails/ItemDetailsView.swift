@@ -15,35 +15,42 @@ struct ItemDetailsView: View {
     }
     
     var body: some View {
-        ScrollView {
-            LazyVStack {
-                ItemImageCarouselView(urls: item.thumbnails)
-                
-                Group {
-                    itemDescription
-                        .padding(.top, 25)
+        ZStack {
+            ScrollView {
+                LazyVStack {
+                    ItemImageCarouselView(urls: item.thumbnails)
                     
-                    Divider()
-                        .padding(.vertical, 30)
-                }
-                .defaultHorizontalScreenPadding()
-                .padding(.horizontal, 10)
-                
-                if let reviews = item.reviews {
-                    ItemReviewsView(reviews: reviews)
+                    Group {
+                        itemDescription
+                            .padding(.top, 25)
+                        
+                        Divider()
+                            .padding(.vertical, 30)
+                    }
+                    .defaultHorizontalScreenPadding()
+                    .padding(.horizontal, 10)
+                    
+                    if let reviews = item.reviews {
+                        ItemReviewsView(reviews: reviews)
+                    }
                 }
             }
+            .padding(.bottom, 70)
             
-            Button {
-                viewModel.toggleCart()
-            } label: {
-                Text("Buy")
-                    .frame(maxWidth: .infinity)
-                    .textCase(.uppercase)
+            VStack {
+                Spacer()
+                
+                Button {
+                    viewModel.toggleCart()
+                } label: {
+                    Text(viewModel.itemDetails.isAddedToCart ? "Remove from the cart" : "Buy")
+                        .frame(maxWidth: .infinity)
+                        .textCase(.uppercase)
+                }
+                .buttonStyle(PrimaryButtonStyle(color: viewModel.itemDetails.isAddedToCart ? .AppColor.textSecondary : nil))
+                .defaultHorizontalScreenPadding()
+                .padding(.bottom, 90)
             }
-            .buttonStyle(PrimaryButtonStyle())
-            .padding(.top, 30)
-            .defaultHorizontalScreenPadding()
         }
         .verticalScreenSpacing()
     }

@@ -29,6 +29,10 @@ class ItemReviewsViewModel: BaseViewModel {
     }
     
     func handleReviewClick() {
+        guard reviews[selectedIndex].message != nil else {
+            return
+        }
+        
         isFullViewOpened = true
     }
     

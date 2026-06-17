@@ -13,19 +13,7 @@ struct ItemView: View {
         HStack(alignment: VerticalAlignment.center) {
             ZStack {
                 if let imageUrl = item.thumbnailUrl {
-                    AsyncImage(url: URL(string: imageUrl)) { phase in
-                        switch phase {
-                        case .failure:
-                            imagePlaceholder
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        default:
-                            ProgressView()
-                        }
-                    }
-                    .aspectRatio(contentMode: .fill)
+                    AsyncImageView(url: imageUrl)
                 } else {
                     imagePlaceholder
                 }
