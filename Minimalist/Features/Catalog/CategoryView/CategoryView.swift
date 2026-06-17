@@ -9,6 +9,7 @@ struct CategoryView: View {
                 LazyVGrid(columns: viewModel.columns, spacing: 16) {
                     ForEach(viewModel.displayedCategories, id: \.id) { item in
                         CategoryCardView(title: item.name, icon: item.iconName ?? nil)
+                            .contentShape(Rectangle())
                             .onTapGesture {
                                 viewModel.handleCategoryCardClick(category: item)
                             }
