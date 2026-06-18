@@ -64,7 +64,7 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
     private(set) var selectedItemIndex: Int = 0
     
     init() {
-        showRoundedTabBar = RemoteConfigManager().isRoundTabBarEnabled
+        showRoundedTabBar = AppConfigurationManager.shared.remoteConfigManager.isRoundTabBarEnabled
         catalogViewModel = CatalogViewModel(router: catalogRouter)
         favoritesViewModel = FavoritesViewModel(router: favoritesRouter)
         cartViewModel = CartViewModel(router: cartRouter)
