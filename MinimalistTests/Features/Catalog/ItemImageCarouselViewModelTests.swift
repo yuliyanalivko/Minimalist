@@ -4,33 +4,30 @@ import SwiftUI
 
 @Suite("ItemImageCarouselViewModel Tests")
 struct ItemImageCarouselViewModelTests {
-
-    @Test("Should clamp negative image count to zero")
-    func init_clampsNegativeCount() {
-        let vm = ItemImageCarouselViewModel(imageCount: -5)
-
-        #expect(vm.imageCount == 0)
-        #expect(vm.slotCount == 0)
-        #expect(vm.selectedIndex == 0)
+    
+    func makeURLs(_ count: Int) -> [String] {
+        Array(repeating: "https://example.com", count: count)
     }
 
     @Test("Should return imageCount when below max visible dots", arguments: [0, 1, 5, 10])
     func slotCount_matchesImageCountWhenSmall(imageCount: Int) {
-        let vm = ItemImageCarouselViewModel(imageCount: imageCount)
+        /* maxVisibleDots = 10 */
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(imageCount))
 
         #expect(vm.slotCount == imageCount)
     }
 
     @Test("Should return maxVisibleDots when imageCount exceeds max visible dots", arguments: [11, 14, 26])
     func slotCount_isCappedAtTen(imageCount: Int) {
-        let vm = ItemImageCarouselViewModel(imageCount: imageCount)
+        /* maxVisibleDots = 10 */
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(imageCount))
 
         #expect(vm.slotCount == 10)
     }
 
     @Test("Should stay at zero when all images fit in the dot bar")
     func startDotIndex_isZeroWhenImageCountFits() {
-        let vm = ItemImageCarouselViewModel(imageCount: 8)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(8))
         vm.selectedIndex = 7
 
         #expect(vm.startDotIndex == 0)
@@ -38,7 +35,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should stay at zero while selected index is in the first window", arguments: [0, 4, 7])
     func startDotIndex_isZeroAtBeginning(selectedIndex: Int) {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = selectedIndex
 
         #expect(vm.startDotIndex == 0)
@@ -51,7 +48,7 @@ struct ItemImageCarouselViewModelTests {
            (selectedIndex: 13, expectedStart: 4)
     ])
     func startDotIndex_slidesInMiddle(selectedIndex: Int, expectedStart: Int) {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = selectedIndex
 
         #expect(vm.startDotIndex == expectedStart)
@@ -59,7 +56,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should clamp to last window at the end")
     func startDotIndex_clampsAtEnd() {
-        let vm = ItemImageCarouselViewModel(imageCount: 26)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(26))
         vm.selectedIndex = 25
 
         #expect(vm.startDotIndex == 16)
@@ -67,7 +64,7 @@ struct ItemImageCarouselViewModelTests {
     
     @Test("Should place selected index at third slot from the end in the middle of the list")
     func startDotIndex_placesSelectedThirdFromEnd() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
         let selectedSlot = vm.selectedIndex - vm.startDotIndex
         
@@ -76,7 +73,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should map slots to image indices from startDotIndex")
     func indexForSlot_mapsFromWindowStart() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
 
         #expect(vm.startDotIndex == 3)
@@ -87,7 +84,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should update selectedIndex for valid index")
     func select_updatesSelectedIndex() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
 
         vm.select(5)
 
@@ -96,7 +93,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should ignore out-of-bounds indices", arguments: [-1, 14, 100] )
     func select_ignoresInvalidIndex(index: Int) {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 3
 
         vm.select(index)
@@ -106,7 +103,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should return full size when all images fit")
     func dotSize_isFullWhenNoSlidingWindow() {
-        let vm = ItemImageCarouselViewModel(imageCount: 6)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(6))
         vm.selectedIndex = 2
 
         #expect(vm.dotSize(forSlot: 0) == vm.dotSize)
@@ -116,7 +113,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should return full size for selected index in sliding window")
     func dotSize_isFullForSelectedIndex() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
 
         let selectedSlot = 10 - vm.startDotIndex
@@ -126,7 +123,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should return half size at leading edge when window has scrolled")
     func dotSize_isHalfAtLeadingEdge() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
 
         #expect(vm.startDotIndex > 0)
@@ -135,7 +132,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should return half size at trailing edge when more images remain")
     func dotSize_isHalfAtTrailingEdge() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
 
         #expect(vm.startDotIndex + vm.slotCount < vm.imageCount)
@@ -144,7 +141,7 @@ struct ItemImageCarouselViewModelTests {
     
     @Test("Should return reduced size at second slot from leading edge when window has scrolled")
     func dotSize_isReducedAtSecondLeadingEdge() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
         
         #expect(vm.dotSize(forSlot: 1) == vm.dotSize * 0.75)
@@ -152,7 +149,7 @@ struct ItemImageCarouselViewModelTests {
     
     @Test("Should return reduced size at second slot from trailing edge when more images remain")
     func dotSize_isReducedAtSecondTrailingEdge() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
         
         #expect(vm.dotSize(forSlot: vm.slotCount - 2) == vm.dotSize * 0.75)
@@ -160,7 +157,7 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should return full size for middle slots in sliding window")
     func dotSize_isFullForMiddleSlots() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 10
 
         #expect(vm.dotSize(forSlot: 4) == vm.dotSize)
@@ -169,11 +166,41 @@ struct ItemImageCarouselViewModelTests {
 
     @Test("Should not shrink trailing edge on last window")
     func dotSize_trailingEdgeFullOnLastWindow() {
-        let vm = ItemImageCarouselViewModel(imageCount: 14)
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(14))
         vm.selectedIndex = 13
 
         #expect(vm.startDotIndex == 4)
         #expect(vm.startDotIndex + vm.slotCount == vm.imageCount)
         #expect(vm.dotSize(forSlot: vm.slotCount - 1) == vm.dotSize)
+    }
+    
+    @Test("Should delegate to image loader with first three URLs")
+    func preloadImages_delegatesToLoader() {
+        let imageLoader = MockImageLoader()
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(5), imageLoader: imageLoader)
+        
+        vm.preloadImages()
+        
+        #expect(imageLoader.loadedURLs.count == 3)
+    }
+    
+    @Test("Should delegate to image loader")
+    func loadImage_delegatesToLoader() {
+        let imageLoader = MockImageLoader()
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(1), imageLoader: imageLoader)
+        
+        vm.loadImage(url: URL(string: "https://example.com")!)
+        
+        #expect(imageLoader.loadedURLs.count == 1)
+    }
+    
+    @Test("Should return image state")
+    func imageState_returnImageState() {
+        let imageLoader = MockImageLoader()
+        let url = URL(string: "https://example.com")!
+        imageLoader.cachedImages[url] = .failed
+        let vm = ItemImageCarouselViewModel(imageUrls: makeURLs(1), imageLoader: imageLoader)
+        
+        #expect(vm.imageState(of: url) == .failed)
     }
 }

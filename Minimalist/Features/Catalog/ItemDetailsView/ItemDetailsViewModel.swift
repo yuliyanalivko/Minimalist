@@ -4,15 +4,25 @@ import SwiftUI
 class ItemDetailsViewModel: BaseViewModel {
     var itemDetails: ItemDetails
     
+    var itemImageCarouselViewModel: ItemImageCarouselViewModel
+    var itemReviewsViewModel: ItemReviewsViewModel
+    
     init(id: String) {
         // TODO: remove later
-        self.itemDetails = Self.loadMock()
+        let itemDetails = Self.loadMock()
+        self.itemDetails = itemDetails
+        itemImageCarouselViewModel = ItemImageCarouselViewModel(imageUrls: itemDetails.thumbnails)
+        itemReviewsViewModel = ItemReviewsViewModel(reviews: itemDetails.reviews ?? [])
     }
     
     init(id: String, analyticsManager: AnalyticsManager) {
         // TODO: remove later
-        self.itemDetails = Self.loadMock()
+        let itemDetails = Self.loadMock()
+        self.itemDetails = itemDetails
         
+        itemImageCarouselViewModel = ItemImageCarouselViewModel(imageUrls: itemDetails.thumbnails)
+        itemReviewsViewModel = ItemReviewsViewModel(reviews: itemDetails.reviews ?? [])
+
         super.init(analyticsManager: analyticsManager)
     }
     

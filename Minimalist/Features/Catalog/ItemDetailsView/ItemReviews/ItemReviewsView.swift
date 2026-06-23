@@ -1,20 +1,12 @@
 import SwiftUI
 
 struct ItemReviewsView: View {
-    
-    let reviews: [Review]
-    
-    @State var viewModel: ItemReviewsViewModel
-    
-    init(reviews: [Review]) {
-        self.reviews = reviews
-        viewModel = ItemReviewsViewModel(reviews: reviews)
-    }
+    @Bindable var viewModel: ItemReviewsViewModel
     
     var body: some View {
         ZStack {
             TabView(selection: $viewModel.selectedIndex) {
-                ForEach(Array(reviews.enumerated()), id: \.element.id) { index, review in
+                ForEach(Array(viewModel.reviews.enumerated()), id: \.element.id) { index, review in
                     reviewItem(review)
                         .padding(.horizontal, 60)
                         .tag(index)
@@ -22,7 +14,7 @@ struct ItemReviewsView: View {
             }
             .sheet(isPresented: $viewModel.isFullViewOpened) {
                 NavigationStack {
-                    FullReviewView(review: reviews[viewModel.selectedIndex])
+                    FullReviewView(review: viewModel.reviews[viewModel.selectedIndex])
                         .padding(.top, 40)
                 }
                 .presentationDetents([.medium, .large])
@@ -93,9 +85,9 @@ struct ItemReviewsView: View {
 }
 
 #Preview {
-    ItemReviewsView(reviews: [
+    ItemReviewsView(viewModel: ItemReviewsViewModel(reviews: [
         Review(id: "2-id", rating: 4, message: "A text view always uses exactly the amount of space it needs to display its rendered contents, but you can affect the view’s layout. For example, you can use the frame(width:height:alignment:) modifier to propose specific dimensions to the view. If the view accepts the proposal but the text doesn’t fit into the available space, the view uses a combination of wrapping, tightening, scaling, and truncation to make it fit. With a width of 100 points but no constraint on the height, a text view might wrap a long string: A text view always uses exactly the amount of space it needs to display its rendered contents, but you can affect the view’s layout. For example, you can use the frame(width:height:alignment:) modifier to propose specific dimensions to the view. If the view accepts the proposal but the text doesn’t fit into the available space, the view uses a combination of wrapping, tightening, scaling, and truncation to make it fit. With a width of 100 points but no constraint on the height, a text view might wrap a long string: A text view always uses exactly the amount of space it needs to display its rendered contents, but you can affect the view’s layout. For example, you can use the frame(width:height:alignment:) modifier to propose specific dimensions to the view. If the view accepts the proposal but the text doesn’t fit into the available space, the view uses a combination of wrapping, tightening, scaling, and truncation to make it fit. With a width of 100 points but no constraint on the height, a text view might wrap a long string:"),
         Review(id: "1-id", rating: 2, message: "I very like it!"),
         Review(id: "3-id", rating: 5, message: nil)
-    ])
+    ]))
 }

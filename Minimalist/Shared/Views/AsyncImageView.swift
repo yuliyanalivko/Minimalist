@@ -6,13 +6,13 @@ struct AsyncImageView: View {
     init(url: String, size: Int = 500) {
         self.url = URL(string: url)?.resized(to: size)
     }
-
+    
     var body: some View {
         ZStack {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .failure:
-                    imagePlaceholder
+                    ImagePlaceholder()
                 case .success(let image):
                     image
                         .resizable()
@@ -23,12 +23,6 @@ struct AsyncImageView: View {
                 }
             }
         }
-    }
-    
-    private var imagePlaceholder: some View {
-        Image.photo
-            .font(.largeTitle)
-            .foregroundStyle(Color.AppColor.textSecondary)
     }
 }
 

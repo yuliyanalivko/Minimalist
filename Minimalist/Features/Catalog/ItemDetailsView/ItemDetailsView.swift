@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ItemDetailsView: View {
-    let id: String
     
     @State private var viewModel: ItemDetailsViewModel
     
@@ -10,7 +9,6 @@ struct ItemDetailsView: View {
     }
     
     init(id: String) {
-        self.id = id
         _viewModel = State(initialValue: ItemDetailsViewModel(id: id))
     }
     
@@ -18,7 +16,7 @@ struct ItemDetailsView: View {
         ZStack {
             ScrollView {
                 LazyVStack {
-                    ItemImageCarouselView(urls: item.thumbnails)
+                    ItemImageCarouselView(viewModel: viewModel.itemImageCarouselViewModel)
                     
                     Group {
                         itemDescription
@@ -30,8 +28,8 @@ struct ItemDetailsView: View {
                     .defaultHorizontalScreenPadding()
                     .padding(.horizontal, 10)
                     
-                    if let reviews = item.reviews {
-                        ItemReviewsView(reviews: reviews)
+                    if item.reviews != nil {
+                        ItemReviewsView(viewModel: viewModel.itemReviewsViewModel)
                     }
                 }
             }
@@ -47,7 +45,7 @@ struct ItemDetailsView: View {
                         .frame(maxWidth: .infinity)
                         .textCase(.uppercase)
                 }
-                .buttonStyle(PrimaryButtonStyle(color: viewModel.itemDetails.isAddedToCart ? .AppColor.textSecondary : nil))
+                .buttonStyle(PrimaryButtonStyle(backgroundColor: viewModel.itemDetails.isAddedToCart ? .AppColor.textSecondary : nil))
                 .defaultHorizontalScreenPadding()
                 .padding(.bottom, 90)
             }

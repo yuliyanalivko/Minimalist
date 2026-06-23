@@ -3,12 +3,17 @@ import SwiftUI
 @Observable
 class ItemImageCarouselViewModel {
     
-    let imageCount: Int
+    let imageUrls: [String]
     var selectedIndex: Int = 0
     let dotSize: CGFloat = 10
     
-    private let maxVisibleDots = 10
-    private let selectedPositionFromEnd = 3
+    var urlsToPreload: [URL?] {
+        Array(imageUrls.prefix(preloadedCount).map { URL(string: $0) })
+    }
+    
+    var imageCount: Int {
+        imageUrls.count
+    }
     
     var slotCount: Int {
         min(maxVisibleDots, imageCount)
@@ -18,6 +23,11 @@ class ItemImageCarouselViewModel {
         UIScreen.main.bounds.width * 0.7
     }
     
+    private let maxVisibleDots = 10
+    private let selectedPositionFromEnd = 3
+    private let preloadedCount: Int = 3
+    private var imageLoader: ImageCacheManaging
+
     private var targetSelectedSlot: Int {
         maxVisibleDots - selectedPositionFromEnd
     }
@@ -32,9 +42,10 @@ class ItemImageCarouselViewModel {
             imageCount - maxVisibleDots
         )
     }
-
-    init(imageCount: Int) {
-        self.imageCount = max(imageCount, 0)
+    
+    init(imageUrls: [String], imageLoader: ImageCacheManaging = ImageLoader()) {
+        self.imageUrls = imageUrls
+        self.imageLoader = imageLoader
     }
     
     func index(forSlot slot: Int) -> Int {
@@ -63,5 +74,17 @@ class ItemImageCarouselViewModel {
         guard index >= 0, index < imageCount else { return }
         
         selectedIndex = index
+    }
+    
+    func loadImage(url: URL) {        
+        imageLoader.load(url: url)
+    }
+    
+    func preloadImages() {
+        imageLoader.load(urls: urlsToPreload)
+    }
+    
+    func imageState(of url: URL) -> ImageState? {
+        imageLoader.cachedImages[url]
     }
 }

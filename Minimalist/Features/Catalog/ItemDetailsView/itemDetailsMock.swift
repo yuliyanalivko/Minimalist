@@ -27,17 +27,14 @@ let itemDetailsMock =
     "price": 2.59,
     "thumbnails": [
       "https://www.mamp.one/wp-content/uploads/2024/09/image-resources2.jpg",
-      "https://picsum.photos/id/237/200/300",
-      "https://www.mamp.one/wp-content/uploads/2024/09/image-resources2.jpg",
-      "https://picsum.photos/id/237/200/300",
-      "https://www.mamp.one/wp-content/uploads/2024/09/image-resources2.jpg",
-      "https://picsum.photos/id/237/200/300",
-      "https://www.mamp.one/wp-content/uploads/2024/09/image-resources2.jpg",
-      "https://picsum.photos/id/237/200/300",
-      "https://www.mamp.one/wp-content/uploads/2024/09/image-resources2.jpg",
-      "https://picsum.photos/id/237/200/300",
-      "https://www.mamp.one/wp-content/uploads/2024/09/image-resources2.jpg",
-      "https://picsum.photos/id/237/200/300"
+      "https://iso.500px.com/wp-content/uploads/2018/05/Blog-marketplace-getty500px-48429366-nologo-3000x2000.png",
+      "https://iso.500px.com/wp-content/uploads/2015/04/cuddles_cover.jpeg",
+      "https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2025/04/solar_orbiter_s_widest_high-res_view_of_the_sun/26672644-4-eng-GB/Solar_Orbiter_s_widest_high-res_view_of_the_Sun.jpg",
+      "https://cdn.pixabay.com/photo/2018/03/31/13/43/bird-3278162_1280.jpg",
+      "https://static.wikia.nocookie.net/alldimensions/images/0/02/Universe-expanding-acceleration-1.jpg/revision/latest?cb=20260328105224",
+      "https://lsc.org/a360c87dad4512ce6cb6f84fc5978602.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/5/55/Large_breaking_wave.jpg",
+      "https://www.shaylehollie.co.uk/wp-content/uploads/2025/04/Thurstaston-Beach-Sunset.jpg",
     ],
     "reviews": [
       {
@@ -48,7 +45,7 @@ let itemDetailsMock =
       {
         "id": "k874f1ee-6c54-4b01-90e6-d701748f0862",
         "rating": 2,
-        "message": "I am very glad to have this lamp in my home. Very classic, beautiful and stylish. Thanks a lot to IKEA!"
+        "message": "I am very glad to have this lamp in my home. Very classic, beautiful and stylish. Thanks a lot to IKEA!!"
       },
       {
         "id": "d074f1ee-6c54-4b23-90e6-d70174835402",
