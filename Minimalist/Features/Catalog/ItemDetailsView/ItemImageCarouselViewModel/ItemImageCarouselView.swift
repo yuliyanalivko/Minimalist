@@ -42,29 +42,7 @@ struct ItemImageCarouselView: View {
         Color.AppColor.backgroundSecondary
             .frame(height: viewModel.imageHeight)
             .overlay {
-                Group {
-                    if let validURL = URL(string: url) {
-                        let currentState = viewModel.imageState(of: validURL)
-                        
-                        switch currentState {
-                        case .success(let uiImage):
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                            
-                        case .failed:
-                            ImagePlaceholder()
-                            
-                        case .loading, .none:
-                            ProgressView()
-                                .onAppear {
-                                    viewModel.loadImage(url: validURL)
-                                }
-                        }
-                    } else {
-                        ImagePlaceholder()
-                    }
-                }
+                ImageView(url: url)
             }
             .cornerRadius(10)
             .defaultHorizontalScreenPadding()

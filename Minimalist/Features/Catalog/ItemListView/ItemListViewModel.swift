@@ -26,15 +26,14 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         let data = itemsMock.data(using: .utf8)!
         allItems = try! JSONDecoder().decode([Item].self, from: data)
         allItems = allItems.map { item in
-            let testUrl = "https://iso.500px.com/wp-content/uploads/2018/05/Blog-marketplace-getty500px-48429366-nologo-3000x2000.png"
             guard let thumbnailUrl = item.thumbnailUrl,
-                  let url = URL(string: testUrl) else {
+                  let url = URL(string: thumbnailUrl) else {
                 return item
             }
             
             var updatedItem = item
                          
-            updatedItem.thumbnailUrl = testUrl
+            updatedItem.thumbnailUrl = thumbnailUrl
             updatedItem.thumbnailUrl = url.resized(to: 500).absoluteString
             
             return updatedItem

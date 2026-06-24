@@ -13,7 +13,7 @@ struct ItemView: View {
         HStack(alignment: VerticalAlignment.center) {
             ZStack {
                 if let imageUrl = item.thumbnailUrl {
-                    AsyncImageView(url: imageUrl)
+                    ImageView(url: imageUrl)
                 } else {
                     imagePlaceholder
                 }

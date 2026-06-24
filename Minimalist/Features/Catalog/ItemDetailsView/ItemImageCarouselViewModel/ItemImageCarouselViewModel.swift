@@ -7,10 +7,6 @@ class ItemImageCarouselViewModel {
     var selectedIndex: Int = 0
     let dotSize: CGFloat = 10
     
-    var urlsToPreload: [URL?] {
-        Array(imageUrls.prefix(preloadedCount).map { URL(string: $0) })
-    }
-    
     var imageCount: Int {
         imageUrls.count
     }
@@ -21,15 +17,6 @@ class ItemImageCarouselViewModel {
     
     var imageHeight: CGFloat {
         UIScreen.main.bounds.width * 0.7
-    }
-    
-    private let maxVisibleDots = 10
-    private let selectedPositionFromEnd = 3
-    private let preloadedCount: Int = 3
-    private var imageLoader: ImageCacheManaging
-
-    private var targetSelectedSlot: Int {
-        maxVisibleDots - selectedPositionFromEnd
     }
     
     var startDotIndex: Int {
@@ -43,9 +30,21 @@ class ItemImageCarouselViewModel {
         )
     }
     
-    init(imageUrls: [String], imageLoader: ImageCacheManaging = ImageLoader()) {
+    private let maxVisibleDots = 10
+    private let selectedPositionFromEnd = 3
+    private let preloadedCount = 3
+    private var imagePrefetcher: ImagePrefetching
+    
+    private var targetSelectedSlot: Int {
+        maxVisibleDots - selectedPositionFromEnd
+    }
+    
+    init(
+        imageUrls: [String],
+        imagePrefetcher: ImagePrefetching = Prefetcher(),
+    ) {
         self.imageUrls = imageUrls
-        self.imageLoader = imageLoader
+        self.imagePrefetcher = imagePrefetcher
     }
     
     func index(forSlot slot: Int) -> Int {
@@ -76,15 +75,10 @@ class ItemImageCarouselViewModel {
         selectedIndex = index
     }
     
-    func loadImage(url: URL) {        
-        imageLoader.load(url: url)
-    }
-    
     func preloadImages() {
-        imageLoader.load(urls: urlsToPreload)
-    }
-    
-    func imageState(of url: URL) -> ImageState? {
-        imageLoader.cachedImages[url]
+        let urls = imageUrls
+            .prefix(preloadedCount).compactMap { URL(string: $0) }
+        
+        imagePrefetcher.prefetch(urls: urls)
     }
 }
