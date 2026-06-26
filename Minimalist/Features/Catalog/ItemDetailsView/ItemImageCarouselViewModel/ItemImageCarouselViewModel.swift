@@ -1,7 +1,7 @@
 import SwiftUI
 
 @Observable
-class ItemImageCarouselViewModel {
+class ItemImageCarouselViewModel: BaseViewModel {
     
     let imageUrls: [String]
     var selectedIndex: Int = 0

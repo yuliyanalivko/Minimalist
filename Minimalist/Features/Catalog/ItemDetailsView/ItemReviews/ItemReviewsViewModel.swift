@@ -7,6 +7,7 @@ class ItemReviewsViewModel: BaseViewModel {
     
     var selectedIndex: Int = 0
     var isFullViewOpened: Bool = false
+    var fullViewContentHeight: CGFloat = 200
     
     init(reviews: [Review]) {
         self.reviews = reviews

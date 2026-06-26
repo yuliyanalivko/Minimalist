@@ -13,11 +13,15 @@ struct ItemReviewsView: View {
                 }
             }
             .sheet(isPresented: $viewModel.isFullViewOpened) {
-                NavigationStack {
-                    FullReviewView(review: viewModel.reviews[viewModel.selectedIndex])
-                        .padding(.top, 40)
-                }
-                .presentationDetents([.medium, .large])
+                FullReviewView(review: viewModel.reviews[viewModel.selectedIndex])
+                    .padding(.top, 40)
+                    .onGeometryChange(for: CGFloat.self) { proxy in
+                        return proxy.size.height
+                    } action: { newValue in
+                        viewModel.fullViewContentHeight = newValue
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .presentationDetents([.height(viewModel.fullViewContentHeight)])
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .frame(height: 100)
