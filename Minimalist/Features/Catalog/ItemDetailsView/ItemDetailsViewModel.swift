@@ -7,15 +7,14 @@ class ItemDetailsViewModel: BaseViewModel {
     var itemImageCarouselViewModel: ItemImageCarouselViewModel
     var itemReviewsViewModel: ItemReviewsViewModel
     
-    init(id: String) {
-        // TODO: remove later
-        let itemDetails = Self.loadMock()
-        self.itemDetails = itemDetails
-        itemImageCarouselViewModel = ItemImageCarouselViewModel(imageUrls: itemDetails.thumbnails)
-        itemReviewsViewModel = ItemReviewsViewModel(reviews: itemDetails.reviews ?? [])
+    convenience init(id: String) {
+        self.init(id: id, analyticsManager: AppConfigurationManager.shared.analyticsManager)
     }
-    
-    init(id: String, analyticsManager: AnalyticsManager) {
+
+    init(
+        id: String,
+        analyticsManager: AnalyticsManager?
+    ) {
         // TODO: remove later
         let itemDetails = Self.loadMock()
         self.itemDetails = itemDetails

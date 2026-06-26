@@ -11,30 +11,12 @@ struct ItemImageCarouselView: View {
                     .tag(index)
             }
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
+        .tabViewStyle(.page(indexDisplayMode: .always))
         .frame(height: viewModel.imageHeight)
         .task {
             viewModel.preloadImages()
         }
 
-        HStack(spacing: 8) {
-            ForEach(0..<viewModel.slotCount, id: \.self) { slot in
-                let index = viewModel.index(forSlot: slot)
-
-                Circle()
-                    .fill(index == viewModel.selectedIndex
-                          ? Color.AppColor.primary
-                          : Color.AppColor.backgroundSecondary)
-                    .frame(
-                        width: viewModel.dotSize(forSlot: slot),
-                        height: viewModel.dotSize(forSlot: slot)
-                    )
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .clipped()
-        .padding(.top, 15)
-        .defaultHorizontalScreenPadding()
     }
 
     @ViewBuilder
