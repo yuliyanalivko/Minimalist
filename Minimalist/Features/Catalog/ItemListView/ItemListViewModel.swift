@@ -33,6 +33,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             
             var updatedItem = item
                          
+            updatedItem.thumbnailUrl = thumbnailUrl
             updatedItem.thumbnailUrl = url.resized(to: 500).absoluteString
             
             return updatedItem

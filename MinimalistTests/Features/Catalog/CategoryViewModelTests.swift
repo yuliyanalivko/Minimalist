@@ -73,8 +73,6 @@ struct CategoryViewModelTests {
         #expect(vm.selectedCategory == categories[0])
     }
     
-    
-    
     @Test("calls logEvent with the correct search event")
     func logSearchEvent_callLogEvent() {
         let consumer = MockAnalyticsConsumer()

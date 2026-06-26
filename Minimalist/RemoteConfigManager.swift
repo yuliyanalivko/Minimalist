@@ -19,25 +19,25 @@ class RemoteConfigManager: RemoteConfigManaging {
     var isRoundTabBarEnabled: Bool = true
     var isTestingNotificationsEnabled: Bool = false
     
+    private var isPrepared = false
+    
     private var remoteConfig: RemoteConfig? {
-        guard firebaseApp != nil else {
+        guard firebaseApp?.app() != nil else {
             return nil
         }
         
         return RemoteConfig.remoteConfig()
     }
     
-    private(set) var firebaseApp: FirebaseApp?
+    private(set) var firebaseApp: FirebaseApp.Type?
     
-    init(firebaseApp: FirebaseApp? = FirebaseApp.app()) {
+    init(firebaseApp: FirebaseApp.Type? = FirebaseApp.self) {
         self.firebaseApp = firebaseApp
-        
-        configureSettings()
-        setDefaults()
-        addOnConfigUpdateListener()
     }
     
     func fetchAndActivate() async {
+        prepareIfNeeded()
+        
         do {
             _ = try await remoteConfig?.fetchAndActivate()
             applyValues()
@@ -49,6 +49,21 @@ class RemoteConfigManager: RemoteConfigManaging {
                 )
             )
         }
+    }
+    
+    private func prepareIfNeeded() {
+        guard !isPrepared else {
+            return
+        }
+        
+        guard remoteConfig != nil else {
+            return
+        }
+        
+        configureSettings()
+        setDefaults()
+        addOnConfigUpdateListener()
+        isPrepared = true
     }
     
     private func configureSettings() {
@@ -64,7 +79,7 @@ class RemoteConfigManager: RemoteConfigManaging {
     private func setDefaults() {
         let defaults: [String: NSObject] = [
             ParameterKey.isRoundTabBarEnabled.rawValue: true as NSObject,
-            ParameterKey.isTestingNotificationsEnabled.rawValue: true as NSObject
+            ParameterKey.isTestingNotificationsEnabled.rawValue: false as NSObject
         ]
         remoteConfig?.setDefaults(defaults)
     }
