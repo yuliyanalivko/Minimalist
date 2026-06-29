@@ -10,22 +10,10 @@ struct ItemView: View {
     }
     
     var body: some View {
-        HStack {
+        HStack(alignment: VerticalAlignment.center) {
             ZStack {
                 if let imageUrl = item.thumbnailUrl {
-                    AsyncImage(url: URL(string: imageUrl)) { phase in
-                        switch phase {
-                        case .failure:
-                            imagePlaceholder
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        default:
-                            ProgressView()
-                        }
-                    }
-                    .aspectRatio(contentMode: .fill)
+                    ImageView(url: imageUrl)
                 } else {
                     imagePlaceholder
                 }
@@ -66,6 +54,7 @@ struct ItemView: View {
             .padding(.vertical, 15)
             .padding(.leading, 15)
         }
+        .contentShape(Rectangle())
         .defaultHorizontalScreenPadding()
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
         .listRowSeparator(.hidden)

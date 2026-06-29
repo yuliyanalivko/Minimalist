@@ -7,6 +7,9 @@ enum AppIcon: String {
     case photo = "photo"
     case star = "star.fill"
     case magnifyingGlass = "exclamationmark.magnifyingglass"
+    case cart = "cart.fill"
+    case arrowLeft = "chevron.left"
+    case arrowRight = "chevron.right"
 }
 
 extension Image {
@@ -32,5 +35,17 @@ extension Image {
     
     static var magnifyingGlass: Image {
         Image(systemName: AppIcon.magnifyingGlass.rawValue)
+    }
+    
+    static var cart: Image {
+        Image(systemName: AppIcon.cart.rawValue)
+    }
+    
+    static var previous: Image {
+        Image(systemName: AppIcon.arrowLeft.rawValue)
+    }
+    
+    static var next: Image {
+        Image(systemName: AppIcon.arrowRight.rawValue)
     }
 }
