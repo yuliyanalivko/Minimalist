@@ -3,6 +3,8 @@ import SwiftUI
 @Observable class BaseViewModel {
     var isLoading: Bool = false
     
+    private(set) var toastManager: ToastManaging?
+    
     private(set) var error: Error?
     
     private let analyticsManager: AnalyticsManager?
@@ -11,8 +13,12 @@ import SwiftUI
         error?.localizedDescription
     }
     
-    init(analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager) {
-        self.analyticsManager = analyticsManager
+    init(
+        analyticsManager: AnalyticsManager? = nil,
+        toastManager: ToastManaging? = nil
+    ) {
+        self.analyticsManager = analyticsManager ?? AppConfigurationManager.shared.analyticsManager
+        self.toastManager = toastManager ?? ToastManager.shared
     }
     
     /// Sets the current error state for the view model.
@@ -34,5 +40,9 @@ import SwiftUI
     
     func logEvent(_ event: AnalyticsEvent) {
         analyticsManager?.logEvent(event)
+    }
+    
+    func showToast(message: String, style: ToastStyle = .info) {
+        toastManager?.show(message: message, style: style)
     }
 }

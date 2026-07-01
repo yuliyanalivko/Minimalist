@@ -4,6 +4,7 @@ import SwiftUI
 
 @MainActor
 struct MainTabViewModelTests {
+    
     @Test("updates selectedItemIndex")
     func select_updateSelectedItemIndex() {
         let vm = MainTabViewModel()

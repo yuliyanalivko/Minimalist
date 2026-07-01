@@ -34,6 +34,18 @@ struct BaseViewModelModelTests {
         #expect(sut.error == nil)
         #expect(sut.errorMessage == nil)
     }
+    
+    @Test("Should display message via ToastManager")
+    @MainActor
+    func showToast_displayMessage() {
+        let toastManager = MockToastManager()
+        let vm = BaseViewModel(analyticsManager: nil, toastManager: toastManager)
+        
+        vm.showToast(message: "Something went wrong", style: .error)
+        
+        #expect(toastManager.current?.message == "Something went wrong")
+        #expect(toastManager.current?.style == .error)
+    }
 }
 
 private enum TestError: LocalizedError {

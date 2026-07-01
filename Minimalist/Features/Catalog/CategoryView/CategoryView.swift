@@ -4,22 +4,36 @@ struct CategoryView: View {
     let viewModel: CategoryViewModel
     
     var body: some View {
-        if !viewModel.displayedCategories.isEmpty {
-            ScrollView {
-                LazyVGrid(columns: viewModel.columns, spacing: 16) {
-                    ForEach(viewModel.displayedCategories, id: \.id) { item in
-                        CategoryCardView(title: item.name, icon: item.iconName ?? nil)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                viewModel.handleCategoryCardClick(category: item)
-                            }
+        
+        Group {
+            switch viewModel.state {
+            case .loading:
+                ProgressView()
+                
+            case .content(let categories):
+                ScrollView {
+                    LazyVGrid(columns: viewModel.columns, spacing: 16) {
+                        ForEach(categories, id: \.id) { item in
+                            CategoryCardView(title: item.name, icon: item.iconName ?? nil)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    viewModel.handleCategoryCardClick(category: item)
+                                }
+                        }
                     }
+                    .defaultHorizontalScreenPadding()
+                    .verticalScreenSpacing()
                 }
-                .defaultHorizontalScreenPadding()
-                .verticalScreenSpacing()
+                
+            case .emptySearch:
+                EmptySearchResultView()
+                
+            case .empty:
+                Text("No Data")
             }
-        } else {
-            EmptySearchResultView()
+        }
+        .task {
+            await viewModel.fetchCategories()
         }
     }
 }
