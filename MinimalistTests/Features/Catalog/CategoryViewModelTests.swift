@@ -37,22 +37,20 @@ struct CategoryViewModelTests {
     
     private func makeViewModel(
         router: CatalogRouter = CatalogRouter(),
-        provider: CategoryProviding = StubCategoryProviding(),
+        categoryService: CategoryProviding = MockCategoryProviding(),
         analyticsManager: AnalyticsManager? = nil,
         toastManager: ToastManaging? = nil
     ) -> CategoryViewModel {
-        try? ServiceLocator.shared.unregister(CategoryProviding.self)
-        try! ServiceLocator.shared.register(service: provider as CategoryProviding)
         
         if let analyticsManager {
-            return CategoryViewModel(router: router, analyticsManager: analyticsManager, toastManager: toastManager ?? MockToastManager())
+            return CategoryViewModel(router: router, categoryService: categoryService, analyticsManager: analyticsManager, toastManager: toastManager ?? MockToastManager())
         }
         
         if let toastManager {
-            return CategoryViewModel(router: router, analyticsManager: analyticsManager ?? AnalyticsManager(providers: []), toastManager: toastManager)
+            return CategoryViewModel(router: router, categoryService: categoryService, analyticsManager: analyticsManager ?? AnalyticsManager(providers: []), toastManager: toastManager)
         }
         
-        return CategoryViewModel(router: router)
+        return CategoryViewModel(router: router, categoryService: categoryService)
     }
     
     @Test("returns all categories when search text is empty")
@@ -118,7 +116,7 @@ struct CategoryViewModelTests {
     
     @Test("Should load categories from service")
     func fetchCategories_success() async {
-        let vm = makeViewModel(provider: MockCategoryProviding(categories: categories))
+        let vm = makeViewModel(categoryService: MockCategoryProviding(categories: categories))
         
         await vm.fetchCategories()
         
@@ -134,7 +132,7 @@ struct CategoryViewModelTests {
             NSLocalizedDescriptionKey: "Network failed"
         ])
         let toastManager = MockToastManager()
-        let vm = makeViewModel(provider: MockCategoryProviding(error: testError), toastManager: toastManager)
+        let vm = makeViewModel(categoryService: MockCategoryProviding(error: testError), toastManager: toastManager)
         
         await vm.fetchCategories()
         

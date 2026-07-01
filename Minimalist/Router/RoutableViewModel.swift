@@ -3,18 +3,12 @@ import SwiftUI
 @Observable
 class RoutableViewModel<T: Router>: BaseViewModel {
     var router: T
-
-    init(router: T) {
-        self.router = router
-        super.init()
-    }
     
-    init(router: T, analyticsManager: AnalyticsManager) {
-        self.router = router
-        super.init(analyticsManager: analyticsManager)
-    }
-    
-    init(router: T, analyticsManager: AnalyticsManager, toastManager: ToastManaging) {
+    init(
+        router: T,
+        analyticsManager: AnalyticsManager? = nil,
+        toastManager: ToastManaging? = nil
+    ) {
         self.router = router
         super.init(analyticsManager: analyticsManager, toastManager: toastManager)
     }

@@ -7,10 +7,6 @@ struct CatalogViewModelTests {
     func makeViewModel(
         analyticsManager: AnalyticsManager = AnalyticsManager(providers: [])
     ) -> CatalogViewModel {
-        let provider: CategoryProviding = StubCategoryProviding()
-        try? ServiceLocator.shared.unregister(CategoryProviding.self)
-        try! ServiceLocator.shared.register(service: provider as CategoryProviding)
-        
         return CatalogViewModel(
             router: .init(),
             analyticsManager: analyticsManager,

@@ -5,15 +5,9 @@ import SwiftUI
 @MainActor
 struct MainTabViewModelTests {
     
-    func makeViewModel() -> MainTabViewModel {
-        try? ServiceLocator.shared.unregister(CategoryProviding.self)
-        try! ServiceLocator.shared.register(service: StubCategoryProviding() as CategoryProviding)
-        
-        return MainTabViewModel()
-    }
     @Test("updates selectedItemIndex")
     func select_updateSelectedItemIndex() {
-        let vm = makeViewModel()
+        let vm = MainTabViewModel()
         
         vm.select(1)
 
@@ -22,14 +16,14 @@ struct MainTabViewModelTests {
   
     @Test("should return selected item")
     func selectedItem_returnSelectedItem_validIndex() {
-        let vm = makeViewModel()
+        let vm = MainTabViewModel()
 
         #expect(vm.selectedItem?.title == vm.items[0].title)
     }
     
     @Test("should return nil if index is invalid")
     func selectedItem_returnNil_invalidIndex() {
-        let vm = makeViewModel()
+        let vm = MainTabViewModel()
         
         vm.select(-10)
 

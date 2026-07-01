@@ -3,9 +3,6 @@ import SwiftUI
 @Observable
 class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     
-    @ObservationIgnored
-    @Injected private var categoryService: CategoryProviding
-    
     enum ContentState: Equatable {
         case loading
         case content([Category])
@@ -32,7 +29,7 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     var searchText: String = ""
     var allCategories: [Category]?
     var loading: Bool = true
-        
+    
     let columns = [
         GridItem(.flexible(),spacing: 16),
         GridItem(.flexible(),spacing: 16)
@@ -47,6 +44,25 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     private var selectedCategoryId: String?
+    private let categoryService: CategoryProviding
+    
+    init(
+        router: CatalogRouter,
+        categoryService: CategoryProviding = CategoryService()
+    ) {
+        self.categoryService = categoryService
+        super.init(router: router)
+    }
+    
+    init(
+        router: CatalogRouter,
+        categoryService: CategoryProviding = CategoryService(),
+        analyticsManager: AnalyticsManager? = nil,
+        toastManager: ToastManaging? = nil
+    ) {
+        self.categoryService = categoryService
+        super.init(router: router, analyticsManager: analyticsManager, toastManager: toastManager)
+    }
     
     func fetchCategories() async {
         do {

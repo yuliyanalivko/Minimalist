@@ -14,11 +14,11 @@ import SwiftUI
     }
     
     init(
-        analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager,
-        toastManager: ToastManaging = ToastManager.shared
+        analyticsManager: AnalyticsManager? = nil,
+        toastManager: ToastManaging? = nil
     ) {
-        self.analyticsManager = analyticsManager
-        self.toastManager = toastManager
+        self.analyticsManager = analyticsManager ?? AppConfigurationManager.shared.analyticsManager
+        self.toastManager = toastManager ?? ToastManager.shared
     }
     
     /// Sets the current error state for the view model.

@@ -24,7 +24,6 @@ final class AppConfigurationManager {
     private(set) var remoteConfigManager: RemoteConfigManaging
     private(set) var notificationManager: NotificationManaging
     private(set) var analyticsManager: AnalyticsManager?
-    private(set) var serviceLocator: ServiceLocating
     
     private(set) var isInitialized = false
     
@@ -32,12 +31,10 @@ final class AppConfigurationManager {
         firebaseConfigurator: SDKConfigurator = FirebaseConfigurator(),
         remoteConfigManager: RemoteConfigManaging = RemoteConfigManager(),
         notificationManager: NotificationManaging = NotificationManager.shared,
-        serviceLocator: ServiceLocating = ServiceLocator.shared
     ) {
         self.firebaseConfigurator = firebaseConfigurator
         self.remoteConfigManager = remoteConfigManager
         self.notificationManager = notificationManager
-        self.serviceLocator = serviceLocator
     }
     
     func initializeSDKs() {
@@ -48,14 +45,6 @@ final class AppConfigurationManager {
     
     func updateAnalyticsManagerProviders(_ providers: [AnalyticsTracking]) {
         analyticsManager?.updateProviders(providers)
-    }
-    
-    func registerServices() {
-        do {
-            try serviceLocator.register(service: CategoryService() as CategoryProviding)
-        } catch {
-            print("\(error)")
-        }
     }
     
     private func performInitialization() async {
