@@ -13,4 +13,9 @@ class RoutableViewModel<T: Router>: BaseViewModel {
         self.router = router
         super.init(analyticsManager: analyticsManager)
     }
+    
+    init(router: T, analyticsManager: AnalyticsManager, toastManager: ToastManaging) {
+        self.router = router
+        super.init(analyticsManager: analyticsManager, toastManager: toastManager)
+    }
 }
