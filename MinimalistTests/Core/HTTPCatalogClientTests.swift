@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import Minimalist
 
-struct MinimalistAPIClientTests {
+struct HTTPCatalogClientTests {
     
     private let json = "[]".data(using: .utf8)!
     
@@ -11,9 +11,9 @@ struct MinimalistAPIClientTests {
     func getCategories_useCorrectEndpoint() async throws {
         let httpClient = MockHTTPClient()
         httpClient.getResult = .success(json)
-        let apiClient = MinimalistAPIClient(client: httpClient)
+        let provider = HTTPCatalogClient(client: httpClient)
         
-        _ = try await apiClient.getCategories()
+        _ = try await provider.getCategories()
         
         #expect(httpClient.lastPath == "api/v1/categories")
     }

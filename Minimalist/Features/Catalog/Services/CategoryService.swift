@@ -5,9 +5,9 @@ protocol CategoryProviding {
 }
 
 final class CategoryService: CategoryProviding {
-    private let client: APIClient
+    private let client: CatalogDataProvider
     
-    init(client: APIClient = MinimalistAPIClient()) {
+    init(client: CatalogDataProvider = CatalogDataProvider()) {
         self.client = client
     }
     

@@ -10,10 +10,10 @@ struct CategoryServiceTests {
     
     @Test("Should return decoded categories")
     func getCategories_returnCategories() async throws {
-        let mock = MockAPIClient()
+        let client = MockCatalogAPIClient()
         let result = [Category(id: "1", name: "Sofas", thumbnailUrl: nil, subCategories: [])]
-        mock.getResult = .success(result)
-        let service = CategoryService(client: mock)
+        client.getResult = .success(result)
+        let service = CategoryService(client: CatalogDataProvider(httpClient: client))
         
         let categories = try await service.getCategories()
         
@@ -22,9 +22,9 @@ struct CategoryServiceTests {
     
     @Test("Should throw error")
     func getCategories_throwError() async {
-        let mock = MockAPIClient()
-        mock.getResult = .failure(NetworkError.transportError(underlying: URLError(.notConnectedToInternet)))
-        let service = CategoryService(client: mock)
+        let client = MockCatalogAPIClient()
+        client.getResult = .failure(NetworkError.transportError(underlying: URLError(.notConnectedToInternet)))
+        let service = CategoryService(client: CatalogDataProvider(httpClient: client))
         
         await #expect(throws: NetworkError.self) {
             _ = try await service.getCategories()

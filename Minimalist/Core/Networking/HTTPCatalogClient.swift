@@ -1,8 +1,6 @@
-import Foundation
-
-class MinimalistAPIClient: APIClient {
+struct HTTPCatalogClient: CatalogAPIClient {
     private let client: HTTPClient
-    
+
     private let apiV1 = "api/v1/"
     private let categories = "categories"
     
@@ -15,6 +13,6 @@ class MinimalistAPIClient: APIClient {
     }
 }
 
-protocol APIClient {
+protocol CatalogAPIClient {
     func getCategories() async throws -> [Category]
 }

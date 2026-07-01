@@ -1,7 +1,7 @@
 import Foundation
 @testable import Minimalist
 
-final class MockAPIClient: APIClient {
+final class MockCatalogAPIClient: CatalogAPIClient {
     var getResult: Result<[Minimalist.Category], Error>?
 
     func getCategories() async throws -> [Minimalist.Category] {
