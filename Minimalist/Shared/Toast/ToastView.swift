@@ -9,8 +9,8 @@ struct ToastView: View {
                 .foregroundColor(toast.style.color)
             
             Text(toast.message)
-                .font(.AppFont.caption)
-                .foregroundStyle(Color.AppColor.textPrimary)
+                .font(toast.font)
+                .foregroundStyle(toast.textColor)
                 .lineLimit(2)
         }
         .padding(14)

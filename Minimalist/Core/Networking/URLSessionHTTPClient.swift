@@ -68,6 +68,11 @@ extension HTTPClient {
     }
 }
 
+/// A networking client powered by Swift Concurrency and `URLSession`.
+///
+/// Handles the core work for all network requests. It standardizes how
+/// the app builds URLs, manages HTTP headers, processes JSON data,
+/// and validates server response codes.
 struct URLSessionHTTPClient: HTTPClient {
     private let baseURL: URL
     private let session: URLSession
@@ -75,7 +80,7 @@ struct URLSessionHTTPClient: HTTPClient {
     private let decoder: JSONDecoder
     
     init(
-        baseURL: URL = APIConfiguration.baseURL,
+        baseURL: URL = APIConfiguration.hostURL,
         session: URLSession = .shared,
         encoder: JSONEncoder = JSONEncoder(),
         decoder: JSONDecoder = JSONDecoder(),
@@ -86,6 +91,12 @@ struct URLSessionHTTPClient: HTTPClient {
         self.decoder = decoder
     }
     
+    /// Performs an asynchronous HTTP GET request and decodes the JSON response.
+    /// - Parameters:
+    ///   - path: The relative URL endpoint path for the request.
+    ///   - query: An optional dictionary of URL query key-value pairs to append to the request string.
+    ///   - headers: An optional dictionary of custom HTTP request headers to attach to the network task.
+    /// - Returns: A fully initialized instance of type `T` populated from the decoded network payload.
     func get<T: Decodable>(
         _ path: String,
         query: [String: String]?,
@@ -96,6 +107,13 @@ struct URLSessionHTTPClient: HTTPClient {
         return try await fetch(for: request)
     }
     
+    /// Performs an asynchronous HTTP POST request, encoding a request body and decoding the JSON response.
+    /// - Parameters:
+    ///   - path: The relative URL endpoint path for the request.
+    ///   - query: An optional dictionary of URL query key-value pairs to append to the request string.
+    ///   - headers: An optional dictionary of custom HTTP request headers to attach to the network task.
+    ///   - body: The `Encodable` object to be serialized into JSON and sent in the HTTP request body.
+    /// - Returns: A fully initialized instance of type `T` populated from the decoded network payload.
     func post<T: Decodable, Body: Encodable>(
         _ path: String,
         query: [String: String]?,
@@ -107,6 +125,13 @@ struct URLSessionHTTPClient: HTTPClient {
         return try await fetch(for: request)
     }
     
+    /// Performs an asynchronous HTTP PUT request, encoding an update body and decoding the JSON response.
+    /// - Parameters:
+    ///   - path: The relative URL endpoint path for the resource being updated.
+    ///   - query: An optional dictionary of URL query key-value pairs to append to the request string.
+    ///   - headers: An optional dictionary of custom HTTP request headers to attach to the network task.
+    ///   - body: The `Encodable` object containing updated data to be serialized into JSON and sent in the request body.
+    /// - Returns: A fully initialized instance of type `T` representing the updated resource state.
     func put<T: Decodable, Body: Encodable>(
         _ path: String,
         query: [String: String]?,
@@ -118,6 +143,11 @@ struct URLSessionHTTPClient: HTTPClient {
         return try await fetch(for: request)
     }
     
+    /// Performs an asynchronous HTTP DELETE request where no response body is expected.
+    /// - Parameters:
+    ///   - path: The relative URL endpoint path for the resource to be deleted.
+    ///   - query: An optional dictionary of URL query key-value pairs to append to the request string.
+    ///   - headers: An optional dictionary of custom HTTP request headers to attach to the network task.
     func delete(
         _ path: String,
         query: [String: String]?,

@@ -7,9 +7,8 @@ class RoutableViewModel<T: Router>: BaseViewModel {
     init(
         router: T,
         analyticsManager: AnalyticsManager? = nil,
-        toastManager: ToastManaging? = nil
     ) {
         self.router = router
-        super.init(analyticsManager: analyticsManager, toastManager: toastManager)
+        super.init(analyticsManager: analyticsManager)
     }
 }

@@ -9,7 +9,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         allItems.filtered(by: searchText, key: \.name)
     }
 
-    init(router: CatalogRouter, analyticsManager: AnalyticsManager? = nil) {
+    override init(router: CatalogRouter, analyticsManager: AnalyticsManager? = nil) {
         super.init(router: router, analyticsManager: analyticsManager)
         // TODO: remove later
         loadMock()

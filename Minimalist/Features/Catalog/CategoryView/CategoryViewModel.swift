@@ -43,25 +43,31 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
         allCategories?.filtered(by: searchText, key: \.name)
     }
     
+    var scrollAnchorAligment: UnitPoint {
+        guard let categories = displayedCategories else {
+            return .center
+        }
+        
+        return state == .content(categories) ? .top : .center
+    }
+    
     private var selectedCategoryId: String?
     private let categoryService: CategoryProviding
     
     init(
         router: CatalogRouter,
-        categoryService: CategoryProviding = CategoryService()
+        categoryService: CategoryProviding = CategoryService(),
+        analyticsManager: AnalyticsManager? = nil
     ) {
         self.categoryService = categoryService
-        super.init(router: router)
+        super.init(router: router, analyticsManager: analyticsManager)
     }
     
-    init(
+    convenience init(
         router: CatalogRouter,
-        categoryService: CategoryProviding = CategoryService(),
-        analyticsManager: AnalyticsManager? = nil,
-        toastManager: ToastManaging? = nil
+        categoryService: CategoryProviding = CategoryService()
     ) {
-        self.categoryService = categoryService
-        super.init(router: router, analyticsManager: analyticsManager, toastManager: toastManager)
+        self.init(router: router, categoryService: categoryService, analyticsManager: AppConfigurationManager.shared.analyticsManager)
     }
     
     func fetchCategories() async {

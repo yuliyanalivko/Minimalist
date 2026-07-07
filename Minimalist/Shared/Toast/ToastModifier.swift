@@ -9,11 +9,14 @@ struct ToastModifier: ViewModifier {
                 Group {
                     if let toast = manager.current {
                         ToastView(toast: toast)
+                            .id(toast.id)
                             .transition(.move(edge: .top).combined(with: .opacity))
-                        
+                            .onTapGesture {
+                                manager.dismissCurrent()
+                            }
                     }
                 }
-                .animation(.easeInOut(duration: 0.25), value: manager.current != nil)
+                .animation(.easeInOut(duration: manager.animationDurationInSec), value: manager.current?.id)
             }
     }
 }

@@ -3,18 +3,30 @@ import Testing
 @testable import Minimalist
 
 struct HTTPCatalogClientTests {
-    
-    private let json = "[]".data(using: .utf8)!
-    
-    @MainActor
+
+    private func makeClient(
+        handler: @escaping MockURLProtocol.Handler
+    ) -> HTTPCatalogClient {
+        let httpClient = TestHTTPClientFactory.make(handler: handler)
+
+        return HTTPCatalogClient(client: httpClient)
+    }
+
     @Test("Should cal api/v1/categories for categories")
     func getCategories_useCorrectEndpoint() async throws {
-        let httpClient = MockHTTPClient()
-        httpClient.getResult = .success(json)
-        let provider = HTTPCatalogClient(client: httpClient)
-        
-        _ = try await provider.getCategories()
-        
-        #expect(httpClient.lastPath == "api/v1/categories")
+        let json = mockCategories.data(using: .utf8)!
+
+        let client = makeClient { request in
+            #expect(request.url?.path == "/api/v1/categories")
+            #expect(request.httpMethod == "GET")
+
+            return (TestHTTPClientFactory.httpResponse(for: request, statusCode: 200), json)
+        }
+
+        let categories = try await client.getCategories()
+
+        #expect(categories.count == 1)
+        #expect(categories.first?.id == "1")
+        #expect(categories.first?.name == "Sofas")
     }
 }

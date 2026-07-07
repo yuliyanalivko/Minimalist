@@ -1,8 +1,11 @@
 import SwiftUI
 
-struct ToastItem {
+struct ToastItem: Identifiable {
+    let id = UUID()
     let message: String
     let style: ToastStyle
+    let textColor: Color = .AppColor.textPrimary
+    let font: Font = .AppFont.caption
 }
 
 enum ToastStyle {

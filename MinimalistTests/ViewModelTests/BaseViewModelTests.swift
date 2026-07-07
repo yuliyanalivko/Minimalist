@@ -38,13 +38,12 @@ struct BaseViewModelModelTests {
     @Test("Should display message via ToastManager")
     @MainActor
     func showToast_displayMessage() {
-        let toastManager = MockToastManager()
-        let vm = BaseViewModel(analyticsManager: nil, toastManager: toastManager)
+        let vm = BaseViewModel(analyticsManager: nil)
         
         vm.showToast(message: "Something went wrong", style: .error)
         
-        #expect(toastManager.current?.message == "Something went wrong")
-        #expect(toastManager.current?.style == .error)
+        #expect(ToastManager.shared.current?.message == "Something went wrong")
+        #expect(ToastManager.shared.current?.style == .error)
     }
 }
 

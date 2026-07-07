@@ -32,7 +32,7 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     private var _categoryViewModel: CategoryViewModel
     private var _itemListViewModel: ItemListViewModel
 
-    init(router: CatalogRouter, analyticsManager: AnalyticsManager? = nil) {
+    override init(router: CatalogRouter, analyticsManager: AnalyticsManager? = nil) {
         self._categoryViewModel = CategoryViewModel(router: router)
         self._itemListViewModel = ItemListViewModel(router: router)
         
