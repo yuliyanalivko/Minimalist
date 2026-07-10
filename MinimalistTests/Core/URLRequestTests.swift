@@ -2,7 +2,7 @@ import Testing
 import Foundation
 @testable import Minimalist
 
-struct URLRequestExtensionTests {
+struct URLRequestTests {
     
     let testURL = URL(string: "https://example.com")!
 

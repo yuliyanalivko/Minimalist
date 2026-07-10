@@ -2,7 +2,7 @@ import Testing
 import Foundation
 @testable import Minimalist
 
-struct URLSessionNetworkPerformerTests {
+struct NetworkPerformerTests {
     
     private func makeMockSession() -> URLSession {
         let configuration = URLSessionConfiguration.ephemeral
