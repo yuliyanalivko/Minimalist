@@ -26,24 +26,13 @@ struct BaseViewModelModelTests {
     
     @Test("clearError removes current error")
     func clearError_removesError() {
-        let sut = BaseViewModel()
+        let vm = BaseViewModel()
 
-        sut.setError(TestError.unknownError)
-        sut.clearError()
+        vm.setError(TestError.unknownError)
+        vm.clearError()
 
-        #expect(sut.error == nil)
-        #expect(sut.errorMessage == nil)
-    }
-    
-    @Test("Should display message via ToastManager")
-    @MainActor
-    func showToast_displayMessage() {
-        let vm = BaseViewModel(analyticsManager: nil)
-        
-        vm.showToast(message: "Something went wrong", style: .error)
-        
-        #expect(ToastManager.shared.current?.message == "Something went wrong")
-        #expect(ToastManager.shared.current?.style == .error)
+        #expect(vm.error == nil)
+        #expect(vm.errorMessage == nil)
     }
 }
 

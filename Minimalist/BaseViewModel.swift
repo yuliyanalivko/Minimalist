@@ -28,6 +28,7 @@ import SwiftUI
     /// - Parameter error: Error representing the failure state.
     func setError(_ error: Error) {
         self.error = error
+        showToast(message: error.localizedDescription, style: .error)
     }
     
     func clearError() {

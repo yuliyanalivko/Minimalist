@@ -52,30 +52,33 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     private var selectedCategoryId: String?
-    private let categoryService: CategoryProviding
+    private let dataCoordinator: CatalogDataCoordinator
     
     init(
         router: CatalogRouter,
-        categoryService: CategoryProviding = CategoryService(),
+        dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         analyticsManager: AnalyticsManager? = nil
     ) {
-        self.categoryService = categoryService
+        self.dataCoordinator = dataCoordinator
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
     convenience init(
         router: CatalogRouter,
-        categoryService: CategoryProviding = CategoryService()
+        dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator()
     ) {
-        self.init(router: router, categoryService: categoryService, analyticsManager: AppConfigurationManager.shared.analyticsManager)
+        self.init(
+            router: router,
+            dataCoordinator: dataCoordinator,
+            analyticsManager: AppConfigurationManager.shared.analyticsManager
+        )
     }
     
     func fetchCategories() async {
         do {
-            allCategories = try await categoryService.getCategories()
+            allCategories =  try await dataCoordinator.getCategories()
         } catch {
             setError(error)
-            showToast(message: error.localizedDescription, style: .error)
         }
         
         loading = false

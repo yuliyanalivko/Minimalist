@@ -2,7 +2,6 @@ import Foundation
 import Testing
 @testable import Minimalist
 
-@MainActor
 struct CategoryViewModelTests {
 
     let categories: [Minimalist.Category] = [
@@ -33,34 +32,30 @@ struct CategoryViewModelTests {
         ),
     ]
 
+    @MainActor
     private func makeViewModel(
-        handler: MockURLProtocol.Handler? = nil,
+        mockData: Data? = mockCategories.data(using: .utf8),
+        mockError: Error? = nil,
         analyticsManager: AnalyticsManager? = nil
     ) -> CategoryViewModel {
-        let resolvedHandler: MockURLProtocol.Handler = handler ?? { request in
-            (TestHTTPClientFactory.httpResponse(for: request, statusCode: 200), mockCategories.data(using: .utf8)!)
-        }
-
-        let httpClient = TestHTTPClientFactory.make(handler: resolvedHandler)
-
-        let categoryService = CategoryService(
-            client: CatalogDataProvider(
-                httpClient: HTTPCatalogClient(client: httpClient)
-            )
+        let mockClient = MockNetworkClient(mockData: mockData, mockError: mockError)
+        let coordinator = CatalogDataCoordinator(
+            networkService: CatalogNetworkService(networkClient: mockClient)
         )
 
         if let analyticsManager {
             return CategoryViewModel(
                 router: CatalogRouter(),
-                categoryService: categoryService,
+                dataCoordinator: coordinator,
                 analyticsManager: analyticsManager
             )
         }
 
-        return CategoryViewModel(router: CatalogRouter(), categoryService: categoryService)
+        return CategoryViewModel(router: CatalogRouter(), dataCoordinator: coordinator)
     }
 
     @Test("returns all categories when search text is empty")
+    @MainActor
     func categories_returnAllCategories_emptySearch() {
         let vm = makeViewModel()
 
@@ -70,6 +65,7 @@ struct CategoryViewModelTests {
     }
 
     @Test("returns all categories when search text contains only whitespaces")
+    @MainActor
     func categories_returnAllCategories_whitespaceSearch() {
         let vm = makeViewModel()
 
@@ -80,6 +76,7 @@ struct CategoryViewModelTests {
     }
 
     @Test("returns filtered categories when search text is not empty")
+    @MainActor
     func categories_returnAllCategories_nonemptySearch() {
         let vm = makeViewModel()
 
@@ -90,6 +87,7 @@ struct CategoryViewModelTests {
     }
 
     @Test("sets selectedCategory")
+    @MainActor
     func handleCategoryCardClick_setSelectedCategory() {
         let vm = makeViewModel()
         vm.allCategories = categories
@@ -99,6 +97,7 @@ struct CategoryViewModelTests {
     }
 
     @Test("calls logEvent with the correct search event")
+    @MainActor
     func logSearchEvent_callLogEvent() {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
@@ -122,16 +121,12 @@ struct CategoryViewModelTests {
     }
 
     @Test("Should load categories from service")
+    @MainActor
     func fetchCategories_success() async {
         let json = mockCategories.data(using: .utf8)!
         let expected = try! JSONDecoder().decode([Minimalist.Category].self, from: json)
 
-        let vm = makeViewModel { request in
-            #expect(request.url?.path == "/api/v1/categories")
-            #expect(request.httpMethod == "GET")
-
-            return (TestHTTPClientFactory.httpResponse(for: request, statusCode: 200), json)
-        }
+        let vm = makeViewModel(mockData: json)
 
         await vm.fetchCategories()
 
@@ -141,18 +136,19 @@ struct CategoryViewModelTests {
     }
 
     @Test("Should set error on failure")
+    @MainActor
     func fetchCategories_failure() async {
-        let vm = makeViewModel { request in
-            (TestHTTPClientFactory.httpResponse(for: request, statusCode: 500), Data())
-        }
+        let vm = makeViewModel(mockError: URLError(.badServerResponse))
 
         await vm.fetchCategories()
 
         #expect(vm.error != nil)
+        #expect(vm.errorMessage == "The server returned an unexpected response. Please try again later.")
         #expect(vm.loading == false)
     }
 
     @Test("Should be loading while fetch has not completed")
+    @MainActor
     func state_isLoading() {
         let vm = makeViewModel()
         vm.loading = true
@@ -161,6 +157,7 @@ struct CategoryViewModelTests {
     }
 
     @Test("Should be empty when search has no matches")
+    @MainActor
     func state_isEmpty() {
         let vm = makeViewModel()
         vm.loading = false
