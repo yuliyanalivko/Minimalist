@@ -3,10 +3,19 @@ import Testing
 
 @MainActor
 struct CatalogViewModelTests {
+    
+    func makeViewModel(
+        analyticsManager: AnalyticsManager = AnalyticsManager(providers: [])
+    ) -> CatalogViewModel {
+        return CatalogViewModel(
+            router: .init(),
+            analyticsManager: analyticsManager,
+        )
+    }
 
     @Test("sets up shared router instance correctly")
     func init_setsUpSharedRouter() async throws {
-        let vm = CatalogViewModel(router: .init())
+        let vm = makeViewModel()
         
         #expect(vm.categoryViewModel.router === vm.router, "CategoryViewModel should share the main router instance")
         #expect(vm.itemListViewModel.router === vm.router, "ItemListViewModel should share the main router instance")
@@ -14,8 +23,8 @@ struct CatalogViewModelTests {
     
     @Test("categorySearchText updates the CategoryViewModel.categorySearchText")
     func categorySearchText_Passthrough() {
-        let vm = CatalogViewModel(router: .init())
-        
+        let vm = makeViewModel()
+
         vm.categorySearchText = "Sofas"
         
         #expect(vm.categoryViewModel.searchText == "Sofas")
@@ -23,8 +32,8 @@ struct CatalogViewModelTests {
     
     @Test("categorySearchText gets the CategoryViewModel.categorySearchText")
     func categorySearchText_getViewModelSearchText() {
-        let vm = CatalogViewModel(router: .init())
-        
+        let vm = makeViewModel()
+
         vm.categoryViewModel.searchText = "Sofas"
         
         #expect(vm.categorySearchText == "Sofas")
@@ -32,8 +41,8 @@ struct CatalogViewModelTests {
     
     @Test("itemListSearchText gets the CategoryViewModel.categorySearchText")
     func itemListSearchText_Passthrough() {
-        let vm = CatalogViewModel(router: .init())
-        
+        let vm = makeViewModel()
+
         vm.itemListSearchText = "Sofas"
         
         #expect(vm.itemListViewModel.searchText == "Sofas")
@@ -41,8 +50,8 @@ struct CatalogViewModelTests {
     
     @Test("itemListSearchText updates the ItemListViewModel state")
     func itemListSearchText_getViewModelSearchText() {
-        let vm = CatalogViewModel(router: .init())
-        
+        let vm = makeViewModel()
+
         vm.itemListViewModel.searchText = "Sofas"
         
         #expect(vm.itemListSearchText == "Sofas")
@@ -53,7 +62,7 @@ struct CatalogViewModelTests {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = CatalogViewModel(router: .init(), analyticsManager: analyticsManager)
+        let vm = makeViewModel(analyticsManager: analyticsManager)
         
         vm.trackCatalogScreen()
         

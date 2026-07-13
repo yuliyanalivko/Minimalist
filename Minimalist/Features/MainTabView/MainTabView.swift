@@ -19,6 +19,7 @@ struct MainTabView: View {
             .ignoresSafeArea(.keyboard)
             
         }
+        .toast()
         .tint(.AppColor.primary)
         .onReceive(viewModel.keyboardPublisher) {
             viewModel.isKeyboardVisible = $0

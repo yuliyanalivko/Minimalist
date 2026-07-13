@@ -26,13 +26,13 @@ struct BaseViewModelModelTests {
     
     @Test("clearError removes current error")
     func clearError_removesError() {
-        let sut = BaseViewModel()
+        let vm = BaseViewModel()
 
-        sut.setError(TestError.unknownError)
-        sut.clearError()
+        vm.setError(TestError.unknownError)
+        vm.clearError()
 
-        #expect(sut.error == nil)
-        #expect(sut.errorMessage == nil)
+        #expect(vm.error == nil)
+        #expect(vm.errorMessage == nil)
     }
 }
 

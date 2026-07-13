@@ -30,7 +30,7 @@ final class AppConfigurationManager {
     init(
         firebaseConfigurator: SDKConfigurator = FirebaseConfigurator(),
         remoteConfigManager: RemoteConfigManaging = RemoteConfigManager(),
-        notificationManager: NotificationManaging = NotificationManager.shared
+        notificationManager: NotificationManaging = NotificationManager.shared,
     ) {
         self.firebaseConfigurator = firebaseConfigurator
         self.remoteConfigManager = remoteConfigManager

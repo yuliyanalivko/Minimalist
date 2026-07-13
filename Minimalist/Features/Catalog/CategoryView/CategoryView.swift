@@ -4,10 +4,15 @@ struct CategoryView: View {
     let viewModel: CategoryViewModel
     
     var body: some View {
-        if !viewModel.displayedCategories.isEmpty {
-            ScrollView {
+        
+        ScrollView {
+            switch viewModel.state {
+            case .loading:
+                ProgressView()
+                
+            case .content(let categories):
                 LazyVGrid(columns: viewModel.columns, spacing: 16) {
-                    ForEach(viewModel.displayedCategories, id: \.id) { item in
+                    ForEach(categories, id: \.id) { item in
                         CategoryCardView(title: item.name, icon: item.iconName ?? nil)
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -17,9 +22,22 @@ struct CategoryView: View {
                 }
                 .defaultHorizontalScreenPadding()
                 .verticalScreenSpacing()
+                
+            case .emptySearch:
+                EmptySearchResultView()
+                    .tabBarAwareCentering()
+                
+            case .empty:
+                Text("No Data")
+                    .tabBarAwareCentering()
             }
-        } else {
-            EmptySearchResultView()
+        }
+        .defaultScrollAnchor(viewModel.scrollAnchorAligment, for: .alignment)
+        .task {
+            await viewModel.fetchCategories()
+        }
+        .refreshable {
+            await viewModel.fetchCategories()
         }
     }
 }

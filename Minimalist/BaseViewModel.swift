@@ -2,7 +2,7 @@ import SwiftUI
 
 @Observable class BaseViewModel {
     var isLoading: Bool = false
-    
+        
     private(set) var error: Error?
     
     private let analyticsManager: AnalyticsManager?
@@ -11,8 +11,10 @@ import SwiftUI
         error?.localizedDescription
     }
     
-    init(analyticsManager: AnalyticsManager? = AppConfigurationManager.shared.analyticsManager) {
-        self.analyticsManager = analyticsManager
+    init(
+        analyticsManager: AnalyticsManager? = nil,
+    ) {
+        self.analyticsManager = analyticsManager ?? AppConfigurationManager.shared.analyticsManager
     }
     
     /// Sets the current error state for the view model.
@@ -26,6 +28,7 @@ import SwiftUI
     /// - Parameter error: Error representing the failure state.
     func setError(_ error: Error) {
         self.error = error
+        showToast(message: error.localizedDescription, style: .error)
     }
     
     func clearError() {
@@ -34,5 +37,9 @@ import SwiftUI
     
     func logEvent(_ event: AnalyticsEvent) {
         analyticsManager?.logEvent(event)
+    }
+    
+    func showToast(message: String, style: ToastStyle = .info) {
+        ToastManager.shared.show(message: message, style: style)
     }
 }
