@@ -13,10 +13,6 @@ struct ItemImageCarouselView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .frame(height: viewModel.imageHeight)
-        .task {
-            viewModel.preloadImages()
-        }
-
     }
 
     @ViewBuilder

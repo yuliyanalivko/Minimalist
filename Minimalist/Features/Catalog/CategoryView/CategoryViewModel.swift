@@ -2,25 +2,23 @@ import SwiftUI
 
 @Observable
 class CategoryViewModel: RoutableViewModel<CatalogRouter> {
-    
-    enum ContentState: Equatable {
-        case loading
-        case content([Category])
-        case emptySearch
-        case empty
-    }
-    
-    var state: ContentState {
-        if loading { return .loading }
+    var state: ContentState<[Category]> {
+        if isLoading { return .loading }
+        
+        let searchText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard searchText.isEmpty else {
+            return .emptySearch
+        }
         
         guard let categories = displayedCategories else {
             return .empty
         }
         
         if categories.isEmpty {
-            return searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            ? .emptySearch
-            : .empty
+            return searchText.isEmpty
+            ? .empty
+            : .emptySearch
         }
         
         return .content(categories)
@@ -28,7 +26,6 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     
     var searchText: String = ""
     var allCategories: [Category]?
-    var loading: Bool = true
     
     let columns = [
         GridItem(.flexible(),spacing: 16),
@@ -41,14 +38,6 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     
     var displayedCategories: [Category]? {
         allCategories?.filtered(by: searchText, key: \.name)
-    }
-    
-    var scrollAnchorAligment: UnitPoint {
-        guard let categories = displayedCategories else {
-            return .center
-        }
-        
-        return state == .content(categories) ? .top : .center
     }
     
     private var selectedCategoryId: String?
@@ -75,18 +64,20 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     func fetchCategories() async {
+        isLoading = true
+        
         do {
             allCategories =  try await dataCoordinator.getCategories()
         } catch {
             setError(error)
         }
         
-        loading = false
+        isLoading = false
     }
     
     func handleCategoryCardClick(category: Category) {
         selectCategory(category)
-        router.navigate(to: CatalogRoute.itemList(title: category.name))
+        router.navigate(to: CatalogRoute.itemList(title: category.name, id: category.id))
     }
     
     func logSearchEvent() {
