@@ -2,89 +2,51 @@ import SwiftUI
 
 @Observable
 class ItemDetailsViewModel: BaseViewModel {
-    var itemDetails: ItemDetails?
+    var itemDetails: ItemDetails
     
     var itemImageCarouselViewModel: ItemImageCarouselViewModel
     var itemReviewsViewModel: ItemReviewsViewModel
     
-    var state: ContentState<ItemDetails> {
-        if isLoading { return .loading }
-        
-        guard let itemDetails else {
-            return .empty
-        }
-        
-        return .content(itemDetails)
+    convenience init(id: String) {
+        self.init(id: id, analyticsManager: AppConfigurationManager.shared.analyticsManager)
     }
-    
-    var overlayAligment: Alignment {
-        guard let itemDetails else {
-            return .center
-        }
-        
-        return state == .content(itemDetails) ? .bottom : .center
-    }
-    
-    private let id: String
-    private let dataCoordinator: CatalogDataCoordinator
-    
-    convenience init(id: String, dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator()) {
-        self.init(
-            id: id,
-            dataCoordinator: dataCoordinator,
-            analyticsManager: AppConfigurationManager.shared.analyticsManager
-        )
-    }
-    
+
     init(
         id: String,
-        dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         analyticsManager: AnalyticsManager?
     ) {
-        self.id = id
-        self.dataCoordinator = dataCoordinator
+        // TODO: remove later
+        let itemDetails = Self.loadMock()
+        self.itemDetails = itemDetails
         
-        itemImageCarouselViewModel = ItemImageCarouselViewModel()
-        itemReviewsViewModel = ItemReviewsViewModel()
-        
+        itemImageCarouselViewModel = ItemImageCarouselViewModel(imageUrls: itemDetails.thumbnails)
+        itemReviewsViewModel = ItemReviewsViewModel(reviews: itemDetails.reviews ?? [])
+
         super.init(analyticsManager: analyticsManager)
     }
     
-    func fetchItemDetails() async {
-        isLoading = true
-        
+    // TODO: remove later
+    static func loadMock() -> ItemDetails {
+        let data = itemDetailsMock.data(using: .utf8)!
         do {
-            let items = try await dataCoordinator.getItemDetails(id: id)
-            itemDetails = items
-            
-            itemImageCarouselViewModel.configure(imageUrls: items.thumbnails)
-            itemReviewsViewModel.configure(reviews: items.reviews ?? [])
+            return try JSONDecoder().decode(ItemDetails.self, from: data)
         } catch {
-            setError(error)
+            print("Decode error:", error)
+            fatalError("\(error)")
         }
-        
-        isLoading = false
     }
     
     func toggleFavorite() {
-        guard var item = itemDetails else { return }
-
-        item.isFavorited.toggle()
-        itemDetails = item
+        itemDetails.isFavorited.toggle()
         logFavoriteEvent()
     }
     
     func toggleCart() {
-        guard var item = itemDetails else { return }
-
-        item.isAddedToCart.toggle()
-        itemDetails = item
+        itemDetails.isAddedToCart.toggle()
         logCartEvent()
     }
     
     private func logFavoriteEvent() {
-        guard let itemDetails else { return }
-        
         let eventName: AnalyticsEventName = itemDetails.isFavorited
         ? AnalyticsEventName.addToWishlist
         : AnalyticsEventName.removeFromWishlist
@@ -96,8 +58,6 @@ class ItemDetailsViewModel: BaseViewModel {
     }
     
     private func logCartEvent() {
-        guard let itemDetails else { return }
-
         let eventName: AnalyticsEventName = itemDetails.isAddedToCart
         ? AnalyticsEventName.addToCart
         : AnalyticsEventName.removeFromCart

@@ -4,38 +4,35 @@ struct CategoryView: View {
     let viewModel: CategoryViewModel
     
     var body: some View {
+        
         ScrollView {
-            LazyVGrid(columns: viewModel.columns, spacing: 16) {
-                ForEach(viewModel.displayedCategories ?? [], id: \.id) { item in
-                    CategoryCardView(title: item.name, icon: item.iconName ?? nil)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            viewModel.handleCategoryCardClick(category: item)
-                        }
+            switch viewModel.state {
+            case .loading:
+                ProgressView()
+                
+            case .content(let categories):
+                LazyVGrid(columns: viewModel.columns, spacing: 16) {
+                    ForEach(categories, id: \.id) { item in
+                        CategoryCardView(title: item.name, icon: item.iconName ?? nil)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                viewModel.handleCategoryCardClick(category: item)
+                            }
+                    }
                 }
+                .defaultHorizontalScreenPadding()
+                .verticalScreenSpacing()
+                
+            case .emptySearch:
+                EmptySearchResultView()
+                    .tabBarAwareCentering()
+                
+            case .empty:
+                Text("No Data")
+                    .tabBarAwareCentering()
             }
-            .defaultHorizontalScreenPadding()
-            .verticalScreenSpacing()
         }
-        .overlay(
-            Group {
-                switch viewModel.state {
-                case .emptySearch:
-                    ContentUnavailableView.search
-                    
-                case .loading:
-                    ProgressView()
-                    
-                case .empty:
-                    NoDataView()
-                    
-                default:
-                    EmptyView()
-                }
-            }
-                .tabBarAwareCentering()
-                .fixedSize()
-        )
+        .defaultScrollAnchor(viewModel.scrollAnchorAligment, for: .alignment)
         .task {
             await viewModel.fetchCategories()
         }

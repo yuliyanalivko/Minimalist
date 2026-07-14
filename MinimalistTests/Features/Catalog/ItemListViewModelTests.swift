@@ -1,5 +1,4 @@
 import Testing
-import Foundation
 @testable import Minimalist
 
 @MainActor
@@ -40,34 +39,13 @@ struct ItemListViewModelTests {
         )
     ]
     
-    private func makeViewModel(
-        mockData: Data? = mockCategories.data(using: .utf8),
-        mockError: Error? = nil,
-        analyticsManager: AnalyticsManager? = nil
-    ) -> ItemListViewModel {
-        let mockClient = MockNetworkClient(mockData: mockData, mockError: mockError)
-        let coordinator = CatalogDataCoordinator(
-            networkService: CatalogNetworkService(networkClient: mockClient)
-        )
-
-        if let analyticsManager {
-            return ItemListViewModel(
-                router: CatalogRouter(),
-                dataCoordinator: coordinator,
-                analyticsManager: analyticsManager
-            )
-        }
-
-        return ItemListViewModel(router: CatalogRouter(), dataCoordinator: coordinator)
-    }
-    
     @Test("set isFavorite to true and log event")
     func toggleFavorite_setToTrue() {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = makeViewModel(analyticsManager: analyticsManager)
-
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
+        
         vm.allItems = items
         vm.toggleFavorite(vm.allItems[0])
         
@@ -90,7 +68,7 @@ struct ItemListViewModelTests {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = makeViewModel(analyticsManager: analyticsManager)
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
         vm.allItems = items
         vm.allItems[0].isFavorited = true
         vm.toggleFavorite(vm.allItems[0])
@@ -111,8 +89,8 @@ struct ItemListViewModelTests {
     
     @Test("returns allItems when search text is empty")
     func items_returnAllItems_emptySearch() {
-        let vm = makeViewModel()
-
+        let vm = ItemListViewModel(router: CatalogRouter())
+        
         vm.allItems = items
         vm.searchText = ""
         
@@ -121,8 +99,8 @@ struct ItemListViewModelTests {
     
     @Test("returns allItems when search text contains only whitespaces")
     func items_returnAllItems_whitespacesSearch() {
-        let vm = makeViewModel()
-
+        let vm = ItemListViewModel(router: CatalogRouter())
+        
         vm.allItems = items
         vm.searchText = "   "
         
@@ -131,8 +109,8 @@ struct ItemListViewModelTests {
     
     @Test("returns filtered items when search text is not empty")
     func items_returnFilteredItems_nonemptySearch() {
-        let vm = makeViewModel()
-
+        let vm = ItemListViewModel(router: CatalogRouter())
+        
         vm.allItems = items
         vm.searchText = "kast"
         
@@ -141,8 +119,8 @@ struct ItemListViewModelTests {
     
     @Test("returns filtered items ignoring search text case")
     func items_returnFilteredItems_caseSearch() {
-        let vm = makeViewModel()
-
+        let vm = ItemListViewModel(router: CatalogRouter())
+        
         vm.allItems = items
         vm.searchText = "KAST"
         
@@ -154,8 +132,8 @@ struct ItemListViewModelTests {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = makeViewModel(analyticsManager: analyticsManager)
-
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
+        
         vm.searchText = " tab "
         
         vm.logSearchEvent(categoryName: "Tables")
@@ -177,7 +155,7 @@ struct ItemListViewModelTests {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = makeViewModel(analyticsManager: analyticsManager)
+        let vm = ItemListViewModel(router: CatalogRouter(), analyticsManager: analyticsManager)
 
         vm.logViewItemListEvent(id: "1", name: "Tables")
         
@@ -191,60 +169,5 @@ struct ItemListViewModelTests {
         #expect(name == AnalyticsEventName.viewItemList.rawValue)
         #expect(parameters[AnalyticsParamName.listId.rawValue] as? String == "1")
         #expect(parameters[AnalyticsParamName.listName.rawValue] as? String == "Tables")
-    }
-    
-    @Test("Should load items from service")
-    @MainActor
-    func fetchCategories_setItems_onSuccess() async {
-        let json = mockItems.data(using: .utf8)!
-        let expected = try! JSONDecoder().decode([Item].self, from: json)
-        let vm = makeViewModel(mockData: json)
-
-        await vm.fetchItems(id: "1")
-
-        #expect(vm.allItems == expected)
-        #expect(vm.isLoading == false)
-        #expect(vm.state == ContentState.content(expected))
-    }
-
-    @Test("Should set error on failure")
-    @MainActor
-    func fetchItems_setError_onFailure() async {
-        let vm = makeViewModel(mockError: URLError(.badServerResponse))
-
-        await vm.fetchItems(id: "1")
-
-        #expect(vm.error != nil)
-        #expect(vm.errorMessage == "The server returned an unexpected response. Please try again later.")
-        #expect(vm.isLoading == false)
-    }
-
-    @Test("Should be loading while fetch has not completed")
-    @MainActor
-    func state_loading_whenIsLoadingIsTrue() {
-        let vm = ItemListViewModel(router: CatalogRouter())
-        vm.isLoading = true
-
-        #expect(vm.state == .loading)
-    }
-
-    @Test("Should be emptySearch when search has no matches")
-    @MainActor
-    func state_emptySearch_whenSearchHasNoMatches() {
-        let vm = ItemListViewModel(router: CatalogRouter())
-        vm.isLoading = false
-        vm.allItems = items
-        vm.searchText = "xyz"
-
-        #expect(vm.state == .emptySearch)
-    }
-    
-    @Test("Should be empty when allItems is empty")
-    @MainActor
-    func state_empty_whenAllItemsIsEmpty() {
-        let vm = ItemListViewModel(router: CatalogRouter())
-        vm.isLoading = false
-
-        #expect(vm.state == .empty)
     }
 }

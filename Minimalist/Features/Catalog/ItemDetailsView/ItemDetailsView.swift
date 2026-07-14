@@ -4,18 +4,22 @@ struct ItemDetailsView: View {
     
     @State private var viewModel: ItemDetailsViewModel
     
+    private var item: ItemDetails {
+        viewModel.itemDetails
+    }
+    
     init(id: String) {
         _viewModel = State(initialValue: ItemDetailsViewModel(id: id))
     }
     
     var body: some View {
-        ScrollView {
-            LazyVStack {
-            if case .content(let item) = viewModel.state {
+        ZStack {
+            ScrollView {
+                LazyVStack {
                     ItemImageCarouselView(viewModel: viewModel.itemImageCarouselViewModel)
                     
                     Group {
-                        itemDescription(item: item)
+                        itemDescription
                             .padding(.top, 25)
                         
                         Divider()
@@ -24,51 +28,32 @@ struct ItemDetailsView: View {
                     .defaultHorizontalScreenPadding()
                     .padding(.horizontal, 10)
                     
-                    if let reviews = item.reviews, !reviews.isEmpty {
+                    if item.reviews != nil {
                         ItemReviewsView(viewModel: viewModel.itemReviewsViewModel)
                     }
                 }
             }
             .padding(.bottom, 70)
-        }
-        .overlay(alignment: viewModel.overlayAligment) {
-            Group {
-                switch viewModel.state {
-                case .loading:
-                    ProgressView()
-                    
-                case .empty:
-                    NoDataView()
-                        .fixedSize()
-                    
-                case .content(let item):
-                    Button {
-                        viewModel.toggleCart()
-                    } label: {
-                        Text(item.isAddedToCart ? "Remove from the cart" : "Buy")
-                            .frame(maxWidth: .infinity)
-                            .textCase(.uppercase)
-                    }
-                    .buttonStyle(PrimaryButtonStyle(backgroundColor: item.isAddedToCart ? .AppColor.textSecondary : nil))
-                    .defaultHorizontalScreenPadding()
-                    .padding(.bottom, 10)
-                    
-                default:
-                    EmptyView()
+            
+            VStack {
+                Spacer()
+                
+                Button {
+                    viewModel.toggleCart()
+                } label: {
+                    Text(viewModel.itemDetails.isAddedToCart ? "Remove from the cart" : "Buy")
+                        .frame(maxWidth: .infinity)
+                        .textCase(.uppercase)
                 }
+                .buttonStyle(PrimaryButtonStyle(backgroundColor: viewModel.itemDetails.isAddedToCart ? .AppColor.textSecondary : nil))
+                .defaultHorizontalScreenPadding()
+                .padding(.bottom, 90)
             }
-            .tabBarAwareCentering()
         }
         .verticalScreenSpacing()
-        .task {
-            await viewModel.fetchItemDetails()
-        }
-        .refreshable {
-            await viewModel.fetchItemDetails()
-        }
     }
     
-    private func itemDescription(item: ItemDetails) -> some View {
+    private var itemDescription: some View {
         VStack(alignment: .leading) {
             HStack {
                 Text(item.name)

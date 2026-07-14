@@ -28,7 +28,6 @@ struct HomeView: View {
             .buttonStyle(PrimaryButtonStyle())
             .opacity(showStartButton ? 1 : 0)
             .disabled(!showStartButton)
-            .animation(.easeInOut(duration: 0.3), value: showStartButton)
                         
             Spacer()
                 .frame(minHeight: 40, idealHeight: 130, maxHeight: 130)

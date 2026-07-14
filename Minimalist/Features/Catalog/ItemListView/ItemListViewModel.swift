@@ -8,53 +8,36 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     var displayedItems: [Item] {
         allItems.filtered(by: searchText, key: \.name)
     }
-    
-    var state: ContentState<[Item]> {
-        if isLoading { return .loading }
-        
-        if displayedItems.isEmpty {
-            return searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            ? .empty
-            : .emptySearch
-        }
-        
-        return .content(displayedItems)
-    }
-    
-    private let dataCoordinator: CatalogDataCoordinator
-    private var id: String?
-    
-    init(
-        router: CatalogRouter,
-        dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
-        analyticsManager: AnalyticsManager? = nil
-    ) {
-        self.dataCoordinator = dataCoordinator
-        super.init(router: router, analyticsManager: analyticsManager)
-    }
-    
-    func fetchItems(id: String) async {
-        isLoading = true
 
-        if self.id != id {
-            self.id = id
-            allItems = []
+    override init(router: CatalogRouter, analyticsManager: AnalyticsManager? = nil) {
+        super.init(router: router, analyticsManager: analyticsManager)
+        // TODO: remove later
+        loadMock()
+    }
+    
+    // TODO: remove later
+    func loadMock() {
+        let data = itemsMock.data(using: .utf8)!
+        allItems = try! JSONDecoder().decode([Item].self, from: data)
+        allItems = allItems.map { item in
+            guard let thumbnailUrl = item.thumbnailUrl,
+                  let url = URL(string: thumbnailUrl) else {
+                return item
+            }
+            
+            var updatedItem = item
+                         
+            updatedItem.thumbnailUrl = thumbnailUrl
+            updatedItem.thumbnailUrl = url.resized(to: 500).absoluteString
+            
+            return updatedItem
         }
-        
-        do {
-            let items = try await dataCoordinator.getItems(categoryId: id)
-            allItems = mapUrls(of: items)
-        } catch {
-            setError(error)
-        }
-        
-        isLoading = false
     }
     
     func toggleFavorite(_ item: Item) {
         if let index = allItems.firstIndex(where: { $0.id == item.id }) {
             allItems[index].isFavorited.toggle()
-            
+
             logToggleFavoriteEvent(item: allItems[index])
         }
         
@@ -68,7 +51,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         let searchTerm = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !searchTerm.isEmpty else { return }
-        
+
         logEvent(AnalyticsEvent(
             name: AnalyticsEventName.applySearch,
             parameters: [AnalyticsParamName.searchTerm: searchTerm, AnalyticsParamName.categoryName: categoryName]
@@ -81,7 +64,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             parameters: [AnalyticsParamName.listId: id, AnalyticsParamName.listName: name]
         ))
     }
-    
+
     private func logToggleFavoriteEvent(item: Item) {
         let eventName: AnalyticsEventName = item.isFavorited
         ? AnalyticsEventName.addToWishlist
@@ -91,21 +74,5 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             name: eventName,
             parameters: [.itemId: item.id, .itemName: item.name]
         ))
-    }
-    
-    private func mapUrls(of items: [Item]) -> [Item]{
-        items.map { item in
-            guard let thumbnailUrl = item.thumbnailUrl,
-                  let url = URL(string: thumbnailUrl) else {
-                return item
-            }
-            
-            var updatedItem = item
-            
-            updatedItem.thumbnailUrl = thumbnailUrl
-            updatedItem.thumbnailUrl = url.resized(to: 500).absoluteString
-            
-            return updatedItem
-        }
     }
 }

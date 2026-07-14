@@ -131,8 +131,8 @@ struct CategoryViewModelTests {
         await vm.fetchCategories()
 
         #expect(vm.allCategories == expected)
-        #expect(vm.isLoading == false)
-        #expect(vm.state == ContentState.content(expected))
+        #expect(vm.loading == false)
+        #expect(vm.state == CategoryViewModel.ContentState.content(expected))
     }
 
     @Test("Should set error on failure")
@@ -144,36 +144,26 @@ struct CategoryViewModelTests {
 
         #expect(vm.error != nil)
         #expect(vm.errorMessage == "The server returned an unexpected response. Please try again later.")
-        #expect(vm.isLoading == false)
+        #expect(vm.loading == false)
     }
 
     @Test("Should be loading while fetch has not completed")
     @MainActor
-    func state_loading_fetchHasNotCompleted() {
+    func state_isLoading() {
         let vm = makeViewModel()
-        vm.isLoading = true
+        vm.loading = true
 
         #expect(vm.state == .loading)
     }
 
-    @Test("Should be emptySearch when search has no matches")
+    @Test("Should be empty when search has no matches")
     @MainActor
-    func state_emptySearch_searchHasNoMatches() {
+    func state_isEmpty() {
         let vm = makeViewModel()
-        vm.isLoading = false
+        vm.loading = false
         vm.allCategories = categories
         vm.searchText = "xyz"
 
-        #expect(vm.state == .emptySearch)
-    }
-    
-    @Test("Should be emptySearch when searchText is not empty and categories are not fetched")
-    @MainActor
-    func state_emptySearch_searchIsNotEmptyAndCategoriesIsNil() {
-        let vm = makeViewModel()
-        vm.isLoading = false
-        vm.searchText = "xyz"
-
-        #expect(vm.state == .emptySearch)
+        #expect(vm.state == .empty)
     }
 }
