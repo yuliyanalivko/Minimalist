@@ -3,13 +3,13 @@ import SwiftUI
 @Observable
 class ItemReviewsViewModel: BaseViewModel {
     
-    let reviews: [Review]
-    
     var selectedIndex: Int = 0
     var isFullViewOpened: Bool = false
     var fullViewContentHeight: CGFloat = 200
     
-    init(reviews: [Review]) {
+    private(set) var reviews: [Review] = []
+    
+    init(reviews: [Review] = []) {
         self.reviews = reviews
     }
     
@@ -43,5 +43,11 @@ class ItemReviewsViewModel: BaseViewModel {
     
     func navigateForward() {
         selectedIndex = min(selectedIndex + 1, reviews.count - 1)
+    }
+    
+    func configure(reviews: [Review]) {
+        self.reviews = reviews
+        isFullViewOpened = false
+        selectedIndex = 0
     }
 }

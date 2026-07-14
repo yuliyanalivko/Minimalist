@@ -3,9 +3,10 @@ import SwiftUI
 @Observable
 class ItemImageCarouselViewModel: BaseViewModel {
     
-    let imageUrls: [String]
     var selectedIndex: Int = 0
     
+    private(set) var imageUrls: [String] = []
+
     var imageCount: Int {
         imageUrls.count
     }
@@ -18,11 +19,17 @@ class ItemImageCarouselViewModel: BaseViewModel {
     private var imagePrefetcher: ImagePrefetching
     
     init(
-        imageUrls: [String],
+        imageUrls: [String] = [],
         imagePrefetcher: ImagePrefetching = Prefetcher(),
     ) {
         self.imageUrls = imageUrls
         self.imagePrefetcher = imagePrefetcher
+    }
+    
+    func configure(imageUrls: [String]) {
+        self.imageUrls = imageUrls
+        selectedIndex = 0
+        preloadImages()
     }
     
     func preloadImages() {
