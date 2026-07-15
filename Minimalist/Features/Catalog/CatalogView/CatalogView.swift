@@ -24,8 +24,8 @@ struct CatalogView: View {
                 .navigationTitle(CatalogRoute.category.title)
                 .searchableWithDebounce(text: $viewModel.categorySearchText, action: viewModel.logCategorySearchEvent)
             
-        case .itemList:
-            ItemListView(viewModel: viewModel.itemListViewModel)
+        case .itemList(_, let id):
+            ItemListView(viewModel: viewModel.itemListViewModel, id: id)
                 .navigationTitle(route.title)
                 .searchableWithDebounce(text: $viewModel.itemListSearchText, action: viewModel.logItemListSearchEvent)
                 .onAppear {
