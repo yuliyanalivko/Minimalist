@@ -2,6 +2,7 @@ import SwiftUI
 
 @Observable
 class ItemListViewModel: RoutableViewModel<CatalogRouter> {
+    let id: String
     var allItems: [Item] = []
     var searchText: String = ""
     
@@ -22,23 +23,23 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     private let dataCoordinator: CatalogDataCoordinator
-    private var id: String?
     
     init(
+        id: String,
         router: CatalogRouter,
         dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         analyticsManager: AnalyticsManager? = nil
     ) {
+        self.id = id
         self.dataCoordinator = dataCoordinator
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
-    func fetchItems(id: String) async {
+    func fetchItems() async {
         isLoading = true
-
-        if self.id != id {
-            self.id = id
-            allItems = []
+        
+        defer {
+            isLoading = false
         }
         
         do {
@@ -47,17 +48,25 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         } catch {
             setError(error)
         }
-        
-        isLoading = false
     }
     
-    func toggleFavorite(_ item: Item) {
+    func toggleFavorite(_ item: Item) async {
         if let index = allItems.firstIndex(where: { $0.id == item.id }) {
-            allItems[index].isFavorited.toggle()
-            
-            logToggleFavoriteEvent(item: allItems[index])
+            do {
+                allItems[index].isFavorited.toggle()
+                
+                let toggleFavorite = allItems[index].isFavorited
+                ? dataCoordinator.addToFavorites
+                : dataCoordinator.removeFromFavorites
+                
+                try await toggleFavorite(item.id)
+                
+                logToggleFavoriteEvent(item: allItems[index])
+            } catch {
+                allItems[index].isFavorited.toggle()
+                setError(error)
+            }
         }
-        
     }
     
     func handleItemClick(item: Item) {

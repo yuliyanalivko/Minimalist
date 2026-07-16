@@ -3,7 +3,7 @@ import Foundation
 @testable import Minimalist
 
 struct ItemDetailsViewModelTests {
-    
+
     let item: ItemDetails =
         ItemDetails(
             id: "1",
@@ -23,15 +23,19 @@ struct ItemDetailsViewModelTests {
             thumbnails: ["https://example.com/id/1041/5184/2916"],
             reviews: []
         )
-    
+
     private func makeViewModel(
         mockData: Data? = mockItemDetails.data(using: .utf8),
         mockError: Error? = nil,
+        favoritesMock: MockNetworkClient = MockNetworkClient(mockData: Data()),
+        cartMock: MockNetworkClient = MockNetworkClient(mockData: Data()),
         analyticsManager: AnalyticsManager? = nil
     ) -> ItemDetailsViewModel {
-        let mockClient = MockNetworkClient(mockData: mockData, mockError: mockError)
+        let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
         let coordinator = CatalogDataCoordinator(
-            networkService: CatalogNetworkService(networkClient: mockClient)
+            networkService: CatalogNetworkService(networkClient: catalogMock),
+            favoritesNetworkService: FavoritesNetworkService(networkClient: favoritesMock),
+            cartNetworkService: CartNetworkService(networkClient: cartMock)
         )
 
         if let analyticsManager {
@@ -44,105 +48,111 @@ struct ItemDetailsViewModelTests {
 
         return ItemDetailsViewModel(id: "1", dataCoordinator: coordinator)
     }
-    
+
     @Test("Should set isFavorite to true")
-    func toggleFavorite_setToTrue(){
+    @MainActor
+    func toggleFavorite_setToTrue() async {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = ItemDetailsViewModel(id: "1", analyticsManager: analyticsManager)
+        let vm = makeViewModel(analyticsManager: analyticsManager)
         vm.itemDetails = item
-        
-        vm.toggleFavorite()
-        
-        #expect(vm.itemDetails!.isFavorited)
-        
+
+        await vm.toggleFavorite()
+
+        #expect(vm.itemDetails?.isFavorited == true)
+
         guard let name = consumer.loggedEvent?.name,
               let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
-            
+
             return
         }
-        
+
         #expect(name == AnalyticsEventName.addToWishlist.rawValue)
         #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == item.id)
         #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == item.name)
     }
-    
+
     @Test("Should set isFavorite to false")
-    func toggleFavorite_setToFalse(){
+    @MainActor
+    func toggleFavorite_setToFalse() async {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = ItemDetailsViewModel(id: "1", analyticsManager: analyticsManager)
-        vm.itemDetails = item
-        vm.itemDetails!.isFavorited = true
-        
-        vm.toggleFavorite()
-        
-        #expect(!vm.itemDetails!.isFavorited)
-        
+        let vm = makeViewModel(analyticsManager: analyticsManager)
+        var favoritedItem = item
+        favoritedItem.isFavorited = true
+        vm.itemDetails = favoritedItem
+
+        await vm.toggleFavorite()
+
+        #expect(vm.itemDetails?.isFavorited == false)
+
         guard let name = consumer.loggedEvent?.name,
               let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
-            
+
             return
         }
-        
+
         #expect(name == AnalyticsEventName.removeFromWishlist.rawValue)
         #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == item.id)
         #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == item.name)
     }
-    
+
     @Test("Should set isAddedToCart to true")
-    func toggleCart_setToTrue(){
+    @MainActor
+    func toggleCart_setToTrue() async {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = ItemDetailsViewModel(id: "1", analyticsManager: analyticsManager)
+        let vm = makeViewModel(analyticsManager: analyticsManager)
         vm.itemDetails = item
-        
-        vm.toggleCart()
-        
-        #expect(vm.itemDetails!.isAddedToCart)
-        
+
+        await vm.toggleCart()
+
+        #expect(vm.itemDetails?.isAddedToCart == true)
+
         guard let name = consumer.loggedEvent?.name,
               let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
-            
+
             return
         }
-        
+
         #expect(name == AnalyticsEventName.addToCart.rawValue)
         #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == item.id)
         #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == item.name)
     }
-    
+
     @Test("Should set isAddedToCart to false")
-    func toggleCart_setToFalse(){
+    @MainActor
+    func toggleCart_setToFalse() async {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
-        let vm = ItemDetailsViewModel(id: "1", analyticsManager: analyticsManager)
-        vm.itemDetails = item
-        vm.itemDetails!.isAddedToCart = true
-        
-        vm.toggleCart()
-        
-        #expect(!vm.itemDetails!.isAddedToCart)
-        
+        let vm = makeViewModel(analyticsManager: analyticsManager)
+        var cartItem = item
+        cartItem.isAddedToCart = true
+        vm.itemDetails = cartItem
+
+        await vm.toggleCart()
+
+        #expect(vm.itemDetails?.isAddedToCart == false)
+
         guard let name = consumer.loggedEvent?.name,
               let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
-            
+
             return
         }
-        
+
         #expect(name == AnalyticsEventName.removeFromCart.rawValue)
         #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == item.id)
         #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == item.name)
     }
-    
+
     @Test("Should load item details from service")
     @MainActor
     func fetchItemDetails_setItemDetails_onSuccess() async {
@@ -151,7 +161,7 @@ struct ItemDetailsViewModelTests {
         let vm = makeViewModel(mockData: json)
 
         await vm.fetchItemDetails()
-        
+
         #expect(vm.itemDetails == expected)
         #expect(vm.isLoading == false)
         #expect(vm.state == ContentState.content(expected))

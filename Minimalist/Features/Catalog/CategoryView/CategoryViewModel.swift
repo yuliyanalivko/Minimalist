@@ -66,13 +66,15 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
     func fetchCategories() async {
         isLoading = true
         
+        defer {
+            isLoading = false
+        }
+        
         do {
             allCategories =  try await dataCoordinator.getCategories()
         } catch {
             setError(error)
         }
-        
-        isLoading = false
     }
     
     func handleCategoryCardClick(category: Category) {

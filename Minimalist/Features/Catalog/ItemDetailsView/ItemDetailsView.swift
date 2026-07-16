@@ -43,7 +43,9 @@ struct ItemDetailsView: View {
                     
                 case .content(let item):
                     Button {
-                        viewModel.toggleCart()
+                        Task {
+                            await viewModel.toggleCart()
+                        }
                     } label: {
                         Text(item.isAddedToCart ? "Remove from the cart" : "Buy")
                             .frame(maxWidth: .infinity)
@@ -82,14 +84,18 @@ struct ItemDetailsView: View {
                     .foregroundStyle(item.isFavorited ? Color.AppColor.primary : Color.AppColor.backgroundSecondary)
                     .padding(.trailing, 15)
                     .onTapGesture {
-                        viewModel.toggleFavorite()
+                        Task {
+                            await viewModel.toggleFavorite()
+                        }
                     }
                 
                 Image.cart
                     .font(.AppFont.icon)
                     .foregroundStyle(item.isAddedToCart ? Color.AppColor.primary : Color.AppColor.backgroundSecondary)
                     .onTapGesture {
-                        viewModel.toggleCart()
+                        Task {
+                            await viewModel.toggleCart()
+                        }
                     }
             }
             

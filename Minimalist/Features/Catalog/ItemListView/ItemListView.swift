@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ItemListView: View {
     let viewModel: ItemListViewModel
-    let id: String
     
     var body: some View {
         List {
@@ -10,7 +9,9 @@ struct ItemListView: View {
                 ItemView(
                     item: item,
                     onAddToFavoriteTap: {
-                        viewModel.toggleFavorite(item)
+                        Task {
+                            await viewModel.toggleFavorite(item)
+                        }
                     }
                 )
                 .onTapGesture {
@@ -38,15 +39,26 @@ struct ItemListView: View {
         )
         .listStyle(.plain)
         .verticalScreenSpacing()
+        .toolbar {
+            //TODO: move to a separate view
+            Button {
+            } label: {
+                Image.sort
+            }
+            Button {
+            } label: {
+                Image.filter
+            }
+        }
         .task {
-            await viewModel.fetchItems(id: id)
+            await viewModel.fetchItems()
         }
         .refreshable {
-            await viewModel.fetchItems(id: id)
+            await viewModel.fetchItems()
         }
     }
 }
 
 #Preview {
-    ItemListView(viewModel: ItemListViewModel(router: CatalogRouter()), id: "1")
+    ItemListView(viewModel: ItemListViewModel(id: "1", router: CatalogRouter()))
 }

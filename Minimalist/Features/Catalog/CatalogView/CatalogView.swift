@@ -25,28 +25,24 @@ struct CatalogView: View {
                 .searchableWithDebounce(text: $viewModel.categorySearchText, action: viewModel.logCategorySearchEvent)
             
         case .itemList(_, let id):
-            ItemListView(viewModel: viewModel.itemListViewModel, id: id)
+            itemListView(id: id)
                 .navigationTitle(route.title)
                 .searchableWithDebounce(text: $viewModel.itemListSearchText, action: viewModel.logItemListSearchEvent)
                 .onAppear {
                     viewModel.logViewItemListEvent()
-                }
-                .toolbar {
-                    //TODO: move to a separate view
-                    Button {
-                    } label: {
-                        Image.sort
-                    }
-                    Button {
-                    } label: {
-                        Image.filter
-                    }
                 }
             
         case .itemDetails(_, let id):
             ItemDetailsView(id: id)
                 .navigationTitle(route.title)
         }
+    }
+    
+    private func itemListView(id: String) -> some View {
+        let itemListViewModel = ItemListViewModel(id: id, router: viewModel.router)
+        viewModel.setItemListViewModel(itemListViewModel)
+
+        return ItemListView(viewModel: itemListViewModel)
     }
 }
 

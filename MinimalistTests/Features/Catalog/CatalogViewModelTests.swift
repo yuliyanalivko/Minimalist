@@ -18,7 +18,6 @@ struct CatalogViewModelTests {
         let vm = makeViewModel()
         
         #expect(vm.categoryViewModel.router === vm.router, "CategoryViewModel should share the main router instance")
-        #expect(vm.itemListViewModel.router === vm.router, "ItemListViewModel should share the main router instance")
     }
     
     @Test("categorySearchText updates the CategoryViewModel.categorySearchText")
@@ -42,17 +41,19 @@ struct CatalogViewModelTests {
     @Test("itemListSearchText gets the CategoryViewModel.categorySearchText")
     func itemListSearchText_Passthrough() {
         let vm = makeViewModel()
+        vm.setItemListViewModel(ItemListViewModel(id: "1", router: .init()))
 
         vm.itemListSearchText = "Sofas"
         
-        #expect(vm.itemListViewModel.searchText == "Sofas")
+        #expect(vm.itemListViewModel?.searchText == "Sofas")
     }
     
     @Test("itemListSearchText updates the ItemListViewModel state")
     func itemListSearchText_getViewModelSearchText() {
         let vm = makeViewModel()
+        vm.setItemListViewModel(ItemListViewModel(id: "1", router: .init()))
 
-        vm.itemListViewModel.searchText = "Sofas"
+        vm.itemListViewModel?.searchText = "Sofas"
         
         #expect(vm.itemListSearchText == "Sofas")
     }

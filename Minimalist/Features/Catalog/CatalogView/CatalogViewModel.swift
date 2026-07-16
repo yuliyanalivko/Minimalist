@@ -3,44 +3,41 @@ import SwiftUI
 @Observable
 class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     
-    var categoryViewModel: CategoryViewModel {
-        _categoryViewModel
-    }
-    
-    var itemListViewModel: ItemListViewModel {
-        _itemListViewModel
-    }
+    var itemListViewModel: ItemListViewModel?
+    let categoryViewModel: CategoryViewModel
     
     var categorySearchText: String {
         get {
-            _categoryViewModel.searchText
+            categoryViewModel.searchText
         }
         set {
-            _categoryViewModel.searchText = newValue
+            categoryViewModel.searchText = newValue
         }
     }
     
     var itemListSearchText: String {
         get {
-            _itemListViewModel.searchText
+            itemListViewModel?.searchText ?? ""
         }
         set {
-            _itemListViewModel.searchText = newValue
+            itemListViewModel?.searchText = newValue
         }
     }
     
-    private var _categoryViewModel: CategoryViewModel
-    private var _itemListViewModel: ItemListViewModel
-
+    
     override init(router: CatalogRouter, analyticsManager: AnalyticsManager? = nil) {
-        self._categoryViewModel = CategoryViewModel(router: router)
-        self._itemListViewModel = ItemListViewModel(router: router)
+        self.categoryViewModel = CategoryViewModel(router: router)
         
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
+    func setItemListViewModel(_ itemListViewModel: ItemListViewModel) {
+        self.itemListViewModel = itemListViewModel
+    }
+    
     func logViewItemListEvent() {
-        guard let selectedCategory = categoryViewModel.selectedCategory else {
+        guard let selectedCategory = categoryViewModel.selectedCategory,
+        let itemListViewModel else {
             return
         }
         
@@ -48,7 +45,8 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     func logItemListSearchEvent() {
-        guard let selectedCategory = categoryViewModel.selectedCategory else {
+        guard let selectedCategory = categoryViewModel.selectedCategory,
+        let itemListViewModel else {
             return
         }
         

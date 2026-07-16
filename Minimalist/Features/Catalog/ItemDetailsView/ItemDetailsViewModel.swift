@@ -53,6 +53,10 @@ class ItemDetailsViewModel: BaseViewModel {
     func fetchItemDetails() async {
         isLoading = true
         
+        defer {
+            isLoading = false
+        }
+        
         do {
             let items = try await dataCoordinator.getItemDetails(id: id)
             itemDetails = items
@@ -62,24 +66,50 @@ class ItemDetailsViewModel: BaseViewModel {
         } catch {
             setError(error)
         }
-        
-        isLoading = false
     }
     
-    func toggleFavorite() {
+    func toggleFavorite() async {
         guard var item = itemDetails else { return }
 
         item.isFavorited.toggle()
         itemDetails = item
-        logFavoriteEvent()
+        
+        do {
+            let toggleFavorite = item.isFavorited
+            ? dataCoordinator.addToFavorites
+            : dataCoordinator.removeFromFavorites
+            
+            try await toggleFavorite(item.id)
+            
+            logFavoriteEvent()
+        } catch {
+            item.isFavorited.toggle()
+            itemDetails = item
+            
+            setError(error)
+        }
     }
     
-    func toggleCart() {
+    func toggleCart() async {
         guard var item = itemDetails else { return }
-
+        
         item.isAddedToCart.toggle()
         itemDetails = item
-        logCartEvent()
+
+        do {
+            let toggleCart = item.isAddedToCart
+            ? dataCoordinator.addToCart
+            : dataCoordinator.removeFromCart
+            
+            try await toggleCart(item.id)
+
+            logCartEvent()
+        } catch {
+            item.isAddedToCart.toggle()
+            itemDetails = item
+            
+            setError(error)
+        }
     }
     
     private func logFavoriteEvent() {
