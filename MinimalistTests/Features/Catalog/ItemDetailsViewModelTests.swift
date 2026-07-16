@@ -32,21 +32,34 @@ struct ItemDetailsViewModelTests {
         analyticsManager: AnalyticsManager? = nil
     ) -> ItemDetailsViewModel {
         let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
-        let coordinator = CatalogDataCoordinator(
+        let catalogDataCoordinator = CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
-            favoritesNetworkService: FavoritesNetworkService(networkClient: favoritesMock),
-            cartNetworkService: CartNetworkService(networkClient: cartMock)
+        )
+        
+        let favoritesDataCoordinator = FavoritesDataCoordinator(
+            networkService: FavoritesNetworkService(networkClient: cartMock)
+        )
+        
+        let cartDataCoordinator = CartDataCoordinator(
+            networkService: CartNetworkService(networkClient: favoritesMock)
         )
 
         if let analyticsManager {
             return ItemDetailsViewModel(
                 id: "1",
-                dataCoordinator: coordinator,
+                catalogDataCoordinator: catalogDataCoordinator,
+                favoritesDataCoordinator: favoritesDataCoordinator,
+                cartDataCoordinator: cartDataCoordinator,
                 analyticsManager: analyticsManager
             )
         }
 
-        return ItemDetailsViewModel(id: "1", dataCoordinator: coordinator)
+        return ItemDetailsViewModel(
+            id: "1",
+            catalogDataCoordinator: catalogDataCoordinator,
+            favoritesDataCoordinator: favoritesDataCoordinator,
+            cartDataCoordinator: cartDataCoordinator
+        )
     }
 
     @Test("Should set isFavorite to true")

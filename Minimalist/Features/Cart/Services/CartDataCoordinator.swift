@@ -9,20 +9,28 @@ final class CartDataCoordinator: BaseDataCoordinator {
     }
     
     func getCartItems() async throws -> [Item] {
-        try await requestData({
-            try await networkService.getCartItems()
-        }, as: [Item].self)
+        do {
+            let data = try await networkService.getCartItems()
+            
+            return try JSONDecoder().decode([Item].self, from: data)
+        } catch {
+            throw convert(error: error)
+        }
     }
     
     func addToCart(id: String) async throws {
-        try await request {
-            try await networkService.addToCart(id: id)
+        do {
+            _ = try await networkService.addToCart(id: id)
+        } catch {
+            throw convert(error: error)
         }
     }
     
     func removeFromCart(id: String) async throws {
-        try await request {
-            try await networkService.removeFromCart(id: id)
+        do {
+            _ = try await networkService.removeFromCart(id: id)
+        } catch {
+            throw convert(error: error)
         }
     }
 }

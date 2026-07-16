@@ -11,8 +11,6 @@ struct CatalogDataCoordinatorTests {
     ) -> CatalogDataCoordinator {
         CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
-            favoritesNetworkService: FavoritesNetworkService(networkClient: favoritesMock),
-            cartNetworkService: CartNetworkService(networkClient: cartMock)
         )
     }
 
@@ -49,62 +47,6 @@ struct CatalogDataCoordinatorTests {
 
         #expect(details.id == "1")
         #expect(details.name == "Vindkast")
-    }
-
-    @Test("Should add item to favorites")
-    func addToFavorites_succeeds() async throws {
-        let favoritesMock = MockNetworkClient(mockData: Data())
-        let coordinator = makeCoordinator(
-            catalogMock: MockNetworkClient(mockData: Data()),
-            favoritesMock: favoritesMock
-        )
-
-        try await coordinator.addToFavorites(id: "item-1")
-
-        #expect(favoritesMock.lastRequest?.httpMethod == "POST")
-        #expect(favoritesMock.lastRequest?.url?.path == "/api/v1/favorites")
-    }
-
-    @Test("Should remove item from favorites")
-    func removeFromFavorites_succeeds() async throws {
-        let favoritesMock = MockNetworkClient(mockData: Data())
-        let coordinator = makeCoordinator(
-            catalogMock: MockNetworkClient(mockData: Data()),
-            favoritesMock: favoritesMock
-        )
-
-        try await coordinator.removeFromFavorites(id: "item-1")
-
-        #expect(favoritesMock.lastRequest?.httpMethod == "DELETE")
-        #expect(favoritesMock.lastRequest?.url?.query?.contains("id=item-1") == true)
-    }
-
-    @Test("Should add item to cart")
-    func addToCart_succeeds() async throws {
-        let cartMock = MockNetworkClient(mockData: Data())
-        let coordinator = makeCoordinator(
-            catalogMock: MockNetworkClient(mockData: Data()),
-            cartMock: cartMock
-        )
-
-        try await coordinator.addToCart(id: "item-1")
-
-        #expect(cartMock.lastRequest?.httpMethod == "POST")
-        #expect(cartMock.lastRequest?.url?.path == "/api/v1/cart")
-    }
-
-    @Test("Should remove item from cart")
-    func removeFromCart_succeeds() async throws {
-        let cartMock = MockNetworkClient(mockData: Data())
-        let coordinator = makeCoordinator(
-            catalogMock: MockNetworkClient(mockData: Data()),
-            cartMock: cartMock
-        )
-
-        try await coordinator.removeFromCart(id: "item-1")
-
-        #expect(cartMock.lastRequest?.httpMethod == "DELETE")
-        #expect(cartMock.lastRequest?.url?.query?.contains("id=item-1") == true)
     }
 
     @Test("Should throw network error for server failure")

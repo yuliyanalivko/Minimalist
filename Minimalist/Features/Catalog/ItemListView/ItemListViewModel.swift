@@ -22,16 +22,19 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         return .content(displayedItems)
     }
     
-    private let dataCoordinator: CatalogDataCoordinator
+    private let catalogDataCoordinator: CatalogDataCoordinator
+    private let favoritesDataCoordinator: FavoritesDataCoordinator
     
     init(
         id: String,
         router: CatalogRouter,
-        dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
+        catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
+        favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
         analyticsManager: AnalyticsManager? = nil
     ) {
         self.id = id
-        self.dataCoordinator = dataCoordinator
+        self.catalogDataCoordinator = catalogDataCoordinator
+        self.favoritesDataCoordinator = favoritesDataCoordinator
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
@@ -43,7 +46,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         }
         
         do {
-            let items = try await dataCoordinator.getItems(categoryId: id)
+            let items = try await catalogDataCoordinator.getItems(categoryId: id)
             allItems = mapUrls(of: items)
         } catch {
             setError(error)
@@ -55,11 +58,11 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             do {
                 allItems[index].isFavorited.toggle()
                 
-                let toggleFavorite = allItems[index].isFavorited
-                ? dataCoordinator.addToFavorites
-                : dataCoordinator.removeFromFavorites
-                
-                try await toggleFavorite(item.id)
+                if item.isFavorited {
+                    try await favoritesDataCoordinator.addToFavorites(id: item.id)
+                } else {
+                    try await favoritesDataCoordinator.removeFromFavorites(id: item.id)
+                }
                 
                 logToggleFavoriteEvent(item: allItems[index])
             } catch {

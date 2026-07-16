@@ -47,21 +47,29 @@ struct ItemListViewModelTests {
         analyticsManager: AnalyticsManager? = nil
     ) -> ItemListViewModel {
         let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
-        let coordinator = CatalogDataCoordinator(
-            networkService: CatalogNetworkService(networkClient: catalogMock),
-            favoritesNetworkService: FavoritesNetworkService(networkClient: favoritesMock)
+        let catalogDataCoordinator = CatalogDataCoordinator(
+            networkService: CatalogNetworkService(networkClient: catalogMock)
+        )
+        let favoritesDataCoordinator = FavoritesDataCoordinator(
+            networkService: FavoritesNetworkService(networkClient: favoritesMock)
         )
 
         if let analyticsManager {
             return ItemListViewModel(
                 id: "1",
                 router: CatalogRouter(),
-                dataCoordinator: coordinator,
+                catalogDataCoordinator: catalogDataCoordinator,
+                favoritesDataCoordinator: favoritesDataCoordinator,
                 analyticsManager: analyticsManager
             )
         }
 
-        return ItemListViewModel(id: "1", router: CatalogRouter(), dataCoordinator: coordinator)
+        return ItemListViewModel(
+            id: "1",
+            router: CatalogRouter(),
+            catalogDataCoordinator: catalogDataCoordinator,
+            favoritesDataCoordinator: favoritesDataCoordinator,
+        )
     }
 
     @Test("set isFavorite to true and log event")

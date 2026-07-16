@@ -19,25 +19,4 @@ class BaseDataCoordinator {
         
         return .unknown
     }
-    
-    func requestData<T: Decodable>(
-        _ data: () async throws -> Data,
-        as type: T.Type
-    ) async throws -> T {
-        do {
-            let rawData = try await data()
-            
-            return try JSONDecoder().decode(T.self, from: rawData)
-        } catch {
-            throw convert(error: error)
-        }
-    }
-    
-    func request(_ data: () async throws -> Void) async throws {
-        do {
-            try await data()
-        } catch {
-            throw convert(error: error)
-        }
-    }
 }
