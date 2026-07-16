@@ -5,7 +5,7 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack(path: $viewModel.router.path) {
-            screen(for: .settings)
+            screen(for: .devTools)
                 .navigationDestination(for: SettingsRoute.self) { route in
                     screen(for: route)
                 }
@@ -17,6 +17,10 @@ struct SettingsView: View {
         switch route {
         case .settings:
             Text("settings")
+                .navigationTitle(SettingsRoute.settings.title)
+            
+        case .devTools:
+            DeveloperToolsView()
                 .navigationTitle(SettingsRoute.settings.title)
         }
     }
