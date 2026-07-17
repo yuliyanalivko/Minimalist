@@ -31,8 +31,12 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
-    func setItemListViewModel(_ itemListViewModel: ItemListViewModel) {
-        self.itemListViewModel = itemListViewModel
+    func updateItemListViewModel(id: String) {
+        if let existing = itemListViewModel, existing.id == id {
+            return
+        }
+        
+        itemListViewModel = ItemListViewModel(id: id, router: router)
     }
     
     func logViewItemListEvent() {

@@ -58,7 +58,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             do {
                 allItems[index].isFavorited.toggle()
                 
-                if item.isFavorited {
+                if allItems[index].isFavorited {
                     try await favoritesDataCoordinator.addToFavorites(id: item.id)
                 } else {
                     try await favoritesDataCoordinator.removeFromFavorites(id: item.id)

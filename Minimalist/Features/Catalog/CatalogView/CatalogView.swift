@@ -39,10 +39,9 @@ struct CatalogView: View {
     }
     
     private func itemListView(id: String) -> some View {
-        let itemListViewModel = ItemListViewModel(id: id, router: viewModel.router)
-        viewModel.setItemListViewModel(itemListViewModel)
-
-        return ItemListView(viewModel: itemListViewModel)
+        viewModel.updateItemListViewModel(id: id)
+        
+        return ItemListView(viewModel: viewModel.itemListViewModel!)
     }
 }
 

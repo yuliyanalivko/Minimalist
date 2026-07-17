@@ -32,7 +32,8 @@ class CatalogNetworkService: BaseNetworkService {
             path: "search"
         )
         
-        let request = URLRequest(url: url, method: .get)
+        var request = URLRequest(url: url, method: .get)
+        request.setValue("9b7135f6-c435-4b37-8456-bcb9c812b128", forHTTPHeaderField: "User-ID")
 
         return try await execute(request)
     }
