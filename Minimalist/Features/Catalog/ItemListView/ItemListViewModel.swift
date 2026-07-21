@@ -2,6 +2,7 @@ import SwiftUI
 
 @Observable
 class ItemListViewModel: RoutableViewModel<CatalogRouter> {
+    let id: String
     var allItems: [Item] = []
     var searchText: String = ""
     
@@ -21,43 +22,54 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         return .content(displayedItems)
     }
     
-    private let dataCoordinator: CatalogDataCoordinator
-    private var id: String?
+    private let catalogDataCoordinator: CatalogDataCoordinator
+    private let favoritesDataCoordinator: FavoritesDataCoordinator
     
     init(
+        id: String,
         router: CatalogRouter,
-        dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
+        catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
+        favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
         analyticsManager: AnalyticsManager? = nil
     ) {
-        self.dataCoordinator = dataCoordinator
+        self.id = id
+        self.catalogDataCoordinator = catalogDataCoordinator
+        self.favoritesDataCoordinator = favoritesDataCoordinator
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
-    func fetchItems(id: String) async {
+    func fetchItems() async {
         isLoading = true
-
-        if self.id != id {
-            self.id = id
-            allItems = []
+        
+        defer {
+            isLoading = false
         }
         
         do {
-            let items = try await dataCoordinator.getItems(categoryId: id)
+            let items = try await catalogDataCoordinator.getItems(categoryId: id)
             allItems = mapUrls(of: items)
         } catch {
             setError(error)
         }
-        
-        isLoading = false
     }
     
-    func toggleFavorite(_ item: Item) {
+    func toggleFavorite(_ item: Item) async {
         if let index = allItems.firstIndex(where: { $0.id == item.id }) {
-            allItems[index].isFavorited.toggle()
-            
-            logToggleFavoriteEvent(item: allItems[index])
+            do {
+                allItems[index].isFavorited.toggle()
+                
+                if allItems[index].isFavorited {
+                    try await favoritesDataCoordinator.addToFavorites(id: item.id)
+                } else {
+                    try await favoritesDataCoordinator.removeFromFavorites(id: item.id)
+                }
+                
+                logToggleFavoriteEvent(item: allItems[index])
+            } catch {
+                allItems[index].isFavorited.toggle()
+                setError(error)
+            }
         }
-        
     }
     
     func handleItemClick(item: Item) {

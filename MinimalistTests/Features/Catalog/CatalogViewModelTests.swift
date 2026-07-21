@@ -18,7 +18,6 @@ struct CatalogViewModelTests {
         let vm = makeViewModel()
         
         #expect(vm.categoryViewModel.router === vm.router, "CategoryViewModel should share the main router instance")
-        #expect(vm.itemListViewModel.router === vm.router, "ItemListViewModel should share the main router instance")
     }
     
     @Test("categorySearchText updates the CategoryViewModel.categorySearchText")
@@ -42,17 +41,19 @@ struct CatalogViewModelTests {
     @Test("itemListSearchText gets the CategoryViewModel.categorySearchText")
     func itemListSearchText_Passthrough() {
         let vm = makeViewModel()
+        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
 
         vm.itemListSearchText = "Sofas"
         
-        #expect(vm.itemListViewModel.searchText == "Sofas")
+        #expect(vm.itemListViewModel?.searchText == "Sofas")
     }
     
     @Test("itemListSearchText updates the ItemListViewModel state")
     func itemListSearchText_getViewModelSearchText() {
         let vm = makeViewModel()
+        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
 
-        vm.itemListViewModel.searchText = "Sofas"
+        vm.itemListViewModel?.searchText = "Sofas"
         
         #expect(vm.itemListSearchText == "Sofas")
     }
@@ -73,5 +74,25 @@ struct CatalogViewModelTests {
         }
         
         #expect(parameters[AnalyticsParamName.screenName.rawValue] as? String == "Catalog")
+    }
+    
+    @Test("Should create a new instance of ItemListViewModel when id has changed")
+    func updateItemListViewModel_createNewInstance_whenIdHasChaged() {
+        let vm = makeViewModel()
+        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
+
+        vm.updateItemListViewModel(id: "2")
+        
+        #expect(vm.itemListViewModel?.id == "2")
+    }
+    
+    @Test("Should not update itemListViewModel when id has not changed")
+    func updateItemListViewModel_doNothing_whenIdHasNotChaged() {
+        let vm = makeViewModel()
+        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
+
+        vm.updateItemListViewModel(id: "1")
+        
+        #expect(vm.itemListViewModel?.id == "1")
     }
 }

@@ -41,69 +41,81 @@ struct ItemListViewModelTests {
     ]
     
     private func makeViewModel(
-        mockData: Data? = mockCategories.data(using: .utf8),
+        mockData: Data? = mockItems.data(using: .utf8),
         mockError: Error? = nil,
+        favoritesMock: MockNetworkClient = MockNetworkClient(mockData: Data()),
         analyticsManager: AnalyticsManager? = nil
     ) -> ItemListViewModel {
-        let mockClient = MockNetworkClient(mockData: mockData, mockError: mockError)
-        let coordinator = CatalogDataCoordinator(
-            networkService: CatalogNetworkService(networkClient: mockClient)
+        let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
+        let catalogDataCoordinator = CatalogDataCoordinator(
+            networkService: CatalogNetworkService(networkClient: catalogMock)
+        )
+        let favoritesDataCoordinator = FavoritesDataCoordinator(
+            networkService: FavoritesNetworkService(networkClient: favoritesMock)
         )
 
         if let analyticsManager {
             return ItemListViewModel(
+                id: "1",
                 router: CatalogRouter(),
-                dataCoordinator: coordinator,
+                catalogDataCoordinator: catalogDataCoordinator,
+                favoritesDataCoordinator: favoritesDataCoordinator,
                 analyticsManager: analyticsManager
             )
         }
 
-        return ItemListViewModel(router: CatalogRouter(), dataCoordinator: coordinator)
+        return ItemListViewModel(
+            id: "1",
+            router: CatalogRouter(),
+            catalogDataCoordinator: catalogDataCoordinator,
+            favoritesDataCoordinator: favoritesDataCoordinator,
+        )
     }
-    
+
     @Test("set isFavorite to true and log event")
-    func toggleFavorite_setToTrue() {
+    func toggleFavorite_setToTrue() async {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
         let vm = makeViewModel(analyticsManager: analyticsManager)
 
         vm.allItems = items
-        vm.toggleFavorite(vm.allItems[0])
-        
+        await vm.toggleFavorite(vm.allItems[0])
+
         #expect(vm.allItems[0].isFavorited)
-        
+
         guard let name = consumer.loggedEvent?.name,
               let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
-            
+
             return
         }
-        
+
         #expect(name == AnalyticsEventName.addToWishlist.rawValue)
         #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == vm.allItems[0].id)
         #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == vm.allItems[0].name)
     }
-    
+
     @Test("set isFavorite to false and log event")
-    func toggleFavorite_setToFalse() {
+    func toggleFavorite_setToFalse() async {
         let consumer = MockAnalyticsConsumer()
         let provider = FirebaseAnalyticsProvider(consumer: consumer)
         let analyticsManager = AnalyticsManager(providers: [provider])
         let vm = makeViewModel(analyticsManager: analyticsManager)
         vm.allItems = items
         vm.allItems[0].isFavorited = true
-        vm.toggleFavorite(vm.allItems[0])
-        
+
+        await vm.toggleFavorite(vm.allItems[0])
+
         #expect(!vm.allItems[0].isFavorited)
-        
+
         guard let name = consumer.loggedEvent?.name,
               let parameters = consumer.loggedEvent?.parameters else {
             Issue.record("Expected event to be defined and to have name and parameters")
-            
+
             return
         }
-        
+
         #expect(name == AnalyticsEventName.removeFromWishlist.rawValue)
         #expect(parameters[AnalyticsParamName.itemId.rawValue] as? String == vm.allItems[0].id)
         #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == vm.allItems[0].name)
@@ -200,7 +212,7 @@ struct ItemListViewModelTests {
         let expected = try! JSONDecoder().decode([Item].self, from: json)
         let vm = makeViewModel(mockData: json)
 
-        await vm.fetchItems(id: "1")
+        await vm.fetchItems()
 
         #expect(vm.allItems == expected)
         #expect(vm.isLoading == false)
@@ -212,7 +224,7 @@ struct ItemListViewModelTests {
     func fetchItems_setError_onFailure() async {
         let vm = makeViewModel(mockError: URLError(.badServerResponse))
 
-        await vm.fetchItems(id: "1")
+        await vm.fetchItems()
 
         #expect(vm.error != nil)
         #expect(vm.errorMessage == "The server returned an unexpected response. Please try again later.")
@@ -222,7 +234,7 @@ struct ItemListViewModelTests {
     @Test("Should be loading while fetch has not completed")
     @MainActor
     func state_loading_whenIsLoadingIsTrue() {
-        let vm = ItemListViewModel(router: CatalogRouter())
+        let vm = ItemListViewModel(id: "1", router: CatalogRouter())
         vm.isLoading = true
 
         #expect(vm.state == .loading)
@@ -231,7 +243,7 @@ struct ItemListViewModelTests {
     @Test("Should be emptySearch when search has no matches")
     @MainActor
     func state_emptySearch_whenSearchHasNoMatches() {
-        let vm = ItemListViewModel(router: CatalogRouter())
+        let vm = ItemListViewModel(id: "1", router: CatalogRouter())
         vm.isLoading = false
         vm.allItems = items
         vm.searchText = "xyz"
@@ -242,7 +254,7 @@ struct ItemListViewModelTests {
     @Test("Should be empty when allItems is empty")
     @MainActor
     func state_empty_whenAllItemsIsEmpty() {
-        let vm = ItemListViewModel(router: CatalogRouter())
+        let vm = ItemListViewModel(id: "1", router: CatalogRouter())
         vm.isLoading = false
 
         #expect(vm.state == .empty)

@@ -26,23 +26,36 @@ class ItemDetailsViewModel: BaseViewModel {
     }
     
     private let id: String
-    private let dataCoordinator: CatalogDataCoordinator
+    private let catalogDataCoordinator: CatalogDataCoordinator
+    private let favoritesDataCoordinator: FavoritesDataCoordinator
+    private let cartDataCoordinator: CartDataCoordinator
     
-    convenience init(id: String, dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator()) {
+    convenience init(
+        id: String,
+        catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
+        favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
+        cartDataCoordinator: CartDataCoordinator = CartDataCoordinator()
+    ) {
         self.init(
             id: id,
-            dataCoordinator: dataCoordinator,
+            catalogDataCoordinator: catalogDataCoordinator,
+            favoritesDataCoordinator: favoritesDataCoordinator,
+            cartDataCoordinator: cartDataCoordinator,
             analyticsManager: AppConfigurationManager.shared.analyticsManager
         )
     }
     
     init(
         id: String,
-        dataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
+        catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
+        favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
+        cartDataCoordinator: CartDataCoordinator = CartDataCoordinator(),
         analyticsManager: AnalyticsManager?
     ) {
         self.id = id
-        self.dataCoordinator = dataCoordinator
+        self.catalogDataCoordinator = catalogDataCoordinator
+        self.favoritesDataCoordinator = favoritesDataCoordinator
+        self.cartDataCoordinator = cartDataCoordinator
         
         itemImageCarouselViewModel = ItemImageCarouselViewModel()
         itemReviewsViewModel = ItemReviewsViewModel()
@@ -53,8 +66,12 @@ class ItemDetailsViewModel: BaseViewModel {
     func fetchItemDetails() async {
         isLoading = true
         
+        defer {
+            isLoading = false
+        }
+        
         do {
-            let items = try await dataCoordinator.getItemDetails(id: id)
+            let items = try await catalogDataCoordinator.getItemDetails(id: id)
             itemDetails = items
             
             itemImageCarouselViewModel.configure(imageUrls: items.thumbnails)
@@ -62,24 +79,50 @@ class ItemDetailsViewModel: BaseViewModel {
         } catch {
             setError(error)
         }
-        
-        isLoading = false
     }
     
-    func toggleFavorite() {
+    func toggleFavorite() async {
         guard var item = itemDetails else { return }
-
+        
         item.isFavorited.toggle()
         itemDetails = item
-        logFavoriteEvent()
+        
+        do {
+            if item.isFavorited {
+                try await favoritesDataCoordinator.addToFavorites(id: item.id)
+            } else {
+                try await favoritesDataCoordinator.removeFromFavorites(id: item.id)
+            }
+            
+            logFavoriteEvent()
+        } catch {
+            item.isFavorited.toggle()
+            itemDetails = item
+            
+            setError(error)
+        }
     }
     
-    func toggleCart() {
+    func toggleCart() async {
         guard var item = itemDetails else { return }
-
+        
         item.isAddedToCart.toggle()
         itemDetails = item
-        logCartEvent()
+        
+        do {
+            if item.isAddedToCart {
+                try await cartDataCoordinator.addToCart(id: item.id)
+            } else {
+                try await cartDataCoordinator.removeFromCart(id: item.id)
+            }
+            
+            logCartEvent()
+        } catch {
+            item.isAddedToCart.toggle()
+            itemDetails = item
+            
+            setError(error)
+        }
     }
     
     private func logFavoriteEvent() {
