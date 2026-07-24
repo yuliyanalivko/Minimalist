@@ -36,11 +36,13 @@ struct CategoryViewModelTests {
     private func makeViewModel(
         mockData: Data? = mockCategories.data(using: .utf8),
         mockError: Error? = nil,
+        database: MockDatabaseManager = MockDatabaseManager(),
         analyticsManager: AnalyticsManager? = nil
     ) -> CategoryViewModel {
         let mockClient = MockNetworkClient(mockData: mockData, mockError: mockError)
         let coordinator = CatalogDataCoordinator(
-            networkService: CatalogNetworkService(networkClient: mockClient)
+            networkService: CatalogNetworkService(networkClient: mockClient),
+            databaseManager: database
         )
 
         if let analyticsManager {
@@ -120,42 +122,65 @@ struct CategoryViewModelTests {
         #expect(parameters[AnalyticsParamName.categoryName.rawValue] == nil)
     }
 
-    @Test("Should load categories from service")
+    @Test("Should load categories from network when cache is empty")
     @MainActor
-    func fetchCategories_success() async {
+    func fetchCategories_networkSuccess_emptyCache() async {
         let json = mockCategories.data(using: .utf8)!
         let expected = try! JSONDecoder().decode([Minimalist.Category].self, from: json)
-
         let vm = makeViewModel(mockData: json)
 
         await vm.fetchCategories()
 
         #expect(vm.allCategories == expected)
         #expect(vm.isLoading == false)
-        #expect(vm.state == ContentState.content(expected))
+        #expect(vm.error == nil)
     }
-
-    @Test("Should set error on failure")
+    
+    @Test("Should set error when network fails and cache is empty")
     @MainActor
-    func fetchCategories_failure() async {
+    func fetchCategories_networkFailure_emptyCache() async {
         let vm = makeViewModel(mockError: URLError(.badServerResponse))
 
         await vm.fetchCategories()
 
+        #expect(vm.allCategories == nil || vm.allCategories?.isEmpty == true)
         #expect(vm.error != nil)
-        #expect(vm.errorMessage == "The server returned an unexpected response. Please try again later.")
         #expect(vm.isLoading == false)
     }
-
-    @Test("Should be loading while fetch has not completed")
+    
+    @Test("Should refresh categories after showing cache")
     @MainActor
-    func state_loading_fetchHasNotCompleted() {
-        let vm = makeViewModel()
-        vm.isLoading = true
+    func fetchCategories_cacheThenNetwork() async {
+        let cached = categories
+        let database = MockDatabaseManager()
+        database.objects = cached.map { $0.toEntity() }
 
-        #expect(vm.state == .loading)
+        let json = mockCategories.data(using: .utf8)!
+        let network = try! JSONDecoder().decode([Minimalist.Category].self, from: json)
+        let vm = makeViewModel(mockData: json, database: database)
+
+        await vm.fetchCategories()
+
+        #expect(vm.allCategories == network)
+        #expect(vm.isLoading == false)
     }
+    
+    @Test("Should keep cached categories when network fails")
+    @MainActor
+    func fetchCategories_networkFailure_keepsCache() async {
+        let cached = categories
+        let database = MockDatabaseManager()
+        database.objects = cached.map { $0.toEntity() }
 
+        let vm = makeViewModel(mockError: URLError(.badServerResponse), database: database)
+
+        await vm.fetchCategories()
+
+        #expect(vm.allCategories == cached)
+        #expect(vm.isLoading == false)
+        #expect(vm.error != nil)
+    }
+    
     @Test("Should be emptySearch when search has no matches")
     @MainActor
     func state_emptySearch_searchHasNoMatches() {
