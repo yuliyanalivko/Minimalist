@@ -56,7 +56,7 @@ struct ItemListViewModelTests {
 
         if let analyticsManager {
             return ItemListViewModel(
-                id: "1",
+                categoryId: "1",
                 router: CatalogRouter(),
                 catalogDataCoordinator: catalogDataCoordinator,
                 favoritesDataCoordinator: favoritesDataCoordinator,
@@ -65,7 +65,7 @@ struct ItemListViewModelTests {
         }
 
         return ItemListViewModel(
-            id: "1",
+            categoryId: "1",
             router: CatalogRouter(),
             catalogDataCoordinator: catalogDataCoordinator,
             favoritesDataCoordinator: favoritesDataCoordinator,
@@ -234,7 +234,7 @@ struct ItemListViewModelTests {
     @Test("Should be loading while fetch has not completed")
     @MainActor
     func state_loading_whenIsLoadingIsTrue() {
-        let vm = ItemListViewModel(id: "1", router: CatalogRouter())
+        let vm = ItemListViewModel(categoryId: "1", router: CatalogRouter())
         vm.isLoading = true
 
         #expect(vm.state == .loading)
@@ -243,7 +243,7 @@ struct ItemListViewModelTests {
     @Test("Should be emptySearch when search has no matches")
     @MainActor
     func state_emptySearch_whenSearchHasNoMatches() {
-        let vm = ItemListViewModel(id: "1", router: CatalogRouter())
+        let vm = ItemListViewModel(categoryId: "1", router: CatalogRouter())
         vm.isLoading = false
         vm.allItems = items
         vm.searchText = "xyz"
@@ -254,7 +254,7 @@ struct ItemListViewModelTests {
     @Test("Should be empty when allItems is empty")
     @MainActor
     func state_empty_whenAllItemsIsEmpty() {
-        let vm = ItemListViewModel(id: "1", router: CatalogRouter())
+        let vm = ItemListViewModel(categoryId: "1", router: CatalogRouter())
         vm.isLoading = false
 
         #expect(vm.state == .empty)

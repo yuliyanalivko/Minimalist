@@ -32,11 +32,11 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     func updateItemListViewModel(id: String) {
-        if let existing = itemListViewModel, existing.id == id {
+        if let existing = itemListViewModel, existing.categoryId == id {
             return
         }
         
-        itemListViewModel = ItemListViewModel(id: id, router: router)
+        itemListViewModel = ItemListViewModel(categoryId: id, router: router)
     }
     
     func logViewItemListEvent() {
