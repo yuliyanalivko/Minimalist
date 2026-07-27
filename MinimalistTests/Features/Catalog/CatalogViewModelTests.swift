@@ -41,7 +41,7 @@ struct CatalogViewModelTests {
     @Test("itemListSearchText gets the CategoryViewModel.categorySearchText")
     func itemListSearchText_Passthrough() {
         let vm = makeViewModel()
-        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
+        vm.itemListViewModel = ItemListViewModel(categoryId: "1", router: .init())
 
         vm.itemListSearchText = "Sofas"
         
@@ -51,7 +51,7 @@ struct CatalogViewModelTests {
     @Test("itemListSearchText updates the ItemListViewModel state")
     func itemListSearchText_getViewModelSearchText() {
         let vm = makeViewModel()
-        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
+        vm.itemListViewModel = ItemListViewModel(categoryId: "1", router: .init())
 
         vm.itemListViewModel?.searchText = "Sofas"
         
@@ -79,20 +79,20 @@ struct CatalogViewModelTests {
     @Test("Should create a new instance of ItemListViewModel when id has changed")
     func updateItemListViewModel_createNewInstance_whenIdHasChaged() {
         let vm = makeViewModel()
-        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
+        vm.itemListViewModel = ItemListViewModel(categoryId: "1", router: .init())
 
         vm.updateItemListViewModel(id: "2")
         
-        #expect(vm.itemListViewModel?.id == "2")
+        #expect(vm.itemListViewModel?.categoryId == "2")
     }
     
     @Test("Should not update itemListViewModel when id has not changed")
     func updateItemListViewModel_doNothing_whenIdHasNotChaged() {
         let vm = makeViewModel()
-        vm.itemListViewModel = ItemListViewModel(id: "1", router: .init())
+        vm.itemListViewModel = ItemListViewModel(categoryId: "1", router: .init())
 
         vm.updateItemListViewModel(id: "1")
         
-        #expect(vm.itemListViewModel?.id == "1")
+        #expect(vm.itemListViewModel?.categoryId == "1")
     }
 }

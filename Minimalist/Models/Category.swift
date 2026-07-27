@@ -4,9 +4,13 @@ struct Category: CatalogItemConfigurable {
     let thumbnailUrl: String?
     let subCategories: [SubCategory]
     
+    func toEntity() -> CategoryEntity {
+        CategoryEntity(from: self)
+    }
+    
     var iconName: String? {
         switch name {
-        case "Sofas": 
+        case "Sofas":
             return "couch"
         case "Chairs":
             return "chair"
@@ -21,5 +25,18 @@ struct Category: CatalogItemConfigurable {
         default:
             return nil
         }
+    }
+}
+
+extension Category {
+    init(from entity: CategoryEntity) {
+        let entities = Array(entity.subCategories.map { SubCategory(from: $0) })
+        
+        self.init(
+            id: entity.id,
+            name: entity.name,
+            thumbnailUrl: entity.thumbnailUrl,
+            subCategories: entities
+        )
     }
 }

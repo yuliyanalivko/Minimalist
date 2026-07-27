@@ -60,5 +60,5 @@ struct ItemListView: View {
 }
 
 #Preview {
-    ItemListView(viewModel: ItemListViewModel(id: "1", router: CatalogRouter()))
+    ItemListView(viewModel: ItemListViewModel(categoryId: "1", router: CatalogRouter()))
 }

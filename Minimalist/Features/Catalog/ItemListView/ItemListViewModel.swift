@@ -2,7 +2,7 @@ import SwiftUI
 
 @Observable
 class ItemListViewModel: RoutableViewModel<CatalogRouter> {
-    let id: String
+    let categoryId: String
     var allItems: [Item] = []
     var searchText: String = ""
     
@@ -26,13 +26,13 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     private let favoritesDataCoordinator: FavoritesDataCoordinator
     
     init(
-        id: String,
+        categoryId: String,
         router: CatalogRouter,
         catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
         analyticsManager: AnalyticsManager? = nil
     ) {
-        self.id = id
+        self.categoryId = categoryId
         self.catalogDataCoordinator = catalogDataCoordinator
         self.favoritesDataCoordinator = favoritesDataCoordinator
         super.init(router: router, analyticsManager: analyticsManager)
@@ -46,7 +46,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         }
         
         do {
-            let items = try await catalogDataCoordinator.getItems(categoryId: id)
+            let items = try await catalogDataCoordinator.getItems(categoryId: categoryId)
             allItems = mapUrls(of: items)
         } catch {
             setError(error)

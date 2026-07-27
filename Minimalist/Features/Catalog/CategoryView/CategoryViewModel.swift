@@ -62,16 +62,20 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
             analyticsManager: AppConfigurationManager.shared.analyticsManager
         )
     }
-    
     func fetchCategories() async {
-        isLoading = true
+        if allCategories == nil || allCategories?.isEmpty == true {
+            isLoading = true
+        }
         
         defer {
             isLoading = false
         }
         
         do {
-            allCategories =  try await dataCoordinator.getCategories()
+            for try await categories in dataCoordinator.getCategories() {
+                allCategories = categories
+                isLoading = false
+            }
         } catch {
             setError(error)
         }
