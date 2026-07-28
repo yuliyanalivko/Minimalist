@@ -64,18 +64,23 @@ class ItemDetailsViewModel: BaseViewModel {
     }
     
     func fetchItemDetails() async {
-        isLoading = true
+        if itemDetails == nil {
+            isLoading = true
+        }
         
         defer {
             isLoading = false
         }
         
         do {
-            let items = try await catalogDataCoordinator.getItemDetails(id: id)
-            itemDetails = items
-            
-            itemImageCarouselViewModel.configure(imageUrls: items.thumbnails)
-            itemReviewsViewModel.configure(reviews: items.reviews ?? [])
+            for try await item in catalogDataCoordinator.getItemDetails(id: id) {
+                itemDetails = item
+                
+                itemImageCarouselViewModel.configure(imageUrls: item.thumbnails)
+                itemReviewsViewModel.configure(reviews: item.reviews ?? [])
+
+                isLoading = false
+            }
         } catch {
             setError(error)
         }
