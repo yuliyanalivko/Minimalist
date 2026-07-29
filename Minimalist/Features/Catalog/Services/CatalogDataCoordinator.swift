@@ -61,7 +61,9 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
         AsyncThrowingStream { continuation in
             Task {
                 if let entities = try? databaseManager.get(type: ItemEntity.self) {
-                    let cached = entities.map { Item(from: $0) }
+                    let cached = entities
+                        .filter { $0.category?.id == categoryId }
+                        .map { Item(from: $0) }
                     
                     if !cached.isEmpty {
                         continuation.yield(cached)

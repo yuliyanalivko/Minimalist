@@ -8,7 +8,7 @@ extension URL {
         let resizedString = originalString.replacing(pattern) { match in
             let idPart = match.output.1
             
-            return "\(idPart)/\(size)/\(size)/"
+            return "\(idPart)/\(size)/\(size)"
         }
         
         return URL(string: resizedString) ?? self

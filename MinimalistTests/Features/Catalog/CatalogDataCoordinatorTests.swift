@@ -180,7 +180,12 @@ struct CatalogDataCoordinatorTests {
             Item(
                 id: "1",
                 name: "Sofa",
-                category: nil,
+                category: Category(
+                    id: "1",
+                    name: "Tables",
+                    thumbnailUrl: nil,
+                    subCategories: []
+                ),
                 subcategory: nil,
                 rating: 2.5,
                 isFavorited: false,
@@ -230,7 +235,12 @@ struct CatalogDataCoordinatorTests {
             Item(
                 id: "1",
                 name: "Sofa",
-                category: nil,
+                category: Category(
+                    id: "1",
+                    name: "Tables",
+                    thumbnailUrl: nil,
+                    subCategories: []
+                ),
                 subcategory: nil,
                 rating: 2.5,
                 isFavorited: false,
