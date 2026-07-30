@@ -24,6 +24,7 @@ final class AppConfigurationManager {
     private(set) var remoteConfigManager: RemoteConfigManaging
     private(set) var notificationManager: NotificationManaging
     private(set) var analyticsManager: AnalyticsManager?
+    private(set) var databaseManager: DatabaseManaging
     
     private(set) var isInitialized = false
     
@@ -31,10 +32,12 @@ final class AppConfigurationManager {
         firebaseConfigurator: SDKConfigurator = FirebaseConfigurator(),
         remoteConfigManager: RemoteConfigManaging = RemoteConfigManager(),
         notificationManager: NotificationManaging = NotificationManager.shared,
+        databaseManager: DatabaseManaging = DatabaseManager()
     ) {
         self.firebaseConfigurator = firebaseConfigurator
         self.remoteConfigManager = remoteConfigManager
         self.notificationManager = notificationManager
+        self.databaseManager = databaseManager
     }
     
     func initializeSDKs() {
@@ -53,6 +56,8 @@ final class AppConfigurationManager {
         await remoteConfigManager.fetchAndActivate()
         
         await configureAnalytics()
+        
+        clearCache()
         
         setIsInitialized(true)
     }
@@ -76,5 +81,17 @@ final class AppConfigurationManager {
         }
 #endif
         analyticsManager = AnalyticsManager(providers: providers)
+    }
+    
+    private func clearCache() {
+        let now: Date = Date()
+        
+        guard let cutoff = Calendar.current.date(byAdding: .day, value: -30, to: now) else {
+            return
+        }
+        
+        try? databaseManager.delete(type: CategoryEntity.self, olderThan: cutoff)
+        try? databaseManager.delete(type: ItemEntity.self, olderThan: cutoff)
+        try? databaseManager.delete(type: ItemDetailsEntity.self, olderThan: cutoff)
     }
 }

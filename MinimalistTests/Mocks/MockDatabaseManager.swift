@@ -29,7 +29,7 @@ final class MockDatabaseManager: DatabaseManaging, @unchecked Sendable {
             return objectId == id
         }
     }
-
+    
     func save<T: Object>(_ object: T) throws {
         if let saveError {
             throw saveError
@@ -45,8 +45,18 @@ final class MockDatabaseManager: DatabaseManaging, @unchecked Sendable {
         }
     }
     
-    func delete<T: Object>(type: T.Type) throws {
-        objects.removeAll { $0 is T }
+    func delete<T: Object>(type: T.Type, olderThan date: Date?) throws {
+        objects.removeAll { object in
+            guard let typed = object as? T else { return false }
+            
+            guard let date else { return true }
+            
+            guard let cachedAt = typed.value(forKey: "cachedAt") as? Date else {
+                return false
+            }
+            
+            return cachedAt < date
+        }
     }
     
     func delete<T: Object, KeyType>(type: T.Type, id: KeyType) throws {

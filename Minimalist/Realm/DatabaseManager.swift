@@ -54,13 +54,18 @@ class DatabaseManager: DatabaseManaging {
     }
     
     /// Removes all persisted objects of a specified type from the database.
-    ///
     /// - Parameter type: The Realm object type to delete.
-    func delete<T: Object>(type: T.Type) throws {
+    /// - Parameter date: An optional cutoff date. If provided, only items cached before this date are deleted; if nil, all items of the given type are deleted
+    func delete<T: Object>(type: T.Type, olderThan date: Date? = nil) throws {
         let realm = try realm()
         
         try realm.write {
-            let objects = realm.objects(type)
+            var objects = realm.objects(type)
+            
+            if let date {
+                objects = objects.filter("cachedAt < %@", date)
+            }
+            
             realm.delete(objects)
         }
     }

@@ -1,7 +1,7 @@
 import RealmSwift
 
-class ReviewEntity: Object, Identifiable {
-    @Persisted(primaryKey: true) var id: String
+class ReviewEntity: EmbeddedObject, Identifiable {
+    @Persisted var id: String
     @Persisted var rating: Int
     @Persisted var message: String?
     
