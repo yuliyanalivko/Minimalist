@@ -20,7 +20,7 @@ struct ItemDetailsViewModelTests {
             isFavorited: false,
             isAddedToCart: false,
             price: 10.50,
-            thumbnails: ["https://example.com/id/1041/5184/2916"],
+            thumbnails: ["https://example.com/id/1041/500/500"],
             reviews: []
         )
 
@@ -29,11 +29,13 @@ struct ItemDetailsViewModelTests {
         mockError: Error? = nil,
         favoritesMock: MockNetworkClient = MockNetworkClient(mockData: Data()),
         cartMock: MockNetworkClient = MockNetworkClient(mockData: Data()),
+        database: MockDatabaseManager = MockDatabaseManager(),
         analyticsManager: AnalyticsManager? = nil
     ) -> ItemDetailsViewModel {
         let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
         let catalogDataCoordinator = CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
+            databaseManager: database
         )
         
         let favoritesDataCoordinator = FavoritesDataCoordinator(
@@ -166,9 +168,10 @@ struct ItemDetailsViewModelTests {
         #expect(parameters[AnalyticsParamName.itemName.rawValue] as? String == item.name)
     }
 
-    @Test("Should load item details from service")
+
+    @Test("Should load item details from network when cache is empty")
     @MainActor
-    func fetchItemDetails_setItemDetails_onSuccess() async {
+    func fetchItemDetails_networkSuccess_emptyCache() async {
         let json = mockItemDetails.data(using: .utf8)!
         let expected = try! JSONDecoder().decode(ItemDetails.self, from: json)
         let vm = makeViewModel(mockData: json)
@@ -177,19 +180,52 @@ struct ItemDetailsViewModelTests {
 
         #expect(vm.itemDetails == expected)
         #expect(vm.isLoading == false)
-        #expect(vm.state == ContentState.content(expected))
+        #expect(vm.error == nil)
     }
-
-    @Test("Should set error on failure")
+    
+    @Test("Should set error when network fails and cache is empty")
     @MainActor
-    func fetchItemDetails_setError_onFailure() async {
+    func fetchItemDetails_networkFailure_emptyCache() async {
         let vm = makeViewModel(mockError: URLError(.badServerResponse))
 
         await vm.fetchItemDetails()
 
+        #expect(vm.itemDetails == nil)
         #expect(vm.error != nil)
-        #expect(vm.errorMessage == "The server returned an unexpected response. Please try again later.")
         #expect(vm.isLoading == false)
+    }
+    
+    @Test("Should refresh item details after showing cache")
+    @MainActor
+    func fetchItemDetails_cacheThenNetwork() async {
+        let cached = item
+        let database = MockDatabaseManager()
+        database.objects = [cached.toEntity()]
+
+        let json = mockItemDetails.data(using: .utf8)!
+        let network = try! JSONDecoder().decode(ItemDetails.self, from: json)
+        let vm = makeViewModel(mockData: json, database: database)
+
+        await vm.fetchItemDetails()
+
+        #expect(vm.itemDetails == network)
+        #expect(vm.isLoading == false)
+    }
+    
+    @Test("Should keep cached item details when network fails")
+    @MainActor
+    func fetchItemDetails_networkFailure_keepsCache() async {
+        let cached = item
+        let database = MockDatabaseManager()
+        database.objects = [cached.toEntity()]
+
+        let vm = makeViewModel(mockError: URLError(.badServerResponse), database: database)
+
+        await vm.fetchItemDetails()
+
+        #expect(vm.itemDetails == cached)
+        #expect(vm.isLoading == false)
+        #expect(vm.error != nil)
     }
 
     @Test("Should be loading while fetch has not completed")

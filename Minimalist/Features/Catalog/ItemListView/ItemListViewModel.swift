@@ -39,15 +39,19 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     func fetchItems() async {
-        isLoading = true
+        if allItems.isEmpty == true {
+            isLoading = true
+        }
         
         defer {
             isLoading = false
         }
         
         do {
-            let items = try await catalogDataCoordinator.getItems(categoryId: categoryId)
-            allItems = mapUrls(of: items)
+            for try await items in catalogDataCoordinator.getItems(categoryId: categoryId) {
+                allItems = mapUrls(of: items)
+                isLoading = false
+            }
         } catch {
             setError(error)
         }
