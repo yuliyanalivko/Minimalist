@@ -25,6 +25,7 @@ final class AppConfigurationManager {
     private(set) var notificationManager: NotificationManaging
     private(set) var analyticsManager: AnalyticsManager?
     private(set) var databaseManager: DatabaseManaging
+    private(set) var userSettings: UserSettings
     
     private(set) var isInitialized = false
     
@@ -32,12 +33,14 @@ final class AppConfigurationManager {
         firebaseConfigurator: SDKConfigurator = FirebaseConfigurator(),
         remoteConfigManager: RemoteConfigManaging = RemoteConfigManager(),
         notificationManager: NotificationManaging = NotificationManager.shared,
-        databaseManager: DatabaseManaging = DatabaseManager()
+        databaseManager: DatabaseManaging = DatabaseManager(),
+        userSettings: UserSettings = UserSettings()
     ) {
         self.firebaseConfigurator = firebaseConfigurator
         self.remoteConfigManager = remoteConfigManager
         self.notificationManager = notificationManager
         self.databaseManager = databaseManager
+        self.userSettings = userSettings
     }
     
     func initializeSDKs() {
@@ -84,9 +87,13 @@ final class AppConfigurationManager {
     }
     
     private func clearCache() {
+        guard let days = userSettings.cacheExpirationPeriod.days else {
+            return
+        }
+        
         let now: Date = Date()
         
-        guard let cutoff = Calendar.current.date(byAdding: .day, value: -30, to: now) else {
+        guard let cutoff = Calendar.current.date(byAdding: .day, value: -days, to: now) else {
             return
         }
         
