@@ -2,7 +2,7 @@ import SwiftUI
 
 @Observable
 class UserSettings {
-    private let cacheKey = "app_cache_expiration_period"
+    private let cacheKey: String = UserDefaultsKey.cacheExpirationPeriod.rawValue
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {

@@ -54,6 +54,8 @@ final class AppConfigurationManager {
     }
     
     private func performInitialization() async {
+        registerUserDefaults()
+
         configureFirebase()
         
         await remoteConfigManager.fetchAndActivate()
@@ -100,5 +102,11 @@ final class AppConfigurationManager {
         try? databaseManager.delete(type: CategoryEntity.self, olderThan: cutoff)
         try? databaseManager.delete(type: ItemEntity.self, olderThan: cutoff)
         try? databaseManager.delete(type: ItemDetailsEntity.self, olderThan: cutoff)
+    }
+    
+    private func registerUserDefaults() {
+        UserDefaults.standard.register(defaults: [
+            UserDefaultsKey.cacheExpirationPeriod.rawValue: CacheExpirationPeriod.month.rawValue,
+        ])
     }
 }
