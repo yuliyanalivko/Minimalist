@@ -1,4 +1,5 @@
 import RealmSwift
+import Foundation
 
 class ItemEntity: Object, Identifiable {
     @Persisted(primaryKey: true) var id: String
@@ -10,7 +11,8 @@ class ItemEntity: Object, Identifiable {
     @Persisted var isAddedToCart: Bool
     @Persisted var price: Double
     @Persisted var thumbnailUrl: String?
-    
+    @Persisted var cachedAt: Date = Date()
+
     convenience init(from dto: Item) {
         self.init()
         self.id = dto.id
@@ -29,5 +31,6 @@ class ItemEntity: Object, Identifiable {
         self.isAddedToCart = dto.isAddedToCart
         self.price = dto.price
         self.thumbnailUrl = dto.thumbnailUrl
+        self.cachedAt = Date()
     }
 }

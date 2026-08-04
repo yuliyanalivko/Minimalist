@@ -1,4 +1,5 @@
 import RealmSwift
+import Foundation
 
 class ItemDetailsEntity: Object, Identifiable {
     @Persisted(primaryKey: true) var id: String
@@ -12,7 +13,8 @@ class ItemDetailsEntity: Object, Identifiable {
     @Persisted var price: Double
     @Persisted var thumbnails: List<String> = List()
     @Persisted var reviews: List<ReviewEntity> = List()
-    
+    @Persisted var cachedAt: Date = Date()
+
     convenience init(from dto: ItemDetails) {
         self.init()
         self.id = dto.id
@@ -37,5 +39,7 @@ class ItemDetailsEntity: Object, Identifiable {
             self.reviews
                 .append(objectsIn: reviews.map { ReviewEntity(from: $0) })
         }
+        
+        self.cachedAt = Date()
     }
 }
