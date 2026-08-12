@@ -4,13 +4,13 @@ struct SubCategory: CatalogItemConfigurable {
     let thumbnailUrl: String?
     let iconName: String?
     
-    func toEntity() -> SubCategoryEntity {
-        SubCategoryEntity(from: self)
+    func toRealm() -> RealmSubCategory {
+        RealmSubCategory(from: self)
     }
 }
 
 extension SubCategory {
-    init(from entity: SubCategoryEntity) {
+    init(from entity: RealmSubCategory) {
         self.init(
             id: entity.id,
             name: entity.name,

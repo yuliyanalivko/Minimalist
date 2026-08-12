@@ -9,18 +9,36 @@ struct Item: Identifiable, Codable, Equatable {
     let price: Double
     var thumbnailUrl: String?
     
-    func toEntity() -> ItemEntity {
-        ItemEntity(from: self)
+    func toRealm() -> RealmItem {
+        RealmItem(from: self)
+    }
+    
+    func toSwiftData() -> SwiftDataItem {
+        SwiftDataItem(from: self)
     }
 }
 
 extension Item {
-    init(from entity: ItemEntity) {
+    init(from entity: RealmItem) {
         self.init(
             id: entity.id,
             name: entity.name,
             category: entity.category.map { Category(from: $0) },
             subcategory: entity.subcategory.map { SubCategory(from: $0) },
+            rating: entity.rating,
+            isFavorited: entity.isFavorited,
+            isAddedToCart: entity.isAddedToCart,
+            price: entity.price,
+            thumbnailUrl: entity.thumbnailUrl,
+        )
+    }
+    
+    init(from entity: SwiftDataItem) {
+        self.init(
+            id: entity.entityId,
+            name: entity.name,
+            category: entity.category,
+            subcategory: entity.subcategory,
             rating: entity.rating,
             isFavorited: entity.isFavorited,
             isAddedToCart: entity.isAddedToCart,

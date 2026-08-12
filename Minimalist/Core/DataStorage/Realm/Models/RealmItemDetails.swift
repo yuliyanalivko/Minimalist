@@ -1,18 +1,18 @@
 import RealmSwift
 import Foundation
 
-class ItemDetailsEntity: Object, Identifiable {
+class RealmItemDetails: Object, Identifiable {
     @Persisted(primaryKey: true) var id: String
     @Persisted var name: String
-    @Persisted var category: CategoryEntity?
-    @Persisted var subCategory: SubCategoryEntity?
+    @Persisted var category: RealmCategory?
+    @Persisted var subCategory: RealmSubCategory?
     @Persisted var itemDescription: String
     @Persisted var rating: Double
     @Persisted var isFavorited: Bool
     @Persisted var isAddedToCart: Bool
     @Persisted var price: Double
     @Persisted var thumbnails: List<String> = List()
-    @Persisted var reviews: List<ReviewEntity> = List()
+    @Persisted var reviews: List<RealmReview> = List()
     @Persisted var cachedAt: Date = Date()
 
     convenience init(from dto: ItemDetails) {
@@ -21,11 +21,11 @@ class ItemDetailsEntity: Object, Identifiable {
         self.name = dto.name
         
         if let category = dto.category {
-            self.category = CategoryEntity(from: category)
+            self.category = RealmCategory(from: category)
         }
         
         if let subCategory = dto.subCategory {
-            self.subCategory = SubCategoryEntity(from: subCategory)
+            self.subCategory = RealmSubCategory(from: subCategory)
         }
         
         self.itemDescription = dto.description
@@ -37,7 +37,7 @@ class ItemDetailsEntity: Object, Identifiable {
         
         if let reviews = dto.reviews {
             self.reviews
-                .append(objectsIn: reviews.map { ReviewEntity(from: $0) })
+                .append(objectsIn: reviews.map { RealmReview(from: $0) })
         }
         
         self.cachedAt = Date()

@@ -7,27 +7,17 @@ import UserNotifications
 @MainActor
 struct AppConfigurationManagerTests {
     
-    private func makeCategory(id: String, cachedAt: Date) -> CategoryEntity {
-        let entity = Category(
-            id: id,
-            name: "Sofas",
-            thumbnailUrl: nil,
-            subCategories: []
-        ).toEntity()
-        entity.cachedAt = cachedAt
-        
-        return entity
-    }
-    
-    func configurationManager(database: DatabaseManaging = DatabaseManager()) -> AppConfigurationManager {
-        let manager = AppConfigurationManager(
+    func configurationManager(
+        userSettings: UserSettings = UserSettings(),
+        cacheCleaner: CacheCleaning? = nil
+    ) -> AppConfigurationManager {
+        AppConfigurationManager(
             firebaseConfigurator: MockSDKConfigurator(),
             remoteConfigManager: MockRemoteConfigManager(),
             notificationManager: MockNotificationManager(),
-            databaseManager: database
+            userSettings: userSettings,
+            cacheCleaner: cacheCleaner
         )
-        
-        return manager
     }
     
     func waitForInitialization(
@@ -99,25 +89,33 @@ struct AppConfigurationManagerTests {
         #expect(manager.analyticsManager?.providers.first is FirebaseAnalyticsProvider)
     }
     
-    @Test("Should delete only data older than 30 days")
-    func clearCache_deletesStaleKeepsFresh() async throws {
-        let database = MockDatabaseManager()
-        let now = Date()
-        let stale = Calendar.current.date(byAdding: .day, value: -31, to: now)!
-        let fresh = Calendar.current.date(byAdding: .day, value: -1, to: now)!
-        
-        database.objects = [
-            makeCategory(id: "stale", cachedAt: stale),
-            makeCategory(id: "fresh", cachedAt: fresh)
-        ]
-        
-        let manager = configurationManager(database: database)
+    @Test("Should clear expired cache on initialization")
+    func clearCache_invokesCacheCleaner() async throws {
+        let cleaner = MockCacheCleaner()
+        let defaults = UserDefaults(suiteName: UUID().uuidString)!
+        defaults.set(
+            CacheExpirationPeriod.month.rawValue,
+            forKey: UserDefaultsKey.cacheExpirationPeriod.rawValue
+        )
+        let manager = configurationManager(
+            userSettings: UserSettings(defaults: defaults),
+            cacheCleaner: cleaner
+        )
         
         manager.initializeSDKs()
         try await waitForInitialization(manager: manager)
-
-        let remaining = try database.get(type: CategoryEntity.self)
         
-        #expect(remaining.map(\.id) == ["fresh"])
+        let expectedCutoff = Calendar.current.date(
+            byAdding: .day,
+            value: -(CacheExpirationPeriod.month.days ?? 0),
+            to: Date()
+        )
+        
+        #expect(cleaner.deletedOlderThan != nil)
+        
+        if let deletedOlderThan = cleaner.deletedOlderThan,
+           let expectedCutoff {
+            #expect(abs(deletedOlderThan.timeIntervalSince(expectedCutoff)) < 5)
+        }
     }
 }

@@ -16,6 +16,14 @@ struct DataAndStorageView: View {
                     }
                 }
             }
+            
+            Section {
+                Picker("Storage engine", selection: $viewModel.selectedStorageEngine) {
+                    ForEach(CacheStorageEngine.allCases) { engine in
+                        Text(engine.title).tag(engine)
+                    }
+                }
+            }
         }
     }
 }

@@ -11,13 +11,17 @@ struct ItemDetails: Identifiable, Codable, Equatable {
     var thumbnails: [String]
     let reviews: [Review]?
     
-    func toEntity() -> ItemDetailsEntity {
-        ItemDetailsEntity(from: self)
+    func toRealm() -> RealmItemDetails {
+        RealmItemDetails(from: self)
+    }
+    
+    func toSwiftData() -> SwiftDataItemDetails {
+        SwiftDataItemDetails(from: self)
     }
 }
 
 extension ItemDetails {
-    init(from entity: ItemDetailsEntity) {
+    init(from entity: RealmItemDetails) {
         let reviews = Array(entity.reviews.map { Review(from: $0) })
         let thumbnails = Array(entity.thumbnails.map { $0 })
         
@@ -33,6 +37,22 @@ extension ItemDetails {
             price: entity.price,
             thumbnails: thumbnails,
             reviews: reviews,
+        )
+    }
+    
+    init(from entity: SwiftDataItemDetails) {
+        self.init(
+            id: entity.entityId,
+            name: entity.name,
+            category: entity.category,
+            subCategory: entity.subCategory,
+            description: entity.itemDescription,
+            rating: entity.rating,
+            isFavorited: entity.isFavorited,
+            isAddedToCart: entity.isAddedToCart,
+            price: entity.price,
+            thumbnails: entity.thumbnails,
+            reviews: entity.reviews,
         )
     }
 }

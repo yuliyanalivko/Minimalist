@@ -3,13 +3,13 @@ struct Review: Identifiable, Codable, Equatable, Hashable {
     let rating: Int
     let message: String?
     
-    func toEntity() -> ReviewEntity {
-        ReviewEntity(from: self)
+    func toRealm() -> RealmReview {
+        RealmReview(from: self)
     }
 }
 
 extension Review {
-    init(from entity: ReviewEntity) {
+    init(from entity: RealmReview) {
         self.init(
             id: entity.id,
             rating: entity.rating,

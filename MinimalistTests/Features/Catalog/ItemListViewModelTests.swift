@@ -50,7 +50,7 @@ struct ItemListViewModelTests {
         let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
         let catalogDataCoordinator = CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
-            databaseManager: database
+            storeResolver: { RealmCatalogStore(databaseManager: database) }
         )
         let favoritesDataCoordinator = FavoritesDataCoordinator(
             networkService: FavoritesNetworkService(networkClient: favoritesMock)
@@ -238,7 +238,7 @@ struct ItemListViewModelTests {
     func fetchItems_cacheThenNetwork() async {
         let cached = items
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
 
         let json = mockItems.data(using: .utf8)!
         let network = try! JSONDecoder().decode([Item].self, from: json)
@@ -255,7 +255,7 @@ struct ItemListViewModelTests {
     func fetchItems_networkFailure_keepsCache() async {
         let cached = items
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
 
         let vm = makeViewModel(mockError: URLError(.badServerResponse), database: database)
 

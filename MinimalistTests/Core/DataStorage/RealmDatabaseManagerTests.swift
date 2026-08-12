@@ -4,15 +4,15 @@ import RealmSwift
 @testable import Minimalist
 
 @MainActor
-struct DatabaseManagerTests {
+struct RealmDatabaseManagerTests {
 
-    private func makeManager() throws -> DatabaseManager {
+    private func makeManager() throws -> RealmDatabaseManager {
         let config = Realm.Configuration(
             inMemoryIdentifier: UUID().uuidString,
-            objectTypes: [CategoryEntity.self, SubCategoryEntity.self]
+            objectTypes: [RealmCategory.self, RealmSubCategory.self]
         )
 
-        return DatabaseManager(configuration: config)
+        return RealmDatabaseManager(configuration: config)
     }
 
     @Test("Should save and get data")
@@ -23,10 +23,10 @@ struct DatabaseManagerTests {
             name: "Sofas",
             thumbnailUrl: nil,
             subCategories: []
-        ).toEntity()
+        ).toRealm()
 
         try manager.save(entity)
-        let result = try manager.get(type: CategoryEntity.self)
+        let result = try manager.get(type: RealmCategory.self)
 
         #expect(result.count == 1)
         #expect(result.first?.id == "1")
@@ -36,10 +36,10 @@ struct DatabaseManagerTests {
     @Test("Should update existing object by primary key")
     func save_withSameId_updateObject() throws {
         let manager = try makeManager()
-        try manager.save(Category(id: "1", name: "Sofas", thumbnailUrl: nil, subCategories: []).toEntity())
-        try manager.save(Category(id: "1", name: "Updated", thumbnailUrl: nil, subCategories: []).toEntity())
+        try manager.save(Category(id: "1", name: "Sofas", thumbnailUrl: nil, subCategories: []).toRealm())
+        try manager.save(Category(id: "1", name: "Updated", thumbnailUrl: nil, subCategories: []).toRealm())
 
-        let result = try manager.get(type: CategoryEntity.self)
+        let result = try manager.get(type: RealmCategory.self)
 
         #expect(result.count == 1)
         #expect(result.first?.name == "Updated")
@@ -48,9 +48,9 @@ struct DatabaseManagerTests {
     @Test("Should get data by id")
     func get_byId_returnObject() throws {
         let manager = try makeManager()
-        try manager.save(Category(id: "2", name: "Tables", thumbnailUrl: nil, subCategories: []).toEntity())
+        try manager.save(Category(id: "2", name: "Tables", thumbnailUrl: nil, subCategories: []).toRealm())
         
-        let result = try manager.get(type: CategoryEntity.self, id: "2")
+        let result = try manager.get(type: RealmCategory.self, id: "2")
 
         #expect(result?.name == "Tables")
     }
@@ -58,10 +58,10 @@ struct DatabaseManagerTests {
     @Test("Should delete by id")
     func delete_byId_removeObject() throws {
         let manager = try makeManager()
-        try manager.save(Category(id: "1", name: "Sofas", thumbnailUrl: nil, subCategories: []).toEntity())
+        try manager.save(Category(id: "1", name: "Sofas", thumbnailUrl: nil, subCategories: []).toRealm())
 
-        try manager.delete(type: CategoryEntity.self, id: "1")
-        let result = try manager.get(type: CategoryEntity.self)
+        try manager.delete(type: RealmCategory.self, id: "1")
+        let result = try manager.get(type: RealmCategory.self)
 
         #expect(result.isEmpty)
     }
@@ -70,13 +70,13 @@ struct DatabaseManagerTests {
     func delete_type_removeAll() throws {
         let manager = try makeManager()
         try manager.save([
-            Category(id: "1", name: "Sofas", thumbnailUrl: nil, subCategories: []).toEntity(),
-            Category(id: "2", name: "Tables", thumbnailUrl: nil, subCategories: []).toEntity()
+            Category(id: "1", name: "Sofas", thumbnailUrl: nil, subCategories: []).toRealm(),
+            Category(id: "2", name: "Tables", thumbnailUrl: nil, subCategories: []).toRealm()
         ])
 
-        try manager.delete(type: CategoryEntity.self)
+        try manager.delete(type: RealmCategory.self)
 
-        #expect(try manager.get(type: CategoryEntity.self).isEmpty)
+        #expect(try manager.get(type: RealmCategory.self).isEmpty)
     }
 }
 

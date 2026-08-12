@@ -1,11 +1,11 @@
 import RealmSwift
 import Foundation
 
-class CategoryEntity: Object, Identifiable {
+class RealmCategory: Object, Identifiable {
     @Persisted(primaryKey: true) var id: String
     @Persisted var name: String
     @Persisted var thumbnailUrl: String?
-    @Persisted var subCategories: List<SubCategoryEntity>
+    @Persisted var subCategories: List<RealmSubCategory>
     @Persisted var cachedAt: Date = Date()
 
     convenience init(from dto: Category) {
@@ -13,7 +13,7 @@ class CategoryEntity: Object, Identifiable {
         self.id = dto.id
         self.name = dto.name
         self.thumbnailUrl = dto.thumbnailUrl
-        let entities = dto.subCategories.map { SubCategoryEntity(from: $0) }
+        let entities = dto.subCategories.map { RealmSubCategory(from: $0) }
         self.subCategories.append(objectsIn: entities)
         self.cachedAt = Date()
     }
