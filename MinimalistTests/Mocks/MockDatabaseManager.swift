@@ -7,7 +7,7 @@ final class MockDatabaseManager: DatabaseManaging, @unchecked Sendable {
     var getError: Error?
     var saveError: Error?
     
-    func get<T: Persistable>(type: T.Type) throws -> [T] {
+    func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
         if let getError {
             throw getError
         }

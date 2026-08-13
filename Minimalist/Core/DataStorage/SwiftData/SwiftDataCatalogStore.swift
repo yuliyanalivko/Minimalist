@@ -10,7 +10,7 @@ final class SwiftDataCatalogStore: CatalogStoring {
     /// Fetches all stored categories from the SwiftData database and maps them to domain models.
     /// - Returns: An array of `Category` domain objects.
     func getCategories() throws -> [Category] {
-        let entities = try databaseManager.get(type: SwiftDataCategory.self)
+        let entities = try databaseManager.get(type: SwiftDataCategory.self, sort: true)
         
         return entities.map { Category(from: $0) }
     }
@@ -24,7 +24,7 @@ final class SwiftDataCatalogStore: CatalogStoring {
     /// Fetches all stored items from the SwiftData database and maps them to domain models.
     /// - Returns: An array of `Item` domain objects.
     func getItems() throws -> [Item] {
-        let entities = try databaseManager.get(type: SwiftDataItem.self)
+        let entities = try databaseManager.get(type: SwiftDataItem.self, sort: true)
         
         return entities.map { Item(from: $0) }
     }

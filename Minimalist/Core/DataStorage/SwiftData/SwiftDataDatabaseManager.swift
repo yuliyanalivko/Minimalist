@@ -5,6 +5,10 @@ protocol Expirable {
     var cachedAt: Date { get set }
 }
 
+protocol Sortable {
+    var name: String { get set }
+}
+
 @MainActor
 final class SwiftDataDatabaseManager: DatabaseManaging {
     private let container: ModelContainer
@@ -16,13 +20,14 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
     
     /// Fetches all persisted records of a specified type from the database.
     /// - Parameter type: The persistent model type to query from the database.
+    /// - Parameter sort: A Boolean flag indicating whether to sort the fetched records alphabetically by name. Defaults to `false`.
     /// - Returns: An array containing all stored instances matching the specified type.
-    func get<T: Persistable>(type: T.Type) throws -> [T] {
+    func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
         guard let type = type as? any PersistentModel.Type else {
             return []
         }
         
-        return try fetchAll(type) as? [T] ?? []
+        return try fetchAll(type, sort: sort) as? [T] ?? []
     }
     
     /// Fetches a single persisted record matching a specific unique identifier.
@@ -92,7 +97,7 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
         context.delete(object)
         try context.save()
     }
-        
+    
     private func upsert(_ model: some PersistentModel & EntityIdentified) throws {
         try deleteExisting(type(of: model), entityId: model.entityId)
         context.insert(model)
@@ -114,8 +119,18 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
         try fetchAll(type).first { $0.entityId == id }
     }
     
-    private func fetchAll<T: PersistentModel>(_ type: T.Type) throws -> [T] {
-        try context.fetch(FetchDescriptor<T>())
+    private func fetchAll<T: PersistentModel>(_ type: T.Type, sort: Bool = false) throws -> [T] {
+        if sort, let sortableType = T.self as? any (PersistentModel & Sortable).Type {
+            return try fetchAllSorted(sortableType) as? [T] ?? []
+        }
+        
+        return try context.fetch(FetchDescriptor<T>())
+    }
+    
+    private func fetchAllSorted<T: PersistentModel & Sortable>(_ type: T.Type) throws -> [T] {
+        let descriptor = FetchDescriptor<T>(sortBy: [SortDescriptor(\.name, order: .forward)])
+        
+        return try context.fetch(descriptor)
     }
     
     private func deleteAll<T: PersistentModel>(_ type: T.Type) throws {

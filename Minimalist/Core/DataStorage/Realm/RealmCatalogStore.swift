@@ -8,7 +8,7 @@ final class RealmCatalogStore: CatalogStoring {
     /// Fetches all stored categories from the Realm database and maps them to domain models.
     /// - Returns: An array of `Category` domain objects.
     func getCategories() throws -> [Category] {
-        let entities = try databaseManager.get(type: RealmCategory.self)
+        let entities = try databaseManager.get(type: RealmCategory.self, sort: true)
         
         return entities.map { Category(from: $0) }
     }
@@ -23,7 +23,7 @@ final class RealmCatalogStore: CatalogStoring {
     /// Fetches all stored items from the Realm database and maps them to domain models.
     /// - Returns: An array of `Item` domain objects.
     func getItems() throws -> [Item] {
-        let entities = try databaseManager.get(type: RealmItem.self)
+        let entities = try databaseManager.get(type: RealmItem.self, sort: true)
         
         return entities.map { Item(from: $0) }
     }

@@ -2,7 +2,7 @@ import SwiftData
 import Foundation
 
 @Model
-final class SwiftDataCategory: Persistable, EntityIdentified, Expirable {
+final class SwiftDataCategory: Persistable, EntityIdentified, Expirable, Sortable {
     @Attribute(.unique)
     var entityId: String
     

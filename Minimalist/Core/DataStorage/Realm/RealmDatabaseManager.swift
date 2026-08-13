@@ -12,14 +12,19 @@ class RealmDatabaseManager: DatabaseManaging {
     
     /// Fetches all persisted objects of a specified type from the database as an array.
     /// - Parameter type: The Object model type to query from the database.
+    /// - Parameter sort: A Boolean flag indicating whether to sort the fetched records alphabetically by name. Defaults to `false`.
     /// - Returns: An array containing all stored instances of the specified type.
-    func get<T: Persistable>(type: T.Type) throws -> [T] {
+    func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
         guard let type = type as? Object.Type else {
             return []
         }
         
         let realm = try realm()
-        let results = realm.objects(type)
+        var results = realm.objects(type)
+        
+        if sort {
+            results = results.sorted(byKeyPath: "name")
+        }
         
         return Array(results) as? [T] ?? []
     }

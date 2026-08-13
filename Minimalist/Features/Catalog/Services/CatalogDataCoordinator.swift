@@ -17,7 +17,7 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
         self.storeResolver = storeResolver
     }
     
-    /// Fetches category data using a cache-first strategy over an asynchronous stream.
+    /// Fetches sorted by name category data using a cache-first strategy over an asynchronous stream.
     ///
     /// This method operates in two stages:
     /// 1. Immediately emits non-empty cached categories from the local database (if available).
@@ -35,10 +35,10 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
                 do {
                     let data = try await networkService.getCategories()
                     let categories = try JSONDecoder().decode([Category].self, from: data)
-                    
+
                     try catalogStore.save(categories)
-                    
-                    continuation.yield(categories)
+
+                    continuation.yield(categories.sorted { $0.name < $1.name })
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: convert(error: error))
@@ -47,7 +47,7 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
         }
     }
     
-    /// Fetches item data using a cache-first strategy over an asynchronous stream.
+    /// Fetches sorted by name item data using a cache-first strategy over an asynchronous stream.
     ///
     /// This method operates in two stages:
     /// 1. Immediately emits non-empty cached items from the local database (if available).
@@ -73,8 +73,8 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
                     let items = try JSONDecoder().decode([Item].self, from: data)
                     
                     try catalogStore.save(items)
-                    
-                    continuation.yield(items)
+
+                    continuation.yield(items.sorted { $0.name < $1.name })
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: convert(error: error))

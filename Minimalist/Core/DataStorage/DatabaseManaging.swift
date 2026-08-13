@@ -3,7 +3,7 @@ import Foundation
 protocol Persistable: AnyObject {}
 
 protocol DatabaseManaging {
-    func get<T: Persistable>(type: T.Type) throws -> [T]
+    func get<T: Persistable>(type: T.Type, sort: Bool) throws -> [T]
     func get<T: Persistable, KeyType>(type: T.Type, id: KeyType) throws -> T?
     
     func save<T: Persistable>(_ object: T) throws
