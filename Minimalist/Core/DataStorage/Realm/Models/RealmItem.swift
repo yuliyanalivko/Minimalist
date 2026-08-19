@@ -1,11 +1,11 @@
 import RealmSwift
 import Foundation
 
-class ItemEntity: Object, Identifiable {
+class RealmItem: Object, Identifiable {
     @Persisted(primaryKey: true) var id: String
     @Persisted var name: String
-    @Persisted var category: CategoryEntity?
-    @Persisted var subcategory: SubCategoryEntity?
+    @Persisted var category: RealmCategory?
+    @Persisted var subcategory: RealmSubCategory?
     @Persisted var rating: Double
     @Persisted var isFavorited: Bool
     @Persisted var isAddedToCart: Bool
@@ -19,11 +19,11 @@ class ItemEntity: Object, Identifiable {
         self.name = dto.name
         
         if let category = dto.category {
-            self.category = CategoryEntity(from: category)
+            self.category = RealmCategory(from: category)
         }
         
         if let subcategory = dto.subcategory {
-            self.subcategory = SubCategoryEntity(from: subcategory)
+            self.subcategory = RealmSubCategory(from: subcategory)
         }
         
         self.rating = dto.rating

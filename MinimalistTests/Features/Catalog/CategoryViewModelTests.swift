@@ -42,7 +42,7 @@ struct CategoryViewModelTests {
         let mockClient = MockNetworkClient(mockData: mockData, mockError: mockError)
         let coordinator = CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: mockClient),
-            databaseManager: database
+            storeResolver: { RealmCatalogStore(databaseManager: database) }
         )
 
         if let analyticsManager {
@@ -153,7 +153,7 @@ struct CategoryViewModelTests {
     func fetchCategories_cacheThenNetwork() async {
         let cached = categories
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
 
         let json = mockCategories.data(using: .utf8)!
         let network = try! JSONDecoder().decode([Minimalist.Category].self, from: json)
@@ -170,7 +170,7 @@ struct CategoryViewModelTests {
     func fetchCategories_networkFailure_keepsCache() async {
         let cached = categories
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
 
         let vm = makeViewModel(mockError: URLError(.badServerResponse), database: database)
 

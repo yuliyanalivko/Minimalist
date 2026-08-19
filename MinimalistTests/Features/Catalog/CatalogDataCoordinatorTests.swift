@@ -10,7 +10,7 @@ struct CatalogDataCoordinatorTests {
     ) -> CatalogDataCoordinator {
         CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
-            databaseManager: database
+            storeResolver: { RealmCatalogStore(databaseManager: database) }
         )
     }
     
@@ -58,7 +58,7 @@ struct CatalogDataCoordinatorTests {
             )
         ]
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
         let json = mockCategories.data(using: .utf8)!
         let network = try JSONDecoder().decode(
             [Minimalist.Category].self,
@@ -92,7 +92,7 @@ struct CatalogDataCoordinatorTests {
         )
         _ = try await collectData(from: coordinator.getCategories())
         
-        let saved = try database.get(type: CategoryEntity.self).map(
+        let saved = try database.get(type: RealmCategory.self).map(
             Category.init(from:)
         )
         
@@ -108,7 +108,7 @@ struct CatalogDataCoordinatorTests {
             subCategories: []
         )]
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
         let coordinator = makeCoordinator(
             catalogMock: MockNetworkClient(
                 mockData: nil,
@@ -194,7 +194,7 @@ struct CatalogDataCoordinatorTests {
             )
         ]
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
         let json = mockItems.data(using: .utf8)!
         let network = try JSONDecoder().decode([Item].self, from: json)
         let coordinator = makeCoordinator(
@@ -222,7 +222,7 @@ struct CatalogDataCoordinatorTests {
         )
         _ = try await collectData(from: coordinator.getItems(categoryId: "1"))
         
-        let saved = try database.get(type: ItemEntity.self).map(
+        let saved = try database.get(type: RealmItem.self).map(
             Item.init(from:)
         )
         
@@ -250,7 +250,7 @@ struct CatalogDataCoordinatorTests {
         ]
 
         let database = MockDatabaseManager()
-        database.objects = cached.map { $0.toEntity() }
+        database.objects = cached.map { $0.toRealm() }
         let coordinator = makeCoordinator(
             catalogMock: MockNetworkClient(
                 mockData: nil,
@@ -335,7 +335,7 @@ struct CatalogDataCoordinatorTests {
         )
         
         let database = MockDatabaseManager()
-        database.objects = [cached.toEntity()]
+        database.objects = [cached.toRealm()]
         let json = mockItemDetails.data(using: .utf8)!
         let network = try JSONDecoder().decode(ItemDetails.self, from: json)
         let coordinator = makeCoordinator(
@@ -363,7 +363,7 @@ struct CatalogDataCoordinatorTests {
         )
         _ = try await collectData(from: coordinator.getItemDetails(id: "1"))
         
-        let saved = try database.get(type: ItemDetailsEntity.self).map(
+        let saved = try database.get(type: RealmItemDetails.self).map(
             ItemDetails.init(from:)
         )
         
@@ -387,7 +387,7 @@ struct CatalogDataCoordinatorTests {
         )
 
         let database = MockDatabaseManager()
-        database.objects = [cached.toEntity()]
+        database.objects = [cached.toRealm()]
         let coordinator = makeCoordinator(
             catalogMock: MockNetworkClient(
                 mockData: nil,

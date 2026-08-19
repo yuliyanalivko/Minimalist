@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import FirebaseRemoteConfig
 import Firebase
 import Combine
@@ -24,23 +25,25 @@ final class AppConfigurationManager {
     private(set) var remoteConfigManager: RemoteConfigManaging
     private(set) var notificationManager: NotificationManaging
     private(set) var analyticsManager: AnalyticsManager?
-    private(set) var databaseManager: DatabaseManaging
     private(set) var userSettings: UserSettings
+    private(set) var swiftDataContainer: ModelContainer?
+    
+    private let cacheCleaner: CacheCleaning?
     
     private(set) var isInitialized = false
-    
+
     init(
         firebaseConfigurator: SDKConfigurator = FirebaseConfigurator(),
         remoteConfigManager: RemoteConfigManaging = RemoteConfigManager(),
         notificationManager: NotificationManaging = NotificationManager.shared,
-        databaseManager: DatabaseManaging = DatabaseManager(),
-        userSettings: UserSettings = UserSettings()
+        userSettings: UserSettings = UserSettings(),
+        cacheCleaner: CacheCleaning? = nil
     ) {
         self.firebaseConfigurator = firebaseConfigurator
         self.remoteConfigManager = remoteConfigManager
         self.notificationManager = notificationManager
-        self.databaseManager = databaseManager
         self.userSettings = userSettings
+        self.cacheCleaner = cacheCleaner
     }
     
     func initializeSDKs() {
@@ -61,6 +64,8 @@ final class AppConfigurationManager {
         await remoteConfigManager.fetchAndActivate()
         
         await configureAnalytics()
+        
+        configureModelContainer()
         
         clearCache()
         
@@ -99,14 +104,26 @@ final class AppConfigurationManager {
             return
         }
         
-        try? databaseManager.delete(type: CategoryEntity.self, olderThan: cutoff)
-        try? databaseManager.delete(type: ItemEntity.self, olderThan: cutoff)
-        try? databaseManager.delete(type: ItemDetailsEntity.self, olderThan: cutoff)
+        let cleaner = cacheCleaner ?? CatalogCacheCleaner(swiftDataContainer: swiftDataContainer)
+        try? cleaner.deleteExpired(olderThan: cutoff)
     }
     
     private func registerUserDefaults() {
         UserDefaults.standard.register(defaults: [
             UserDefaultsKey.cacheExpirationPeriod.rawValue: CacheExpirationPeriod.month.rawValue,
+            UserDefaultsKey.cacheStorageEngine.rawValue: CacheStorageEngine.realm.rawValue,
         ])
+    }
+    
+    private func configureModelContainer() {        
+        do {
+            swiftDataContainer = try ModelContainer(
+                for: SwiftDataCategory.self,
+                SwiftDataItem.self,
+                SwiftDataItemDetails.self
+            )
+        } catch {
+            print(error)
+        }
     }
 }

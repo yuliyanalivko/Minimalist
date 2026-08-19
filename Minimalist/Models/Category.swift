@@ -4,8 +4,12 @@ struct Category: CatalogItemConfigurable {
     let thumbnailUrl: String?
     let subCategories: [SubCategory]
     
-    func toEntity() -> CategoryEntity {
-        CategoryEntity(from: self)
+    func toRealm() -> RealmCategory {
+        RealmCategory(from: self)
+    }
+    
+    func toSwiftData() -> SwiftDataCategory {
+        SwiftDataCategory(from: self)
     }
     
     var iconName: String? {
@@ -29,7 +33,7 @@ struct Category: CatalogItemConfigurable {
 }
 
 extension Category {
-    init(from entity: CategoryEntity) {
+    init(from entity: RealmCategory) {
         let entities = Array(entity.subCategories.map { SubCategory(from: $0) })
         
         self.init(
@@ -39,4 +43,14 @@ extension Category {
             subCategories: entities
         )
     }
+    
+    init(from entity: SwiftDataCategory) {
+        self.init(
+            id: entity.entityId,
+            name: entity.name,
+            thumbnailUrl: entity.thumbnailUrl,
+            subCategories: entity.subCategories
+        )
+    }
 }
+

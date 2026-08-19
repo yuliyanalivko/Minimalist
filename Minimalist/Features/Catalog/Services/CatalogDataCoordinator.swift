@@ -1,20 +1,23 @@
 import Foundation
-import RealmSwift
 
 @Observable
 final class CatalogDataCoordinator: BaseDataCoordinator {
     private let networkService: CatalogNetworkService
-    private let databaseManager: DatabaseManaging
+    private let storeResolver: () -> CatalogStoring
+    
+    private var catalogStore: CatalogStoring {
+        storeResolver()
+    }
     
     init(
         networkService: CatalogNetworkService = CatalogNetworkService(),
-        databaseManager: DatabaseManaging = DatabaseManager()
+        storeResolver: @escaping () -> CatalogStoring = { CatalogStoreFactory.makeStore() }
     ) {
         self.networkService = networkService
-        self.databaseManager = databaseManager
+        self.storeResolver = storeResolver
     }
     
-    /// Fetches category data using a cache-first strategy over an asynchronous stream.
+    /// Fetches sorted by name category data using a cache-first strategy over an asynchronous stream.
     ///
     /// This method operates in two stages:
     /// 1. Immediately emits non-empty cached categories from the local database (if available).
@@ -25,21 +28,17 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
     func getCategories() -> AsyncThrowingStream<[Category], Error> {
         AsyncThrowingStream { continuation in
             Task {
-                if let entities = try? databaseManager.get(type: CategoryEntity.self) {
-                    let cached = entities.map { Category(from: $0) }
-                    
-                    if !cached.isEmpty {
-                        continuation.yield(cached)
-                    }
+                if let cached = try? catalogStore.getCategories(), !cached.isEmpty {
+                    continuation.yield(cached)
                 }
                 
                 do {
                     let data = try await networkService.getCategories()
                     let categories = try JSONDecoder().decode([Category].self, from: data)
-                    
-                    try databaseManager.save(categories.map { $0.toEntity() })
-                    
-                    continuation.yield(categories)
+
+                    try catalogStore.save(categories)
+
+                    continuation.yield(categories.sorted { $0.name < $1.name })
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: convert(error: error))
@@ -48,8 +47,8 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
         }
     }
     
-    /// Fetches item data using a cache-first strategy over an asynchronous stream.
-    /// 
+    /// Fetches sorted by name item data using a cache-first strategy over an asynchronous stream.
+    ///
     /// This method operates in two stages:
     /// 1. Immediately emits non-empty cached items from the local database (if available).
     /// 2. Fetches fresh items from the remote server after a delay, updates the local database,
@@ -60,10 +59,9 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
     func getItems(categoryId: String) -> AsyncThrowingStream<[Item], Error> {
         AsyncThrowingStream { continuation in
             Task {
-                if let entities = try? databaseManager.get(type: ItemEntity.self) {
+                if let entities = try? catalogStore.getItems() {
                     let cached = entities
                         .filter { $0.category?.id == categoryId }
-                        .map { Item(from: $0) }
                     
                     if !cached.isEmpty {
                         continuation.yield(cached)
@@ -74,9 +72,9 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
                     let data = try await networkService.getItems(categoryId: categoryId)
                     let items = try JSONDecoder().decode([Item].self, from: data)
                     
-                    try databaseManager.save(items.map { $0.toEntity() })
-                    
-                    continuation.yield(items)
+                    try catalogStore.save(items)
+
+                    continuation.yield(items.sorted { $0.name < $1.name })
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: convert(error: error))
@@ -97,9 +95,7 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
     func getItemDetails(id: String) -> AsyncThrowingStream<ItemDetails, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                if let entity = try? databaseManager.get(type: ItemDetailsEntity.self, id: id) {
-                    let cached = ItemDetails(from: entity)
-                    
+                if let cached = try? catalogStore.getItemDetails(id: id) {
                     continuation.yield(cached)
                 }
                 
@@ -107,7 +103,7 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
                     let data = try await networkService.getItemDetails(id: id)
                     let itemDetails = try JSONDecoder().decode(ItemDetails.self, from: data)
                     
-                    try databaseManager.save(itemDetails.toEntity())
+                    try catalogStore.save(itemDetails)
                     
                     continuation.yield(itemDetails)
                     continuation.finish()

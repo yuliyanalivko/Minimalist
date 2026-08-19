@@ -1,6 +1,6 @@
 import RealmSwift
 
-class SubCategoryEntity: EmbeddedObject, Identifiable {
+class RealmSubCategory: EmbeddedObject, Identifiable {
     @Persisted var id: String
     @Persisted var name: String
     @Persisted var thumbnailUrl: String?
