@@ -6,7 +6,7 @@ extension Object: Persistable {}
 class RealmDatabaseManager: DatabaseManaging {
     private let configuration: Realm.Configuration
     
-    init(configuration: Realm.Configuration = .defaultConfiguration) {
+    init(configuration: Realm.Configuration = RealmConfigurationFactory.make()) {
         self.configuration = configuration
     }
     
