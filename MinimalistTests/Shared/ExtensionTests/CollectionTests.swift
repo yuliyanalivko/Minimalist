@@ -49,4 +49,31 @@ struct CollectionTests {
     func filtered_returnFilteredItems_whitespacesSearch() {
         #expect(collection.filtered(by: "   ", key: \.name) == collection)
     }
+    
+    @Test("Should sort ascending by key path when order is forward")
+    func sorted_returnAscending_forwardOrder() {
+        let sorted = collection.sorted(by: \.name, order: .forward)
+        
+        #expect(sorted == [
+            MockProduct(name: "Garden Sofa"),
+            MockProduct(name: "Table Lamp")
+        ])
+    }
+    
+    @Test("Should sort descending by key path when order is reverse")
+    func sorted_returnDescending_reverseOrder() {
+        let sorted = collection.sorted(by: \.name, order: .reverse)
+        
+        #expect(sorted == [
+            MockProduct(name: "Table Lamp"),
+            MockProduct(name: "Garden Sofa")
+        ])
+    }
+    
+    @Test("Should default to forward order when order is omitted")
+    func sorted_returnAscending_defaultOrder() {
+        let sorted = collection.sorted(by: \.name)
+        
+        #expect(sorted.map(\.name) == ["Garden Sofa", "Table Lamp"])
+    }
 }

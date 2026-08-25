@@ -7,11 +7,9 @@ class CategoryViewModel: RoutableViewModel<CatalogRouter> {
         
         let searchText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        guard searchText.isEmpty else {
-            return .emptySearch
-        }
-        
-        guard let categories = displayedCategories else {
+        guard let categories = displayedCategories,
+              let allCategories,
+              !allCategories.isEmpty else {
             return .empty
         }
         

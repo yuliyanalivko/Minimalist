@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 @Observable
 class ItemListViewModel: RoutableViewModel<CatalogRouter> {
@@ -6,8 +6,17 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     var allItems: [Item] = []
     var searchText: String = ""
     
+    private(set) var sortOption: SortOption?
+    private(set) var sortOrder: SortOrder?
+    
     var displayedItems: [Item] {
-        allItems.filtered(by: searchText, key: \.name)
+        let items = allItems.filtered(by: searchText, key: \.name)
+        
+        if let sortOrder, let sortOption {
+            return sortItems(items, by: sortOption, in: sortOrder)
+        }
+        
+        return items
     }
     
     var state: ContentState<[Item]> {
@@ -80,6 +89,11 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         router.navigate(to: CatalogRoute.itemDetails(title: item.name, id: item.id))
     }
     
+    func updateSorting(by option: SortOption?, in order: SortOrder?) {
+        sortOption = option
+        sortOrder = order
+    }
+    
     func logSearchEvent(categoryName: String) {
         let searchTerm = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -96,6 +110,17 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             name: AnalyticsEventName.viewItemList,
             parameters: [AnalyticsParamName.listId: id, AnalyticsParamName.listName: name]
         ))
+    }
+    
+    private func sortItems(_ items: [Item], by option: SortOption, in order: SortOrder) -> [Item] {
+        switch option {
+        case .name:
+            return items.sorted(by: \.name, order: order)
+        case .price:
+            return items.sorted(by: \.price, order: order)
+        case .rating:
+            return items.sorted(by: \.rating, order: order)
+        }
     }
     
     private func logToggleFavoriteEvent(item: Item) {

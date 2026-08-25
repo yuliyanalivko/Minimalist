@@ -3,6 +3,8 @@ import SwiftUI
 struct ItemListView: View {
     let viewModel: ItemListViewModel
     
+    @State var showSorting: Bool = false
+    
     var body: some View {
         List {
             ForEach(viewModel.displayedItems, id: \.id) { item in
@@ -17,6 +19,14 @@ struct ItemListView: View {
                 .onTapGesture {
                     viewModel.handleItemClick(item: item)
                 }
+            }
+        }
+        .sheet(isPresented: $showSorting) {
+            SortBySheetView(
+                sortOption: viewModel.sortOption,
+                sortOrder: viewModel.sortOrder
+            ) { option, order in
+                viewModel.updateSorting(by: option, in: order)
             }
         }
         .overlay(
@@ -40,8 +50,8 @@ struct ItemListView: View {
         .listStyle(.plain)
         .verticalScreenSpacing()
         .toolbar {
-            //TODO: move to a separate view
             Button {
+                showSorting = true
             } label: {
                 Image.sort
             }

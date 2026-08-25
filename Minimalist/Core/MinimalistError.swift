@@ -7,6 +7,8 @@ enum MinimalistError: Error, LocalizedError {
     /// Represents a failure while serializing or parsing data (e.g., a `DecodingError` from JSON parsing).
     /// - Parameter error: The underlying parsing error containing the schema mismatch details.
     case mappingError(error: Error)
+    /// Represents a failure caused by attempting to persist or retrieve a type that is not supported by the persistence framework.
+    case persistenceTypeError
     /// A fallback case used when an unexpected failure occurs that does not match known categories.
     case unknown
     
@@ -18,6 +20,9 @@ enum MinimalistError: Error, LocalizedError {
             
         case .mappingError:
             return "We couldn't load the data. Please try again."
+            
+        case .persistenceTypeError:
+            return "The requested type is not supported by the persistence framework."
             
         case .unknown:
             return "Something went wrong. Please try again."

@@ -10,6 +10,8 @@ enum AppIcon: String {
     case cart = "cart.fill"
     case arrowLeft = "chevron.left"
     case arrowRight = "chevron.right"
+    case arrowUp = "chevron.up"
+    case arrowDown = "chevron.down"
     case internaldrive = "internaldrive"
     case hammer = "hammer"
 }
@@ -49,6 +51,14 @@ extension Image {
     
     static var next: Image {
         Image(systemName: AppIcon.arrowRight.rawValue)
+    }
+    
+    static var arrowUp: Image {
+        Image(systemName: AppIcon.arrowUp.rawValue)
+    }
+    
+    static var arrowDown: Image {
+        Image(systemName: AppIcon.arrowDown.rawValue)
     }
     
     static var internaldrive: Image {

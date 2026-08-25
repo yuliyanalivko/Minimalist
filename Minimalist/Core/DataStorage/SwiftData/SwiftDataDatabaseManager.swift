@@ -24,7 +24,7 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
     /// - Returns: An array containing all stored instances matching the specified type.
     func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
         guard let type = type as? any PersistentModel.Type else {
-            return []
+            throw MinimalistError.persistenceTypeError
         }
         
         return try fetchAll(type, sort: sort) as? [T] ?? []
@@ -38,7 +38,7 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
     func get<T: Persistable, KeyType>(type: T.Type, id: KeyType) throws -> T? {
         guard let id = id as? String,
               let type = type as? any (PersistentModel & EntityIdentified).Type else {
-            return nil
+            throw MinimalistError.persistenceTypeError
         }
         
         return try fetchByEntityId(type, id: id) as? T
@@ -53,11 +53,16 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
     /// Saves or updates a collection of objects in the database.
     /// - Parameter objects: An array of record instances to be persisted or updated.
     func save<T: Persistable>(_ objects: [T]) throws {
-        for object in objects {
-            guard let model = object as? any PersistentModel & EntityIdentified else {
-                continue
+        let objects: [any PersistentModel & EntityIdentified] = try objects.map { object in
+            guard let object = object as? any PersistentModel & EntityIdentified else {
+                throw MinimalistError.persistenceTypeError
             }
-            try upsert(model)
+            
+            return object
+        }
+        
+        for object in objects {
+            try upsert(object)
         }
         
         try context.save()
@@ -71,13 +76,13 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
     func delete<T: Persistable>(type: T.Type, olderThan date: Date? = nil) throws {
         if let date {
             guard let type = type as? any (PersistentModel & Expirable).Type else {
-                return
+                throw MinimalistError.persistenceTypeError
             }
             
             try deleteExpired(type, olderThan: date)
         } else {
             guard let type = type as? any PersistentModel.Type else {
-                return
+                throw MinimalistError.persistenceTypeError
             }
             
             try deleteAll(type)

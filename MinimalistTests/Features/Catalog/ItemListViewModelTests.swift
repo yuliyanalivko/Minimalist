@@ -294,4 +294,86 @@ struct ItemListViewModelTests {
 
         #expect(vm.state == .empty)
     }
+    
+    @Test("Should sort items by name ascending")
+    func updateSorting_sortByNameForward() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.updateSorting(by: .name, in: .forward)
+        
+        #expect(vm.displayedItems.map(\.name) == ["Solklint", "Vindkast"])
+    }
+    
+    @Test("Should sort items by name descending")
+    func updateSorting_sortByNameReverse() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.updateSorting(by: .name, in: .reverse)
+        
+        #expect(vm.displayedItems.map(\.name) == ["Vindkast", "Solklint"])
+    }
+    
+    @Test("Should sort items by price ascending")
+    func updateSorting_sortByPriceForward() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.updateSorting(by: .price, in: .forward)
+        
+        #expect(vm.displayedItems.map(\.id) == ["1", "2"])
+    }
+    
+    @Test("Should sort items by price descending")
+    func updateSorting_sortByPriceReverse() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.updateSorting(by: .price, in: .reverse)
+        
+        #expect(vm.displayedItems.map(\.id) == ["2", "1"])
+    }
+    
+    @Test("Should sort items by rating ascending")
+    func updateSorting_sortByRatingForward() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.updateSorting(by: .rating, in: .forward)
+        
+        #expect(vm.displayedItems.map(\.id) == ["1", "2"])
+    }
+    
+    @Test("Should sort items by rating descending")
+    func updateSorting_sortByRatingReverse() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.updateSorting(by: .rating, in: .reverse)
+        
+        #expect(vm.displayedItems.map(\.id) == ["2", "1"])
+    }
+    
+    @Test("Should apply sorting after search filtering")
+    func updateSorting_sortFilteredItems() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.searchText = "int"
+        
+        vm.updateSorting(by: .name, in: .forward)
+        
+        #expect(vm.displayedItems.map(\.name) == ["Solklint"])
+    }
+    
+    @Test("Should clear sorting when option and order are nil")
+    func updateSorting_clearSorting() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.updateSorting(by: .name, in: .reverse)
+        
+        vm.updateSorting(by: nil, in: nil)
+        
+        #expect(vm.displayedItems == items)
+    }
 }
