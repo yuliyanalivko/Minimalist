@@ -192,12 +192,33 @@ struct CategoryViewModelTests {
         #expect(vm.state == .emptySearch)
     }
     
-    @Test("Should be empty when searchText is not empty and categories are not fetched")
+    @Test("Should be emptySearch when searchText is not empty and categories are not fetched")
     @MainActor
     func state_empty_searchIsNotEmptyAndCategoriesIsNil() {
         let vm = makeViewModel()
         vm.isLoading = false
         vm.searchText = "xyz"
+
+        #expect(vm.state == .emptySearch)
+    }
+    
+    @Test("Should be empty when categories are not fetched and search is empty")
+    @MainActor
+    func state_empty_searchIsEmptyAndCategoriesIsNil() {
+        let vm = makeViewModel()
+        vm.isLoading = false
+        vm.searchText = ""
+
+        #expect(vm.state == .empty)
+    }
+    
+    @Test("Should be empty when categories and search are empty")
+    @MainActor
+    func state_empty_searchAndCategoriesAreEmpty() {
+        let vm = makeViewModel()
+        vm.isLoading = false
+        vm.allCategories = []
+        vm.searchText = ""
 
         #expect(vm.state == .empty)
     }

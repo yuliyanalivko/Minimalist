@@ -1,24 +1,18 @@
 import SwiftUI
 
 @Observable
-class CategoryViewModel: RoutableViewModel<CatalogRouter> {
+class CategoryViewModel: RoutableViewModel<CatalogRouter> {    
     var state: ContentState<[Category]> {
-        if isLoading { return .loading }
-        
+        if isLoading {
+            return .loading
+        }
+
         let searchText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        guard let categories = displayedCategories,
-              let allCategories,
-              !allCategories.isEmpty else {
-            return .empty
+
+        guard let categories = displayedCategories, !categories.isEmpty else {
+            return searchText.isEmpty ? .empty : .emptySearch
         }
-        
-        if categories.isEmpty {
-            return searchText.isEmpty
-            ? .empty
-            : .emptySearch
-        }
-        
+
         return .content(categories)
     }
     
