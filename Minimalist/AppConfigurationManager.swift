@@ -115,12 +115,15 @@ final class AppConfigurationManager {
         ])
     }
     
-    private func configureModelContainer() {        
+    private func configureModelContainer() {
+        let schema = Schema(SchemaV1.models)
+        let configuration = ModelConfiguration(schema: schema)
+
         do {
             swiftDataContainer = try ModelContainer(
-                for: SwiftDataCategory.self,
-                SwiftDataItem.self,
-                SwiftDataItemDetails.self
+                for: schema,
+                migrationPlan: MigrationPlan.self,
+                configurations: [configuration]
             )
         } catch {
             print(error)
