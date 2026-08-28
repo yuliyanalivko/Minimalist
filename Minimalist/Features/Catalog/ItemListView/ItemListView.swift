@@ -21,9 +21,7 @@ struct ItemListView: View {
         }
         .sheet(isPresented: $viewModel.showSorting) {
             if let sortBySheetViewModel = viewModel.sortBySheetViewModel {
-                SortBySheetView(viewModel: sortBySheetViewModel) { option, order in
-                    viewModel.updateSorting(by: option, in: order)
-                }
+                SortBySheetView(viewModel: sortBySheetViewModel)
             }
         }
         .overlay(

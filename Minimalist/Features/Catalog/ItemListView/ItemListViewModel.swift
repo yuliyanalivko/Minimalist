@@ -7,15 +7,14 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     var searchText: String = ""
     
     var showSorting: Bool = false
-    
-    private(set) var sortOption: SortOption?
-    private(set) var sortOrder: SortOrder?
-    private(set) var sortBySheetViewModel: SortBySheetViewModel?
+    var sortBySheetViewModel: SortBySheetViewModel?
     
     var displayedItems: [Item] {
         let items = allItems.filtered(by: searchText, key: \.name)
         
-        if let sortOrder, let sortOption {
+        if let sortBySheetViewModel,
+           let sortOption = sortBySheetViewModel.selectedOption,
+           let  sortOrder = sortBySheetViewModel.selectedOrder {
             return sortItems(items, by: sortOption, in: sortOrder)
         }
         
@@ -90,11 +89,6 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     
     func handleItemClick(item: Item) {
         router.navigate(to: CatalogRoute.itemDetails(title: item.name, id: item.id))
-    }
-    
-    func updateSorting(by option: SortOption?, in order: SortOrder?) {
-        sortOption = option
-        sortOrder = order
     }
     
     func logSearchEvent(categoryName: String) {

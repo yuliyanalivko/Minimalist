@@ -5,8 +5,6 @@ struct SortBySheetView: View {
     
     @State var viewModel: SortBySheetViewModel
     
-    let onChanged: (SortOption?, SortOrder?) -> Void
-    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
@@ -67,12 +65,9 @@ struct SortBySheetView: View {
         }
         .presentationDetents([.height(viewModel.height)])
         .presentationBackground(.white)
-        .onChange(of: [viewModel.selectedOption, viewModel.selectedOrder] as [AnyHashable]) { _, _ in
-            onChanged(viewModel.selectedOption, viewModel.selectedOrder)
-        }
     }
 }
 
 #Preview {
-    SortBySheetView(viewModel: SortBySheetViewModel()) {_, _ in}
+    SortBySheetView(viewModel: SortBySheetViewModel())
 }

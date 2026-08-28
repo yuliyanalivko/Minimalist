@@ -299,8 +299,7 @@ struct ItemListViewModelTests {
     func updateSorting_sortByNameForward() {
         let vm = makeViewModel()
         vm.allItems = items
-        
-        vm.updateSorting(by: .name, in: .forward)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .name, selectedOrder: .forward)
         
         #expect(vm.displayedItems.map(\.name) == ["Solklint", "Vindkast"])
     }
@@ -309,8 +308,7 @@ struct ItemListViewModelTests {
     func updateSorting_sortByNameReverse() {
         let vm = makeViewModel()
         vm.allItems = items
-        
-        vm.updateSorting(by: .name, in: .reverse)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .name, selectedOrder: .reverse)
         
         #expect(vm.displayedItems.map(\.name) == ["Vindkast", "Solklint"])
     }
@@ -319,8 +317,7 @@ struct ItemListViewModelTests {
     func updateSorting_sortByPriceForward() {
         let vm = makeViewModel()
         vm.allItems = items
-        
-        vm.updateSorting(by: .price, in: .forward)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .price, selectedOrder: .forward)
         
         #expect(vm.displayedItems.map(\.id) == ["1", "2"])
     }
@@ -329,8 +326,7 @@ struct ItemListViewModelTests {
     func updateSorting_sortByPriceReverse() {
         let vm = makeViewModel()
         vm.allItems = items
-        
-        vm.updateSorting(by: .price, in: .reverse)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .price, selectedOrder: .reverse)
         
         #expect(vm.displayedItems.map(\.id) == ["2", "1"])
     }
@@ -339,8 +335,7 @@ struct ItemListViewModelTests {
     func updateSorting_sortByRatingForward() {
         let vm = makeViewModel()
         vm.allItems = items
-        
-        vm.updateSorting(by: .rating, in: .forward)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .rating, selectedOrder: .forward)
         
         #expect(vm.displayedItems.map(\.id) == ["1", "2"])
     }
@@ -349,8 +344,7 @@ struct ItemListViewModelTests {
     func updateSorting_sortByRatingReverse() {
         let vm = makeViewModel()
         vm.allItems = items
-        
-        vm.updateSorting(by: .rating, in: .reverse)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .rating, selectedOrder: .reverse)
         
         #expect(vm.displayedItems.map(\.id) == ["2", "1"])
     }
@@ -360,8 +354,7 @@ struct ItemListViewModelTests {
         let vm = makeViewModel()
         vm.allItems = items
         vm.searchText = "int"
-        
-        vm.updateSorting(by: .name, in: .forward)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .name, selectedOrder: .forward)
         
         #expect(vm.displayedItems.map(\.name) == ["Solklint"])
     }
@@ -370,9 +363,7 @@ struct ItemListViewModelTests {
     func updateSorting_clearSorting() {
         let vm = makeViewModel()
         vm.allItems = items
-        vm.updateSorting(by: .name, in: .reverse)
-        
-        vm.updateSorting(by: nil, in: nil)
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: nil, selectedOrder: nil)
         
         #expect(vm.displayedItems == items)
     }
