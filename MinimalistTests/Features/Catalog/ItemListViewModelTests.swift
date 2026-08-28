@@ -376,4 +376,14 @@ struct ItemListViewModelTests {
         
         #expect(vm.displayedItems == items)
     }
+    
+    @Test("Should set showSorting to true and initialize sortBySheetViewModel")
+    func triggerSortBySheet_initializeSortBySheetViewModelAndSetShowSortingToTrue() {
+        let vm = makeViewModel()
+        
+        vm.triggerSortBySheet()
+        
+        #expect(vm.showSorting)
+        #expect(vm.sortBySheetViewModel != nil)
+    }
 }

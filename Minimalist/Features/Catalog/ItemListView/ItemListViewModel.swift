@@ -6,8 +6,11 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     var allItems: [Item] = []
     var searchText: String = ""
     
+    var showSorting: Bool = false
+    
     private(set) var sortOption: SortOption?
     private(set) var sortOrder: SortOrder?
+    private(set) var sortBySheetViewModel: SortBySheetViewModel?
     
     var displayedItems: [Item] {
         let items = allItems.filtered(by: searchText, key: \.name)
@@ -110,6 +113,11 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             name: AnalyticsEventName.viewItemList,
             parameters: [AnalyticsParamName.listId: id, AnalyticsParamName.listName: name]
         ))
+    }
+    
+    func triggerSortBySheet() {
+        sortBySheetViewModel = sortBySheetViewModel ?? SortBySheetViewModel()
+        showSorting = true
     }
     
     private func sortItems(_ items: [Item], by option: SortOption, in order: SortOrder) -> [Item] {

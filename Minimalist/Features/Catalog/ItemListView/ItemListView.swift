@@ -1,9 +1,7 @@
 import SwiftUI
 
 struct ItemListView: View {
-    let viewModel: ItemListViewModel
-    
-    @State var showSorting: Bool = false
+    @State var viewModel: ItemListViewModel
     
     var body: some View {
         List {
@@ -21,12 +19,11 @@ struct ItemListView: View {
                 }
             }
         }
-        .sheet(isPresented: $showSorting) {
-            SortBySheetView(
-                sortOption: viewModel.sortOption,
-                sortOrder: viewModel.sortOrder
-            ) { option, order in
-                viewModel.updateSorting(by: option, in: order)
+        .sheet(isPresented: $viewModel.showSorting) {
+            if let sortBySheetViewModel = viewModel.sortBySheetViewModel {
+                SortBySheetView(viewModel: sortBySheetViewModel) { option, order in
+                    viewModel.updateSorting(by: option, in: order)
+                }
             }
         }
         .overlay(
@@ -51,7 +48,7 @@ struct ItemListView: View {
         .verticalScreenSpacing()
         .toolbar {
             Button {
-                showSorting = true
+                viewModel.triggerSortBySheet()
             } label: {
                 Image.sort
             }
