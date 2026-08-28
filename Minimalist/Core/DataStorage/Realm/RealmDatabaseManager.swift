@@ -16,7 +16,7 @@ class RealmDatabaseManager: DatabaseManaging {
     /// - Returns: An array containing all stored instances of the specified type.
     func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
         guard let type = type as? Object.Type else {
-            return []
+            throw MinimalistError.persistenceTypeError
         }
         
         let realm = try realm()
@@ -36,9 +36,9 @@ class RealmDatabaseManager: DatabaseManaging {
     /// - Returns: The matching Realm object, or `nil` if no record was found for the given ID.
     func get<T: Persistable, KeyType>(type: T.Type, id: KeyType) throws -> T? {
         guard let type = type as? Object.Type else {
-            return nil
+            throw MinimalistError.persistenceTypeError
         }
-
+        
         let realm = try realm()
         
         guard let object = realm.object(ofType: type, forPrimaryKey: id) else {
@@ -52,7 +52,7 @@ class RealmDatabaseManager: DatabaseManaging {
     /// - Parameter object: The Realm object to persist or update
     func save<T: Persistable>(_ object: T) throws {
         guard let object = object as? Object else {
-            return
+            throw MinimalistError.persistenceTypeError
         }
         
         let realm = try realm()
@@ -65,7 +65,14 @@ class RealmDatabaseManager: DatabaseManaging {
     /// Saves or updates a collection of objects in the database.
     /// - Parameter objects: The array of Realm objects to persist or update
     func save<T: Persistable>(_ objects: [T]) throws {
-        let objects = objects.compactMap { $0 as? Object }
+        let objects = try objects.map { object in
+            guard let object = object as? Object else {
+                throw MinimalistError.persistenceTypeError
+            }
+            
+            return object
+        }
+        
         let realm = try realm()
         
         try realm.write {
@@ -78,7 +85,7 @@ class RealmDatabaseManager: DatabaseManaging {
     /// - Parameter date: An optional cutoff date. If provided, only items cached before this date are deleted; if nil, all items of the given type are deleted.
     func delete<T: Persistable>(type: T.Type, olderThan date: Date? = nil) throws {
         guard let type = type as? Object.Type else {
-            return
+            throw MinimalistError.persistenceTypeError
         }
         
         let realm = try realm()
@@ -100,7 +107,7 @@ class RealmDatabaseManager: DatabaseManaging {
     ///   - id: The primary key of the object to remove.
     func delete<T: Persistable, KeyType>(type: T.Type, id: KeyType) throws {
         guard let type = type as? Object.Type else {
-            return
+            throw MinimalistError.persistenceTypeError
         }
         
         let realm = try realm()

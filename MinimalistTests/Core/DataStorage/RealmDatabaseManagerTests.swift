@@ -78,5 +78,35 @@ struct RealmDatabaseManagerTests {
 
         #expect(try manager.get(type: RealmCategory.self).isEmpty)
     }
+    
+    @Test("Should throw persistenceTypeError for unsupported types")
+    func operations_throwPersistenceTypeError_forUnsupportedType() throws {
+        final class UnsupportedPersistable: Persistable {}
+        
+        let manager = try makeManager()
+        let isPersistenceTypeError: (Error) -> Bool = { error in
+            if case .persistenceTypeError = error as? MinimalistError {
+                return true
+            }
+            
+            return false
+        }
+        
+        #expect {
+            try manager.get(type: UnsupportedPersistable.self)
+        } throws: { isPersistenceTypeError($0) }
+        #expect {
+            try manager.get(type: UnsupportedPersistable.self, id: "1")
+        } throws: { isPersistenceTypeError($0) }
+        #expect {
+            try manager.save(UnsupportedPersistable())
+        } throws: { isPersistenceTypeError($0) }
+        #expect {
+            try manager.delete(type: UnsupportedPersistable.self)
+        } throws: { isPersistenceTypeError($0) }
+        #expect {
+            try manager.delete(type: UnsupportedPersistable.self, id: "1")
+        } throws: { isPersistenceTypeError($0) }
+    }
 }
 

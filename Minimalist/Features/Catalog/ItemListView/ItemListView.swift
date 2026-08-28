@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ItemListView: View {
-    let viewModel: ItemListViewModel
+    @State var viewModel: ItemListViewModel
     
     var body: some View {
         List {
@@ -17,6 +17,11 @@ struct ItemListView: View {
                 .onTapGesture {
                     viewModel.handleItemClick(item: item)
                 }
+            }
+        }
+        .sheet(isPresented: $viewModel.showSorting) {
+            if let sortBySheetViewModel = viewModel.sortBySheetViewModel {
+                SortBySheetView(viewModel: sortBySheetViewModel)
             }
         }
         .overlay(
@@ -40,8 +45,8 @@ struct ItemListView: View {
         .listStyle(.plain)
         .verticalScreenSpacing()
         .toolbar {
-            //TODO: move to a separate view
             Button {
+                viewModel.triggerSortBySheet()
             } label: {
                 Image.sort
             }

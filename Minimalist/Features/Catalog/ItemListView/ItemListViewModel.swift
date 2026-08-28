@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 @Observable
 class ItemListViewModel: RoutableViewModel<CatalogRouter> {
@@ -6,8 +6,19 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     var allItems: [Item] = []
     var searchText: String = ""
     
+    var showSorting: Bool = false
+    var sortBySheetViewModel: SortBySheetViewModel?
+    
     var displayedItems: [Item] {
-        allItems.filtered(by: searchText, key: \.name)
+        let items = allItems.filtered(by: searchText, key: \.name)
+        
+        if let sortBySheetViewModel,
+           let sortOption = sortBySheetViewModel.selectedOption,
+           let  sortOrder = sortBySheetViewModel.selectedOrder {
+            return sortItems(items, by: sortOption, in: sortOrder)
+        }
+        
+        return items
     }
     
     var state: ContentState<[Item]> {
@@ -96,6 +107,22 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
             name: AnalyticsEventName.viewItemList,
             parameters: [AnalyticsParamName.listId: id, AnalyticsParamName.listName: name]
         ))
+    }
+    
+    func triggerSortBySheet() {
+        sortBySheetViewModel = sortBySheetViewModel ?? SortBySheetViewModel()
+        showSorting = true
+    }
+    
+    private func sortItems(_ items: [Item], by option: SortOption, in order: SortOrder) -> [Item] {
+        switch option {
+        case .name:
+            return items.sorted(by: \.name, order: order)
+        case .price:
+            return items.sorted(by: \.price, order: order)
+        case .rating:
+            return items.sorted(by: \.rating, order: order)
+        }
     }
     
     private func logToggleFavoriteEvent(item: Item) {

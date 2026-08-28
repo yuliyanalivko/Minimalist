@@ -18,6 +18,13 @@ struct MinimalistErrorTests {
         
         #expect(unknown.errorDescription == "Something went wrong. Please try again.")
     }
+    
+    @Test("Should return correct user message for persistence type error")
+    func persistenceTypeError_returnCorrectMessage() {
+        let error = MinimalistError.persistenceTypeError
+        
+        #expect(error.errorDescription == "The requested type is not supported by the persistence framework.")
+    }
 
     @Test(
         "Should return correct message for specific network error codes", 

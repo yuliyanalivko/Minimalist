@@ -14,4 +14,15 @@ extension Collection {
         
         return self.filter { $0[keyPath: key].lowercased().contains(cleanSearchText) }
     }
+    
+    func sorted<T: Comparable>(by keyPath: KeyPath<Element, T>, order: SortOrder = .forward) -> [Element] {
+        return sorted { a, b in
+            switch order {
+            case .forward:
+                return a[keyPath: keyPath] < b[keyPath: keyPath]
+            case .reverse:
+                return a[keyPath: keyPath] > b[keyPath: keyPath]
+            }
+        }
+    }
 }
