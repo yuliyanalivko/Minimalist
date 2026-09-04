@@ -34,8 +34,8 @@ struct SortBySheetViewModelTests {
         
         #expect(vm.selectedOption == .rating)
         #expect(vm.selectedOrder == .reverse)
-        #expect(vm.getSelectedOrder(option: .name) == nil)
-        #expect(vm.getSelectedOrder(option: .rating) == .reverse)
+        #expect(vm.selectedOrder(for: .name) == nil)
+        #expect(vm.selectedOrder(for: .rating) == .reverse)
     }
     
     @Test("Should return selected order only for the active option")
@@ -44,9 +44,9 @@ struct SortBySheetViewModelTests {
         
         vm.updateSelection(order: .forward, option: .price)
         
-        #expect(vm.getSelectedOrder(option: .price) == .forward)
-        #expect(vm.getSelectedOrder(option: .name) == nil)
-        #expect(vm.getSelectedOrder(option: .rating) == nil)
+        #expect(vm.selectedOrder(for: .price) == .forward)
+        #expect(vm.selectedOrder(for: .name) == nil)
+        #expect(vm.selectedOrder(for: .rating) == nil)
     }
     
     @Test("Should expose all sort options")
@@ -54,14 +54,5 @@ struct SortBySheetViewModelTests {
         let vm = SortBySheetViewModel()
         
         #expect(vm.options == SortOption.allCases)
-    }
-    
-    @Test("Should update sheet height")
-    func updateHeight_setHeight() {
-        let vm = SortBySheetViewModel()
-        
-        vm.updateHeight(320)
-        
-        #expect(vm.height == 320)
     }
 }

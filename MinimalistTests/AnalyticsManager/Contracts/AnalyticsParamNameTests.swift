@@ -17,7 +17,8 @@ struct AnalyticsParamNameTests {
             (AnalyticsParamName.errorMessage, "error_message"),
             (AnalyticsParamName.items, "items"),
             (AnalyticsParamName.filterCategory, "filter_category"),
-            (AnalyticsParamName.filterPrice, "filter_price"),
+            (AnalyticsParamName.filterMinPrice, "filter_min_price"),
+            (AnalyticsParamName.filterMaxPrice, "filter_max_price"),
             (AnalyticsParamName.filterRating, "filter_rating")
           ]
     )

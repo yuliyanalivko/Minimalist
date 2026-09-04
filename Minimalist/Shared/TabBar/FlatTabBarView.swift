@@ -27,14 +27,7 @@ struct FlatTabBarView: View {
         .padding(12)
         .frame(maxWidth: .infinity)
         .background(Color.AppColor.backgroundSecondary)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(.AppColor.textSecondary)
-                .opacity(0.3),
-            alignment: .top
-        )
-        
+        .separator(.top, color: Color.AppColor.textSecondary.opacity(0.3))
     }
 }
 

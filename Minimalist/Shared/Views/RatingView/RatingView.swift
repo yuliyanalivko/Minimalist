@@ -1,19 +1,20 @@
 import SwiftUI
 
 struct RatingView: View {
-
-    private var viewModel: RatingDataModel
     
-    init(viewModel: RatingDataModel) {
+    private let viewModel: RatingDataModel
+    
+    init(viewModel: RatingDataModel, onChange: ((Double) -> Void)? = nil) {
         self.viewModel = viewModel
+        self.viewModel.onChange = onChange
     }
     
-    init(rating: Double) {
-        self.viewModel = RatingViewModel(rating: rating)
+    init(rating: Double, onChange: ((Double) -> Void)? = nil) {
+        self.viewModel = RatingViewModel(rating: rating, onChange: onChange)
     }
     
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: viewModel.itemSpacing) {
             ForEach(Array(viewModel.items.enumerated()), id: \.offset) { index, item in
                 let itemFill = viewModel.itemFill(index)
                 
@@ -37,10 +38,25 @@ struct RatingView: View {
                             )
                     )
                     .onTapGesture {
+                        guard !viewModel.isReadOnly else { return }
+                        
                         viewModel.select(index)
+                        viewModel.notifyChange()
                     }
             }
         }
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    viewModel.updateRating(for: value.location.x)
+                }
+                .onEnded { _ in
+                    viewModel.notifyChange()
+                },
+            isEnabled: !viewModel.isReadOnly
+        )
+        .allowsHitTesting(!viewModel.isReadOnly)
     }
 }
 
@@ -72,5 +88,5 @@ struct RatingView: View {
             inactiveColor: .gray
         )
     ])
-    RatingView(viewModel: vm)
+    RatingView(viewModel: vm) { _ in }
 }

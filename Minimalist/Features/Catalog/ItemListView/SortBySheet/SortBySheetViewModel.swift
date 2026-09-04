@@ -2,8 +2,6 @@ import SwiftUI
 
 @Observable
 class SortBySheetViewModel {
-    var height: CGFloat = 200
-    
     var selectedOption: SortOption?
     var selectedOrder: SortOrder?
     
@@ -24,11 +22,7 @@ class SortBySheetViewModel {
         }
     }
     
-    func getSelectedOrder(option: SortOption) -> SortOrder? {
+    func selectedOrder(for option: SortOption) -> SortOrder? {
         selectedOption == option ? selectedOrder : nil
-    }
-    
-    func updateHeight(_ newHeight: CGFloat) {
-        height = newHeight
     }
 }
