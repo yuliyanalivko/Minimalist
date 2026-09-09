@@ -2,20 +2,14 @@ import SwiftUI
 
 struct RangeSlider: View {
     @Binding var from: Double
-    @Binding var to: Double
+    @Binding var to: Double    
+
+    @State private var viewModel: RangeSliderViewModel
     
-    let bounds: ClosedRange<Double>
-    
-    @State private var width: Double = 0
-    @State private var fromLabelWidth: CGFloat = 0
-    @State private var toLabelWidth: CGFloat = 0
-    
-    private let thumbSize: CGFloat = 18
-    private let step: Double = 1
-    private let trackCoordinateSpace = "RangeSliderTrack"
-    
-    private var math: RangeSliderMath {
-        RangeSliderMath(bounds: bounds, step: step, thumbSize: thumbSize)
+    init(from: Binding<Double>, to: Binding<Double>, bounds: ClosedRange<Double>) {
+        self._from = from
+        self._to = to
+        _viewModel = State(initialValue: RangeSliderViewModel(bounds: bounds))
     }
     
     var body: some View {
@@ -26,39 +20,39 @@ struct RangeSlider: View {
                 .onGeometryChange(for: CGSize.self) { proxy in
                     proxy.size
                 } action: { newValue in
-                    width = newValue.width
+                    viewModel.width = newValue.width
                 }
             
             Rectangle()
                 .fill(Color.AppColor.primary)
-                .frame(width: math.sliderWidth(width: width, from: from, to: to), height: 3)
-                .offset(x: math.xOffset(width: width, for: from))
+                .frame(width: viewModel.sliderWidth(width: viewModel.width, from: from, to: to), height: 3)
+                .offset(x: viewModel.xOffset(width: viewModel.width, for: from))
             
             fromThumb
-                .offset(x: math.xThumbOffset(width: width, for: from))
+                .offset(x: viewModel.xThumbOffset(width: viewModel.width, for: from))
                 .gesture(
-                    DragGesture(minimumDistance: 0, coordinateSpace: .named(trackCoordinateSpace))
+                    DragGesture(minimumDistance: 0, coordinateSpace: .named(viewModel.trackCoordinateSpace))
                         .onChanged { value in
-                            from = math.lowerValue(atX: value.location.x, width: width, upperBound: to)
+                            from = viewModel.lowerValue(atX: value.location.x, width: viewModel.width, upperBound: to)
                         }
                 )
             
             toThumb
-                .offset(x: math.xThumbOffset(width: width, for: to))
+                .offset(x: viewModel.xThumbOffset(width: viewModel.width, for: to))
                 .gesture(
-                    DragGesture(minimumDistance: 0, coordinateSpace: .named(trackCoordinateSpace))
+                    DragGesture(minimumDistance: 0, coordinateSpace: .named(viewModel.trackCoordinateSpace))
                         .onChanged { value in
-                            to = math.upperValue(atX: value.location.x, width: width, lowerBound: from)
+                            to = viewModel.upperValue(atX: value.location.x, width: viewModel.width, lowerBound: from)
                         }
                 )
         }
-        .coordinateSpace(.named(trackCoordinateSpace))
+        .coordinateSpace(.named(viewModel.trackCoordinateSpace))
     }
     
     private func thumb(value: Double, labelWidth: Binding<CGFloat>) -> some View {
         Circle()
             .fill(Color.AppColor.primary)
-            .frame(width: thumbSize, height: thumbSize)
+            .frame(width: viewModel.thumbSize, height: viewModel.thumbSize)
             .overlay(alignment: .top) {
                 label(value: value)
                     .fixedSize()
@@ -67,7 +61,7 @@ struct RangeSlider: View {
                     } action: {
                         labelWidth.wrappedValue = $0
                     }
-                    .offset(x: math.labelXOffset(trackWidth: width, value: value, labelWidth: labelWidth.wrappedValue))
+                    .offset(x: viewModel.labelXOffset(trackWidth: viewModel.width, value: value, labelWidth: labelWidth.wrappedValue))
             }
     }
     
@@ -85,11 +79,11 @@ struct RangeSlider: View {
     }
     
     private var fromThumb: some View {
-        thumb(value: from, labelWidth: $fromLabelWidth)
+        thumb(value: from, labelWidth: $viewModel.fromLabelWidth)
     }
     
     private var toThumb: some View {
-        thumb(value: to, labelWidth: $toLabelWidth)
+        thumb(value: to, labelWidth: $viewModel.toLabelWidth)
     }
 }
 

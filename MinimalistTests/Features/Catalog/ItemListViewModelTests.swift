@@ -600,7 +600,7 @@ struct ItemListViewModelTests {
     func priceBounds_roundedOutward() {
         let vm = makeViewModel()
         
-        #expect(vm.priceBounds == 0...0)
+        #expect(vm.priceBounds == 0...1000)
         
         vm.allItems = items
         

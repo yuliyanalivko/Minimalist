@@ -137,6 +137,32 @@ struct ColorTests {
     }
     
     @Test
+    func backgroundPrimary_matchesAssets() async throws {
+        let color = Color.AppColor.backgroundPrimary
+        let colorToCompareWith = UIColor(named: "backgroundPrimary")!
+        
+        #expect(lightColorsEqual(color, colorToCompareWith), "light backgroundSecondary color does not match the corresponding assets color")
+        #expect(darkColorsEqual(color, colorToCompareWith), "dark backgroundSecondary color does not match the corresponding assets color")
+    }
+    
+    @Test
+    func backgroundPrimary_hasExpectedRGBValues() async throws {
+        var result = lightHasExpectedRGBValues(
+            Color.AppColor.backgroundPrimary,
+            rgb: (red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0),
+        )
+        
+        #expect(result.isCorrect, "Light backgroundPrimary: RGB is incorrect. Expected (\(result.expected)), got: (\(result.result))")
+        
+        result = darkHasExpectedRGBValues(
+            Color.AppColor.backgroundPrimary,
+            rgb: (red: 0/255.0, green: 0/255.0, blue: 0/255.0),
+        )
+        
+        #expect(result.isCorrect, "Dark backgroundPrimary: RGB is incorrect. Expected (\(result.expected)), got: (\(result.result))")
+    }
+    
+    @Test
     func backgroundSecondary_matchesAssets() async throws {
         let color = Color.AppColor.backgroundSecondary
         let colorToCompareWith = UIColor(named: "backgroundSecondary")!
