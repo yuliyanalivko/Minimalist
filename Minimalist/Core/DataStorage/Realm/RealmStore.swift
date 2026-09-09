@@ -1,4 +1,4 @@
-final class RealmCatalogStore: CatalogStoring {
+final class RealmStore: CacheStoring {
     private let databaseManager: DatabaseManaging
     
     init(databaseManager: DatabaseManaging = RealmDatabaseManager()) {
@@ -8,7 +8,7 @@ final class RealmCatalogStore: CatalogStoring {
     /// Fetches all stored categories from the Realm database and maps them to domain models.
     /// - Returns: An array of `Category` domain objects.
     func getCategories() throws -> [Category] {
-        let entities = try databaseManager.get(type: RealmCategory.self, sort: true)
+        let entities = try databaseManager.get(type: RealmCategory.self, sort: .name)
         
         return entities.map { Category(from: $0) }
     }
@@ -23,7 +23,7 @@ final class RealmCatalogStore: CatalogStoring {
     /// Fetches all stored items from the Realm database and maps them to domain models.
     /// - Returns: An array of `Item` domain objects.
     func getItems() throws -> [Item] {
-        let entities = try databaseManager.get(type: RealmItem.self, sort: true)
+        let entities = try databaseManager.get(type: RealmItem.self, sort: .name)
         
         return entities.map { Item(from: $0) }
     }
@@ -50,6 +50,43 @@ final class RealmCatalogStore: CatalogStoring {
     /// - Parameter itemDetails: The `ItemDetails` domain object.
     func save(_ itemDetails: ItemDetails) throws {
         try databaseManager.save(itemDetails.toRealm())
+    }
+    
+    /// Fetches stored favorite items from the Realm database and maps them to domain models.
+    /// - Returns: An array of `Item` domain objects marked as favorited.
+    func getFavorites() throws -> [Item] {
+        let entities = try databaseManager.get(type: RealmItem.self, sort: nil)
+            .filter(\.isFavorited)
+        
+        return entities.map { Item(from: $0) }
+    }
+    
+    /// Updates the favorited status of a specific item and its details, when cached, in the database.
+    /// - Parameters:
+    ///   - id: The unique identifier of the item to update.
+    ///   - isFavorited: Boolean value indicating whether the item should be marked as favorited or not
+    func setFavorited(id: String, isFavorited: Bool) throws {
+        try databaseManager.update(type: RealmItem.self, id: id) { item in
+            item.isFavorited = isFavorited
+        }
+        
+        try databaseManager.update(type: RealmItemDetails.self, id: id) { details in
+            details.isFavorited = isFavorited
+        }
+    }
+    
+    /// Updates the cart status of a specific item in the database.
+    /// - Parameters:
+    ///   - id: The unique identifier of the `RealmItem` to update.
+    ///   - isAddedToCart: Boolean value indicating whether the item should be marked as added to cart or not.
+    func setAddedToCart(id: String, isAddedToCart: Bool) throws {
+        try databaseManager.update(type: RealmItem.self, id: id) { item in
+            item.isAddedToCart = isAddedToCart
+        }
+        
+        try databaseManager.update(type: RealmItemDetails.self, id: id) { details in
+            details.isAddedToCart = isAddedToCart
+        }
     }
 }
 

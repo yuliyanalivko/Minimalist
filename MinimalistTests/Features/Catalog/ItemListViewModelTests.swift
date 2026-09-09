@@ -50,10 +50,11 @@ struct ItemListViewModelTests {
         let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
         let catalogDataCoordinator = CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
-            storeResolver: { RealmCatalogStore(databaseManager: database) }
+            storeResolver: { RealmStore(databaseManager: database) }
         )
         let favoritesDataCoordinator = FavoritesDataCoordinator(
-            networkService: FavoritesNetworkService(networkClient: favoritesMock)
+            networkService: FavoritesNetworkService(networkClient: favoritesMock),
+            storeResolver: { RealmStore(databaseManager: database) }
         )
 
         if let analyticsManager {
@@ -261,7 +262,7 @@ struct ItemListViewModelTests {
 
         await vm.fetchItems()
 
-        #expect(vm.allItems == cached)
+        #expect(vm.allItems == cached.sorted { $0.name < $1.name })
         #expect(vm.isLoading == false)
         #expect(vm.error != nil)
     }

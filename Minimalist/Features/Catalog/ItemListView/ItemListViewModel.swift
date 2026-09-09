@@ -217,18 +217,6 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     private func mapUrls(of items: [Item]) -> [Item]{
-        items.map { item in
-            guard let thumbnailUrl = item.thumbnailUrl,
-                  let url = URL(string: thumbnailUrl) else {
-                return item
-            }
-            
-            var updatedItem = item
-            
-            updatedItem.thumbnailUrl = thumbnailUrl
-            updatedItem.thumbnailUrl = url.resized(to: 500).absoluteString
-            
-            return updatedItem
-        }
+        URLHelper.mapUrls(of: items, keyPath: \.thumbnailUrl)
     }
 }

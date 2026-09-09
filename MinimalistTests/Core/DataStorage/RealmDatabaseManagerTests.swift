@@ -9,7 +9,13 @@ struct RealmDatabaseManagerTests {
     private func makeManager() throws -> RealmDatabaseManager {
         let config = Realm.Configuration(
             inMemoryIdentifier: UUID().uuidString,
-            objectTypes: [RealmCategory.self, RealmSubCategory.self]
+            objectTypes: [
+                RealmCategory.self,
+                RealmItem.self,
+                RealmItemDetails.self,
+                RealmSubCategory.self,
+                RealmReview.self
+            ]
         )
 
         return RealmDatabaseManager(configuration: config)
@@ -107,6 +113,64 @@ struct RealmDatabaseManagerTests {
         #expect {
             try manager.delete(type: UnsupportedPersistable.self, id: "1")
         } throws: { isPersistenceTypeError($0) }
+    }
+    
+    @Test("Should sort results by name")
+    func get_sortByName_returnsAlphabeticalOrder() throws {
+        let manager = try makeManager()
+        try manager.save([
+            Category(id: "1", name: "Tables", thumbnailUrl: nil, subCategories: []).toRealm(),
+            Category(id: "2", name: "Sofas", thumbnailUrl: nil, subCategories: []).toRealm()
+        ])
+        
+        let result = try manager.get(type: RealmCategory.self, sort: .name)
+        
+        #expect(result.map(\.name) == ["Sofas", "Tables"])
+    }
+    
+    @Test("Should delete only data older than cutoff")
+    func delete_olderThan_removesStaleKeepsFresh() throws {
+        let manager = try makeManager()
+        let now = Date()
+        let stale = Calendar.current.date(byAdding: .day, value: -31, to: now)!
+        let fresh = Calendar.current.date(byAdding: .day, value: -1, to: now)!
+        let cutoff = Calendar.current.date(byAdding: .day, value: -30, to: now)!
+        let staleCategory = Category(id: "stale", name: "Sofas", thumbnailUrl: nil, subCategories: []).toRealm()
+        staleCategory.cachedAt = stale
+        let freshCategory = Category(id: "fresh", name: "Tables", thumbnailUrl: nil, subCategories: []).toRealm()
+        freshCategory.cachedAt = fresh
+        
+        try manager.save([staleCategory, freshCategory])
+        try manager.delete(type: RealmCategory.self, olderThan: cutoff)
+        
+        let remaining = try manager.get(type: RealmCategory.self)
+        
+        #expect(remaining.map(\.id) == ["fresh"])
+    }
+    
+    @Test("Should update an existing object")
+    func update_existingObject_appliesChanges() throws {
+        let manager = try makeManager()
+        try manager.save(item.toRealm())
+        
+        try manager.update(type: RealmItem.self, id: "1") { stored in
+            stored.isFavorited = true
+            stored.isAddedToCart = true
+        }
+        
+        let result = try manager.get(type: RealmItem.self, id: "1")
+        
+        #expect(result?.isFavorited == true)
+        #expect(result?.isAddedToCart == true)
+    }
+    
+    @Test("Should not throw when updating a missing object")
+    func update_missingObject_doesNotThrow() throws {
+        let manager = try makeManager()
+        
+        try manager.update(type: RealmItem.self, id: "missing") { stored in
+            stored.isFavorited = true
+        }
     }
 }
 

@@ -10,14 +10,22 @@ struct FavoritesView: View {
                     screen(for: route)
                 }
         }
+        .onAppear{
+            viewModel.trackFavoritesScreen()
+        }
     }
     
     @ViewBuilder
     private func screen(for route: FavoritesRoute) -> some View {
         switch route {
         case .favorites:
-            Text("favorites")
+            FavoriteListView(viewModel: viewModel.favoriteListViewModel)
                 .navigationTitle(FavoritesRoute.favorites.title)
+                .searchableWithDebounce(text: $viewModel.favoriteListViewModel.searchText, action: viewModel.logFavoriteListSearchEvent)
+            
+        case .itemDetails(_, let id):
+            ItemDetailsView(id: id)
+                .navigationTitle(route.title)
         }
     }
 }

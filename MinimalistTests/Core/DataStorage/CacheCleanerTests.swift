@@ -4,7 +4,7 @@ import Testing
 @testable import Minimalist
 
 @MainActor
-struct CatalogCacheCleanerTests {
+struct CacheCleanerTests {
     
     private func makeRealmCategory(id: String, cachedAt: Date) -> RealmCategory {
         let entity = Category(
@@ -54,7 +54,7 @@ struct CatalogCacheCleanerTests {
             makeRealmCategory(id: "fresh", cachedAt: fresh)
         ]
         
-        let cleaner = CatalogCacheCleaner(realmDatabaseManager: database)
+        let cleaner = CacheCleaner(realmDatabaseManager: database)
         try cleaner.deleteExpired(olderThan: cutoff)
         
         let remaining = try database.get(type: RealmCategory.self)
@@ -76,7 +76,7 @@ struct CatalogCacheCleanerTests {
             makeSwiftDataCategory(id: "fresh", cachedAt: fresh)
         ])
         
-        let cleaner = CatalogCacheCleaner(
+        let cleaner = CacheCleaner(
             realmDatabaseManager: MockDatabaseManager(),
             swiftDataContainer: container
         )

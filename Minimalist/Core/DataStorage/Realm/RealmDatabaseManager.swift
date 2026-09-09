@@ -14,16 +14,16 @@ class RealmDatabaseManager: DatabaseManaging {
     /// - Parameter type: The Object model type to query from the database.
     /// - Parameter sort: A Boolean flag indicating whether to sort the fetched records alphabetically by name. Defaults to `false`.
     /// - Returns: An array containing all stored instances of the specified type.
-    func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
+    func get<T: Persistable>(type: T.Type, sort: QuerySort? = nil) throws -> [T] {
         guard let type = type as? Object.Type else {
             throw MinimalistError.persistenceTypeError
         }
         
         let realm = try realm()
         var results = realm.objects(type)
-        
-        if sort {
-            results = results.sorted(byKeyPath: "name")
+                
+        if let sort {
+            results = results.sorted(byKeyPath: sort.keyPath)
         }
         
         return Array(results) as? [T] ?? []
@@ -115,6 +115,31 @@ class RealmDatabaseManager: DatabaseManaging {
         try realm.write {
             if let object = realm.object(ofType: type, forPrimaryKey: id) {
                 realm.delete(object)
+            }
+        }
+    }
+    
+    /// Updates an existing database record by fetching it and executing a closure containing the modifications.
+    /// - Parameters:
+    ///   - type: The persistent model class or struct type to find.
+    ///   - id: The unique identifier of the record to be updated.
+    ///   - changes: A throwing closure that accepts the retrieved object and modifies its properties.
+    func update<T: Persistable, KeyType>(
+        type: T.Type,
+        id: KeyType,
+        _ changes: (T) throws -> Void
+    ) throws {
+        guard let object = try get(type: type, id: id) else {
+            return
+        }
+        
+        let realm = try realm()
+
+        try realm.write {
+            try changes(object)
+            
+            if let expirable = object as? Expirable {
+                expirable.cachedAt = Date()
             }
         }
     }
