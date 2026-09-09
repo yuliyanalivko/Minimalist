@@ -3,4 +3,5 @@ enum ContentState<T: Equatable>: Equatable {
     case content(T)
     case emptySearch
     case empty
+    case emptyFilter
 }

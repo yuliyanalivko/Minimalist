@@ -11,6 +11,7 @@ enum AnalyticsParamName: String {
     case errorMessage = "error_message"
     case items = "items"
     case filterCategory = "filter_category"
-    case filterPrice = "filter_price"
+    case filterMinPrice = "filter_min_price"
+    case filterMaxPrice = "filter_max_price"
     case filterRating = "filter_rating"
 }

@@ -15,7 +15,7 @@ struct ItemListViewModelTests {
                 thumbnailUrl: nil,
                 subCategories: []
             ),
-            subcategory: nil,
+            subcategory: SubCategory(id: "dining", name: "Dining", thumbnailUrl: nil, iconName: nil),
             rating: 2.5,
             isFavorited: false,
             isAddedToCart: false,
@@ -31,7 +31,7 @@ struct ItemListViewModelTests {
                 thumbnailUrl: nil,
                 subCategories: []
             ),
-            subcategory: nil,
+            subcategory: SubCategory(id: "lighting", name: "Lighting", thumbnailUrl: nil, iconName: nil),
             rating: 5.5,
             isFavorited: false,
             isAddedToCart: false,
@@ -368,13 +368,326 @@ struct ItemListViewModelTests {
         #expect(vm.displayedItems == items)
     }
     
-    @Test("Should set showSorting to true and initialize sortBySheetViewModel")
-    func triggerSortBySheet_initializeSortBySheetViewModelAndSetShowSortingToTrue() {
+    @Test("Should present the sorting sheet and initialize sortBySheetViewModel")
+    func triggerSortBySheet_initializeSortBySheetViewModelAndPresentSheet() {
         let vm = makeViewModel()
         
         vm.triggerSortBySheet()
         
-        #expect(vm.showSorting)
+        #expect(vm.activeSheet == .sort)
         #expect(vm.sortBySheetViewModel != nil)
+    }
+    
+    @Test("Should present the filter sheet and initialize filterBySheetViewModel once")
+    func triggerFilterSheet_initializeFilterBySheetViewModelAndPresentSheet() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.triggerFilterSheet()
+        let firstInstance = vm.filterBySheetViewModel
+        
+        vm.triggerFilterSheet()
+        
+        #expect(vm.activeSheet == .filter)
+        #expect(vm.filterBySheetViewModel != nil)
+        #expect(vm.filterBySheetViewModel === firstInstance)
+        #expect(vm.filterBySheetViewModel?.priceBounds == 10...21)
+        #expect(vm.filterBySheetViewModel?.categories.count == 2)
+    }
+    
+    @Test("Should seed the filter sheet with the applied state on every presentation")
+    func triggerFilterSheet_seedsDraftFromAppliedState() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.minPrice = 20
+        vm.filterBySheetViewModel?.apply()
+        vm.triggerFilterSheet()
+        
+        #expect(vm.filterBySheetViewModel?.draftFilterState == vm.appliedFilterState)
+        #expect(vm.filterBySheetViewModel?.isApplyDisabled == true)
+    }
+    
+    @Test("Should discard draft changes that were never applied")
+    func triggerFilterSheet_discardsUnappliedDraft() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.minPrice = 20
+        vm.filterBySheetViewModel?.expandedOptions = [.rating]
+        vm.triggerFilterSheet()
+        
+        #expect(vm.filterBySheetViewModel?.draftFilterState.priceRange == nil)
+        #expect(vm.filterBySheetViewModel?.expandedOptions.isEmpty == true)
+    }
+    
+    @Test("Should not filter displayedItems while filter values change")
+    func displayedItems_notFilteredUntilApply() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.minPrice = 20
+        
+        #expect(vm.displayedItems == items)
+        #expect(vm.appliedFilterState == nil)
+    }
+    
+    @Test("Should filter displayedItems after Apply")
+    func displayedItems_filteredOnApply() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.minPrice = 20
+        vm.filterBySheetViewModel?.apply()
+        
+        #expect(vm.displayedItems.map(\.id) == ["2"])
+        #expect(vm.appliedFilterState?.priceRange == 20...21)
+    }
+    
+    @Test("Should clear the applied state when every filter is reset")
+    func applyFilters_clearsAppliedStateWhenEmpty() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.applyFilters(FilterState(minRating: 5))
+        vm.applyFilters(FilterState())
+        
+        #expect(vm.appliedFilterState == nil)
+        #expect(vm.displayedItems == items)
+    }
+    
+    @Test("Should filter items by category")
+    func displayedItems_filterByCategory() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.draftFilterState.categoryId = "dining"
+        vm.filterBySheetViewModel?.apply()
+        
+        #expect(vm.displayedItems.map(\.id) == ["1"])
+    }
+    
+    @Test("Should filter items by minimum rating")
+    func displayedItems_filterByRating() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.draftFilterState.minRating = 5
+        vm.filterBySheetViewModel?.apply()
+        
+        #expect(vm.displayedItems.map(\.id) == ["2"])
+    }
+    
+    @Test("Should apply sorting after filters")
+    func displayedItems_sortFilteredItems() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.maxPrice = 15
+        vm.filterBySheetViewModel?.apply()
+        vm.sortBySheetViewModel = SortBySheetViewModel(selectedOption: .name, selectedOrder: .forward)
+        
+        #expect(vm.displayedItems.map(\.name) == ["Vindkast"])
+    }
+    
+    @Test("Should keep all categories available after a category filter is applied")
+    func subcategories_useAllItemsNotDisplayedItems() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.draftFilterState.categoryId = "dining"
+        vm.filterBySheetViewModel?.apply()
+        
+        #expect(Set(vm.subcategories.map(\.id)) == ["dining", "lighting"])
+    }
+    
+    @Test("Should keep filters valid when the price bounds change after loading")
+    func displayedItems_filtersSurvivePriceBoundsChange() {
+        let vm = makeViewModel()
+        vm.triggerFilterSheet()
+        
+        vm.filterBySheetViewModel?.apply()
+        vm.allItems = items
+        
+        #expect(vm.appliedFilterState == nil)
+        #expect(vm.displayedItems == items)
+    }
+    
+    @Test("Should be emptyFilter when filters match no items")
+    func state_emptyFilter_whenFiltersHaveNoMatches() {
+        let vm = makeViewModel()
+        vm.isLoading = false
+        vm.allItems = items
+        
+        vm.applyFilters(FilterState(minRating: 6))
+        
+        #expect(vm.state == .emptyFilter)
+    }
+    
+    @Test("Should prefer emptySearch when search and filters both match nothing")
+    func state_emptySearch_takesPrecedenceOverEmptyFilter() {
+        let vm = makeViewModel()
+        vm.isLoading = false
+        vm.allItems = items
+        vm.searchText = "xyz"
+        
+        vm.applyFilters(FilterState(minRating: 6))
+        
+        #expect(vm.state == .emptySearch)
+    }
+    
+    @Test("Should be content when filtered items remain")
+    func state_content_whenFilteredItemsRemain() {
+        let vm = makeViewModel()
+        vm.isLoading = false
+        vm.allItems = items
+        
+        vm.applyFilters(FilterState(minRating: 2))
+        
+        #expect(vm.state == .content(items))
+    }
+    
+    @Test("Should include an item whose rating equals the minimum")
+    func displayedItems_filterByRating_includesEqualRating() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.applyFilters(FilterState(minRating: 2.5))
+        
+        #expect(vm.displayedItems.map(\.id) == ["1", "2"])
+    }
+    
+    @Test("Should apply category, price, and rating filters together")
+    func displayedItems_combinedFilters() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        vm.applyFilters(FilterState(categoryId: "dining", priceRange: 10...15, minRating: 2))
+        
+        #expect(vm.displayedItems.map(\.id) == ["1"])
+        
+        vm.applyFilters(FilterState(categoryId: "dining", minRating: 5))
+        
+        #expect(vm.displayedItems.isEmpty)
+    }
+    
+    @Test("Should apply search before filters")
+    func displayedItems_searchThenFilter() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.searchText = "int"
+        
+        vm.applyFilters(FilterState(minRating: 5))
+        
+        #expect(vm.displayedItems.map(\.name) == ["Solklint"])
+        
+        vm.searchText = "kast"
+        
+        #expect(vm.displayedItems.isEmpty)
+        #expect(vm.state == .emptySearch)
+    }
+    
+    @Test("Should round price bounds down and up")
+    func priceBounds_roundedOutward() {
+        let vm = makeViewModel()
+        
+        #expect(vm.priceBounds == 0...0)
+        
+        vm.allItems = items
+        
+        #expect(vm.priceBounds == 10...21)
+    }
+    
+    @Test("Should reuse the sort sheet view model on later presentations")
+    func triggerSortBySheet_reusesExistingViewModel() {
+        let vm = makeViewModel()
+        
+        vm.triggerSortBySheet()
+        let firstInstance = vm.sortBySheetViewModel
+        vm.sortBySheetViewModel?.updateSelection(order: .forward, option: .price)
+        
+        vm.triggerSortBySheet()
+        
+        #expect(vm.activeSheet == .sort)
+        #expect(vm.sortBySheetViewModel === firstInstance)
+        #expect(vm.sortBySheetViewModel?.selectedOption == .price)
+    }
+    
+    @Test("Should keep an applied price filter after the item list changes")
+    func displayedItems_priceFilterSurvivesItemListChange() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        vm.applyFilters(FilterState(priceRange: 20...21))
+        
+        vm.allItems = items + [
+            Item(
+                id: "3",
+                name: "Extra",
+                category: items[0].category,
+                subcategory: items[0].subcategory,
+                rating: 4,
+                isFavorited: false,
+                isAddedToCart: false,
+                price: 12,
+                thumbnailUrl: nil
+            )
+        ]
+        
+        #expect(vm.displayedItems.map(\.id) == ["2"])
+        #expect(vm.appliedFilterState?.priceRange == 20...21)
+    }
+    
+    @Test("Should log applyFilter with the selected values")
+    func applyFilters_logsSelectedFilterEvent() {
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = makeViewModel(analyticsManager: analyticsManager)
+        vm.allItems = items
+        
+        vm.applyFilters(FilterState(categoryId: "dining", priceRange: 10...15, minRating: 2))
+        
+        guard let name = consumer.loggedEvent?.name,
+              let parameters = consumer.loggedEvent?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(name == AnalyticsEventName.applyFilter.rawValue)
+        #expect(parameters[AnalyticsParamName.filterCategory.rawValue] as? String == "dining")
+        #expect(parameters[AnalyticsParamName.filterRating.rawValue] as? Double == 2)
+        #expect(parameters[AnalyticsParamName.filterMinPrice.rawValue] as? Double == 10)
+        #expect(parameters[AnalyticsParamName.filterMaxPrice.rawValue] as? Double == 15)
+    }
+    
+    @Test("Should log the price bounds when no price filter is selected")
+    func applyFilters_logsPriceBoundsWhenPriceUnset() {
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = makeViewModel(analyticsManager: analyticsManager)
+        vm.allItems = items
+        
+        vm.applyFilters(FilterState(minRating: 3))
+        
+        guard let parameters = consumer.loggedEvent?.parameters else {
+            Issue.record("Expected event to have parameters")
+            
+            return
+        }
+        
+        #expect(parameters[AnalyticsParamName.filterCategory.rawValue] as? String == "")
+        #expect(parameters[AnalyticsParamName.filterRating.rawValue] as? Double == 3)
+        #expect(parameters[AnalyticsParamName.filterMinPrice.rawValue] as? Double == 10)
+        #expect(parameters[AnalyticsParamName.filterMaxPrice.rawValue] as? Double == 21)
     }
 }
