@@ -14,7 +14,7 @@ class RealmDatabaseManager: DatabaseManaging {
     /// - Parameter type: The Object model type to query from the database.
     /// - Parameter sort: A Boolean flag indicating whether to sort the fetched records alphabetically by name. Defaults to `false`.
     /// - Returns: An array containing all stored instances of the specified type.
-    func get<T: Persistable>(type: T.Type, sort: QuerySort? = nil) throws -> [T] {
+    func get<T: Persistable>(type: T.Type, sort: StorageSortOption? = nil) throws -> [T] {
         guard let type = type as? Object.Type else {
             throw MinimalistError.persistenceTypeError
         }

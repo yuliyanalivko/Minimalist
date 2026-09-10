@@ -185,7 +185,7 @@ struct FavoriteListViewModelTests {
         
         await vm.fetchFavoriteItems()
         
-        #expect(vm.allItems == cached)
+        #expect(vm.allItems == cached.sorted(by: \.name))
         #expect(vm.isLoading == false)
         #expect(vm.error != nil)
     }

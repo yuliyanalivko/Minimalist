@@ -27,6 +27,7 @@ final class FavoritesDataCoordinator: BaseDataCoordinator {
                 do {
                     let data = try await networkService.getFavorites()
                     let items = try JSONDecoder().decode([Item].self, from: data)
+                        .sorted(by: \.name)
                     
                     try store.save(items)
                     

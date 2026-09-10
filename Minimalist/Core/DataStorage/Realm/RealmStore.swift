@@ -55,7 +55,7 @@ final class RealmStore: CacheStoring {
     /// Fetches stored favorite items from the Realm database and maps them to domain models.
     /// - Returns: An array of `Item` domain objects marked as favorited.
     func getFavorites() throws -> [Item] {
-        let entities = try databaseManager.get(type: RealmItem.self, sort: nil)
+        let entities = try databaseManager.get(type: RealmItem.self, sort: .name)
             .filter(\.isFavorited)
         
         return entities.map { Item(from: $0) }
