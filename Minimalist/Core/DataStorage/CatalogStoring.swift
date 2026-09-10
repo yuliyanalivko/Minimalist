@@ -6,5 +6,5 @@ protocol CatalogStoring {
     func save(_ items: [Item]) throws
     
     func getItemDetails(id: String) throws -> ItemDetails?
-    func save(_ itemDetails: ItemDetails) throws    
+    func save(_ itemDetails: ItemDetails) throws
 }
