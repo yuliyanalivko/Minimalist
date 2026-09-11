@@ -1,7 +1,7 @@
 import SwiftData
 
 enum StoreFactory {
-    /// Creates a `CatalogStoring` instance for the given storage engine.
+    /// Creates a `CacheStoring` instance for the given storage engine.
     /// - Parameters:
     ///   - storageEngine: Preferred cache storage engine. Defaults to the value in `UserSettings`.
     ///   - swiftDataContainer: SwiftData container used when `storageEngine` is `.swiftData`.
