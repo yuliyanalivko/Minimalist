@@ -95,6 +95,28 @@ struct RealmStoreTests {
         #expect(try store.getFavorites().first?.id == "1")
     }
     
+    @Test("Should return only items added to cart")
+    func getCartItems_returnsCartItems() throws {
+        var addedToCart = item
+        addedToCart.isAddedToCart = true
+        let notAddedToCart = Item(
+            id: "2",
+            name: "Chair",
+            category: item.category,
+            subcategory: nil,
+            rating: 3,
+            isFavorited: false,
+            isAddedToCart: false,
+            price: 49.99,
+            thumbnailUrl: nil
+        )
+        let store = makeStore()
+        
+        try store.save([addedToCart, notAddedToCart])
+        
+        #expect(try store.getCartItems() == [addedToCart])
+    }
+    
     @Test("Should update cart status on item and details")
     func setAddedToCart_updatesItemAndDetails() throws {
         let store = makeStore()
@@ -105,6 +127,7 @@ struct RealmStoreTests {
         
         #expect(try store.getItems().first?.isAddedToCart == true)
         #expect(try store.getItemDetails(id: "1")?.isAddedToCart == true)
+        #expect(try store.getCartItems().first?.id == "1")
     }
     
     @Test("Should not throw when updating a missing item")

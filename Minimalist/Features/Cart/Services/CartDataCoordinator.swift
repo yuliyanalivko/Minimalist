@@ -17,14 +17,27 @@ final class CartDataCoordinator: BaseDataCoordinator {
         self.networkService = networkService
         self.storeResolver = storeResolver
     }
-    
-    func getCartItems() async throws -> [Item] {
-        do {
-            let data = try await networkService.getCartItems()
-            
-            return try JSONDecoder().decode([Item].self, from: data)
-        } catch {
-            throw convert(error: error)
+
+    func getCartItems() -> AsyncThrowingStream<[Item], Error> {
+        AsyncThrowingStream { continuation in
+            Task {
+                if let cached = try? store.getCartItems(), !cached.isEmpty {
+                    continuation.yield(cached)
+                }
+                
+                do {
+                    let data = try await networkService.getCartItems()
+                    let items = try JSONDecoder().decode([Item].self, from: data)
+                        .sorted(by: \.name)
+                    
+                    try store.save(items)
+                    
+                    continuation.yield(items)
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: convert(error: error))
+                }
+            }
         }
     }
     

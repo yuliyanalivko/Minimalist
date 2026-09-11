@@ -10,14 +10,22 @@ struct CartView: View {
                     screen(for: route)
                 }
         }
+        .onAppear{
+            viewModel.trackCartScreen()
+        }
     }
     
     @ViewBuilder
     private func screen(for route: CartRoute) -> some View {
         switch route {
         case .cart:
-            Text("cart")
+            CartListView(viewModel: viewModel.cartListViewModel)
                 .navigationTitle(CartRoute.cart.title)
+                .searchableWithDebounce(text: $viewModel.cartListViewModel.searchText, action: viewModel.logCartListSearchEvent)
+            
+        case .itemDetails(_, let id):
+            ItemDetailsView(id: id)
+                .navigationTitle(route.title)
         }
     }
 }
