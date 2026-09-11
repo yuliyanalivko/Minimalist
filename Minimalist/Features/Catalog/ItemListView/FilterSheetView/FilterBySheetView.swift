@@ -24,13 +24,12 @@ struct FilterBySheetView: View {
                     viewModel.clear()
                 } label: {
                     Text("Clear")
-                        .fontWeight(.semibold)
                         .textCase(.uppercase)
                         .font(.AppFont.inputText)
                         .foregroundStyle(Color.AppColor.primary)
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(PrimaryButtonStyle(backgroundColor: .white, minWidth: 0, borderColor: .AppColor.primary))
+                .buttonStyle(PrimaryButtonStyle(backgroundColor: .clear, minWidth: 0, borderColor: .AppColor.primary))
 
                 
                 Button {

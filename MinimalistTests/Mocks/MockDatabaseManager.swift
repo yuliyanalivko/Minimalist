@@ -7,12 +7,23 @@ final class MockDatabaseManager: DatabaseManaging, @unchecked Sendable {
     var getError: Error?
     var saveError: Error?
     
-    func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
+    func get<T: Persistable>(type: T.Type, sort: StorageSortOption? = nil) throws -> [T] {
         if let getError {
             throw getError
         }
         
-        return objects.compactMap { $0 as? T }
+        var result = objects.compactMap { $0 as? T }
+        
+        if let sort {
+            result.sort { lhs, rhs in
+                switch sort {
+                case .name:
+                    objectName(lhs) < objectName(rhs)
+                }
+            }
+        }
+        
+        return result
     }
     
     func get<T: Persistable, KeyType>(type: T.Type, id: KeyType) throws -> T? {
@@ -74,5 +85,25 @@ final class MockDatabaseManager: DatabaseManaging, @unchecked Sendable {
             
             return objectId == targetId
         }
+    }
+    
+    func update<T: Persistable, KeyType>(
+        type: T.Type,
+        id: KeyType,
+        _ changes: (T) throws -> Void
+    ) throws {
+        guard let object = try get(type: type, id: id) else {
+            return
+        }
+        
+        try changes(object)
+    }
+    
+    private func objectName<T>(_ object: T) -> String {
+        (object as? Object)?.value(forKey: "name") as? String ?? ""
+    }
+    
+    private func objectCachedAt<T>(_ object: T) -> Date {
+        (object as? Object)?.value(forKey: "cachedAt") as? Date ?? .distantPast
     }
 }

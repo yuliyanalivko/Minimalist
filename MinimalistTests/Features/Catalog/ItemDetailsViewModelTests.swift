@@ -35,15 +35,17 @@ struct ItemDetailsViewModelTests {
         let catalogMock = MockNetworkClient(mockData: mockData, mockError: mockError)
         let catalogDataCoordinator = CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
-            storeResolver: { RealmCatalogStore(databaseManager: database) }
+            storeResolver: { RealmStore(databaseManager: database) }
         )
         
         let favoritesDataCoordinator = FavoritesDataCoordinator(
-            networkService: FavoritesNetworkService(networkClient: cartMock)
+            networkService: FavoritesNetworkService(networkClient: favoritesMock),
+            storeResolver: { RealmStore(databaseManager: database) }
         )
         
         let cartDataCoordinator = CartDataCoordinator(
-            networkService: CartNetworkService(networkClient: favoritesMock)
+            networkService: CartNetworkService(networkClient: cartMock),
+            storeResolver: { RealmStore(databaseManager: database) }
         )
 
         if let analyticsManager {

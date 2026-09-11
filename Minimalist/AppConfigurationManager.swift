@@ -104,7 +104,7 @@ final class AppConfigurationManager {
             return
         }
         
-        let cleaner = cacheCleaner ?? CatalogCacheCleaner(swiftDataContainer: swiftDataContainer)
+        let cleaner = cacheCleaner ?? CacheCleaner(swiftDataContainer: swiftDataContainer)
         try? cleaner.deleteExpired(olderThan: cutoff)
     }
     

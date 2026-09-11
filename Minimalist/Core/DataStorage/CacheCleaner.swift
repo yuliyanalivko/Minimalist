@@ -6,7 +6,7 @@ protocol CacheCleaning {
 }
 
 @MainActor
-final class CatalogCacheCleaner: CacheCleaning {
+final class CacheCleaner: CacheCleaning {
     private let realmDatabaseManager: DatabaseManaging
     private let swiftDataContainer: ModelContainer?
     
