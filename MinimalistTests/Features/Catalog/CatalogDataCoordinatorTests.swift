@@ -10,7 +10,7 @@ struct CatalogDataCoordinatorTests {
     ) -> CatalogDataCoordinator {
         CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: catalogMock),
-            storeResolver: { RealmCatalogStore(databaseManager: database) }
+            storeResolver: { RealmStore(databaseManager: database) }
         )
     }
     

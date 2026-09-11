@@ -42,7 +42,7 @@ struct CategoryViewModelTests {
         let mockClient = MockNetworkClient(mockData: mockData, mockError: mockError)
         let coordinator = CatalogDataCoordinator(
             networkService: CatalogNetworkService(networkClient: mockClient),
-            storeResolver: { RealmCatalogStore(databaseManager: database) }
+            storeResolver: { RealmStore(databaseManager: database) }
         )
 
         if let analyticsManager {

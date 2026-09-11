@@ -1,17 +1,14 @@
 import Foundation
 import SwiftData
 
-protocol Expirable {
+protocol Expirable: AnyObject {
     var cachedAt: Date { get set }
-}
-
-protocol Sortable {
-    var name: String { get set }
 }
 
 @MainActor
 final class SwiftDataDatabaseManager: DatabaseManaging {
     private let container: ModelContainer
+
     private var context: ModelContext { container.mainContext }
     
     init(container: ModelContainer) {
@@ -22,7 +19,7 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
     /// - Parameter type: The persistent model type to query from the database.
     /// - Parameter sort: A Boolean flag indicating whether to sort the fetched records alphabetically by name. Defaults to `false`.
     /// - Returns: An array containing all stored instances matching the specified type.
-    func get<T: Persistable>(type: T.Type, sort: Bool = false) throws -> [T] {
+    func get<T: Persistable>(type: T.Type, sort: StorageSortOption? = nil) throws -> [T] {
         guard let type = type as? any PersistentModel.Type else {
             throw MinimalistError.persistenceTypeError
         }
@@ -103,6 +100,29 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
         try context.save()
     }
     
+    /// Updates an existing database record by fetching it and executing a closure containing the modifications.
+    /// - Parameters:
+    ///   - type: The persistent model class or struct type to find.
+    ///   - id: The unique identifier of the record to be updated.
+    ///   - changes: A throwing closure that accepts the retrieved object and modifies its properties.
+    func update<T: Persistable, KeyType>(
+        type: T.Type,
+        id: KeyType,
+        _ changes: (T) throws -> Void
+    ) throws {
+        guard var object = try get(type: type, id: id) else {
+            return
+        }
+        
+        try changes(object)
+        
+        if let expirable = object as? Expirable {
+            expirable.cachedAt = Date()
+        }
+        
+        try context.save()
+    }
+    
     private func upsert(_ model: some PersistentModel & EntityIdentified) throws {
         try deleteExisting(type(of: model), entityId: model.entityId)
         context.insert(model)
@@ -124,18 +144,21 @@ final class SwiftDataDatabaseManager: DatabaseManaging {
         try fetchAll(type).first { $0.entityId == id }
     }
     
-    private func fetchAll<T: PersistentModel>(_ type: T.Type, sort: Bool = false) throws -> [T] {
-        if sort, let sortableType = T.self as? any (PersistentModel & Sortable).Type {
-            return try fetchAllSorted(sortableType) as? [T] ?? []
+    private func fetchAll<T: PersistentModel>(_ type: T.Type, sort: StorageSortOption? = nil) throws -> [T] {
+        if let sort, let sortableType = T.self as? any (PersistentModel & Sortable).Type {
+            return try fetchAllSorted(sortableType, sort: sort) as? [T] ?? []
         }
         
         return try context.fetch(FetchDescriptor<T>())
     }
     
-    private func fetchAllSorted<T: PersistentModel & Sortable>(_ type: T.Type) throws -> [T] {
-        let descriptor = FetchDescriptor<T>(sortBy: [SortDescriptor(\.name, order: .forward)])
+    private func fetchAllSorted<T: PersistentModel & Sortable>(
+        _ type: T.Type,
+        sort: StorageSortOption
+    ) throws -> [T.SortableModel] {
+        let descriptors = T.sortDescriptors(for: sort)
         
-        return try context.fetch(descriptor)
+        return try context.fetch(FetchDescriptor<T.SortableModel>(sortBy: descriptors))
     }
     
     private func deleteAll<T: PersistentModel>(_ type: T.Type) throws {

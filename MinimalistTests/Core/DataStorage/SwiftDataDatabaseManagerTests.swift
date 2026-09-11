@@ -141,4 +141,42 @@ struct SwiftDataDatabaseManagerTests {
             try manager.delete(type: UnsupportedPersistable.self, id: "1")
         } throws: { isPersistenceTypeError($0) }
     }
+    
+    @Test("Should sort results by name")
+    func get_sortByName_returnsAlphabeticalOrder() throws {
+        let manager = try makeManager()
+        try manager.save([
+            makeCategory(id: "1", name: "Tables"),
+            makeCategory(id: "2", name: "Sofas")
+        ])
+        
+        let result = try manager.get(type: SwiftDataCategory.self, sort: .name)
+        
+        #expect(result.map(\.name) == ["Sofas", "Tables"])
+    }
+    
+    @Test("Should update an existing object and refresh cachedAt")
+    func update_existingObject_appliesChanges() throws {
+        let manager = try makeManager()
+        let originalDate = Date(timeIntervalSince1970: 1)
+        try manager.save(makeCategory(id: "1", cachedAt: originalDate))
+        
+        try manager.update(type: SwiftDataCategory.self, id: "1") { stored in
+            stored.name = "Updated"
+        }
+        
+        let result = try manager.get(type: SwiftDataCategory.self, id: "1")
+        
+        #expect(result?.name == "Updated")
+        #expect(result?.cachedAt ?? originalDate > originalDate)
+    }
+    
+    @Test("Should not throw when updating a missing object")
+    func update_missingObject_doesNotThrow() throws {
+        let manager = try makeManager()
+        
+        try manager.update(type: SwiftDataCategory.self, id: "missing") { stored in
+            stored.name = "Updated"
+        }
+    }
 }
