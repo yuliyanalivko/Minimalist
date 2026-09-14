@@ -15,6 +15,8 @@ enum AppIcon: String {
     case internaldrive = "internaldrive"
     case hammer = "hammer"
     case trash = "trash"
+    case circle = "circle"
+    case checkmarkCircleFill = "checkmark.circle.fill"
 }
 
 extension Image {
@@ -72,5 +74,13 @@ extension Image {
     
     static var trash: Image {
         Image(systemName: AppIcon.trash.rawValue)
+    }
+    
+    static var circle: Image {
+        Image(systemName: AppIcon.circle.rawValue)
+    }
+    
+    static var checkmarkCircleFill: Image {
+        Image(systemName: AppIcon.checkmarkCircleFill.rawValue)
     }
 }

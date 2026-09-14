@@ -131,6 +131,43 @@ struct CartListViewModelTests {
         #expect(vm.state == .content(items))
     }
     
+    @Test("Should be true when item is selected")
+    func isSelectionMode_true_whenSelectedIdsNotEmpty() {
+        let vm = makeViewModel()
+        vm.selectedIds.insert("1")
+        
+        #expect(vm.isSelectionMode)
+    }
+    
+    @Test("Should be false when no items selected")
+    func isSelectionMode_false_whenSelectedIdsEmpty() {
+        let vm = makeViewModel()
+        
+        #expect(!vm.isSelectionMode)
+    }
+    
+    @Test("Should be full price in the view mode")
+    func totalPrice_fullPrice_whenNotInSelectedMode() {
+        let vm = makeViewModel()
+        vm.allItems = items
+        
+        #expect(vm.totalPrice == 31.00)
+    }
+    
+    @Test("Should be the sum of all selected items")
+    func totalPrice_sumOfAllSelected() {
+        let vm = makeViewModel()
+        vm.selectedIds.insert("1")
+        vm.selectedIds.insert("2")
+        vm.allItems = items
+        
+        #expect(vm.totalPrice == 31.00)
+        
+        vm.selectedIds.remove("2")
+        
+        #expect(vm.totalPrice == 10.50)
+    }
+    
     @Test("Should load cart items from network when cache is empty")
     func fetchCartItems_networkSuccess_emptyCache() async {
         let json = mockItems.data(using: .utf8)!
@@ -246,13 +283,43 @@ struct CartListViewModelTests {
         #expect(vm.error != nil)
     }
     
-    @Test("Should navigate to item details on click")
-    func handleItemClick_navigatesToItemDetails() {
+    @Test("Should navigate to item details on click when not in selection mode")
+    func handleItemClick_navigatesToItemDetails_whenInViewMode() {
         let vm = makeViewModel()
         
         vm.handleItemClick(item: items[0])
         
         #expect(vm.router.path.count == 1)
+    }
+    
+    @Test("Should add item id to selectedIds in selection mode on select")
+    func handleItemClick_addItemIdToSelectedIds_inSelectionMode() {
+        let vm = makeViewModel()
+        vm.selectedIds.insert(items[1].id)
+        
+        vm.handleItemClick(item: items[0])
+        
+        #expect(vm.selectedIds.contains(items[0].id))
+    }
+    
+    @Test("Should remove item id from selectedIds in selection mode on deselect")
+    func handleItemClick_removeItemIdFromSelectedIds_inSelectionMode() {
+        let vm = makeViewModel()
+        vm.selectedIds.insert(items[0].id)
+        
+        vm.handleItemClick(item: items[0])
+        
+        #expect(!vm.selectedIds.contains(items[0].id))
+    }
+    
+    @Test("Should add item id to selectedIds")
+    func handleItemLongPress_removeItemIdFromSelectedIds_inSelectionMode() {
+        let vm = makeViewModel()
+        
+        vm.handleItemLongPress(item: items[0])
+        
+        #expect(vm.selectedIds.contains(items[0].id))
+        #expect(vm.isSelectionMode)
     }
     
     @Test("Should call logEvent with the correct search event")

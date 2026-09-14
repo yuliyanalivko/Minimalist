@@ -5,6 +5,8 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
     var allItems: [Item] = []
     var searchText: String = ""
     
+    var selectedIds = Set<String>()
+    
     var displayedItems: [Item] {
         allItems.filtered(by: searchText, key: \.name)
     }
@@ -19,6 +21,16 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         }
         
         return .content(displayedItems)
+    }
+
+    var isSelectionMode: Bool {
+        !selectedIds.isEmpty
+    }
+    
+    var totalPrice: Double {
+        allItems
+            .filter { isSelectionMode ? selectedIds.contains($0.id) : true }
+            .reduce(0.0) { $0 + $1.price }
     }
     
     private let cartDataCoordinator: CartDataCoordinator
@@ -65,8 +77,18 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         }
     }
     
+    func handleItemLongPress(item: Item) {
+        selectedIds.insert(item.id)
+    }
+    
     func handleItemClick(item: Item) {
-        router.navigate(to: CartRoute.itemDetails(title: item.name, id: item.id))
+        guard isSelectionMode else {
+            router.navigate(to: CartRoute.itemDetails(title: item.name, id: item.id))
+            
+            return
+        }
+        
+        toggleSelection(for: item.id)
     }
     
     func logSearchEvent() {
@@ -85,6 +107,14 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
             name: AnalyticsEventName.removeFromCart,
             parameters: [.itemId: item.id, .itemName: item.name]
         ))
+    }
+    
+    private func toggleSelection(for id: String) {
+        if selectedIds.contains(id) {
+            selectedIds.remove(id)
+        } else {
+            selectedIds.insert(id)
+        }
     }
     
     private func mapUrls(of items: [Item]) -> [Item] {

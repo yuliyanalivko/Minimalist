@@ -18,7 +18,9 @@ struct ImageTests {
         (AppIcon.arrowDown, "chevron.down"),
         (AppIcon.internaldrive, "internaldrive"),
         (AppIcon.hammer, "hammer"),
-        (AppIcon.trash, "trash")
+        (AppIcon.trash, "trash"),
+        (AppIcon.circle, "circle"),
+        (AppIcon.checkmarkCircleFill, "checkmark.circle.fill")
     ])
     func appIcon_correctName(icon: AppIcon, expectedName: String) {
         #expect(icon.rawValue == expectedName)

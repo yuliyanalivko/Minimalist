@@ -22,6 +22,7 @@ struct ItemListView: View {
                         .buttonStyle(.plain)
                     }
                 )
+                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
                 .onTapGesture {
                     viewModel.handleItemClick(item: item)
                 }
