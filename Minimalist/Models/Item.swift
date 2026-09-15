@@ -1,4 +1,4 @@
-struct Item: Identifiable, Codable, Equatable {
+struct Item: Identifiable, Codable, Equatable, Hashable {
     let id: String
     let name: String
     let category: Category?

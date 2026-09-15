@@ -1,4 +1,4 @@
-struct Category: CatalogItemConfigurable {
+struct Category: CatalogItemConfigurable, Hashable {
     let id: String
     let name: String
     let thumbnailUrl: String?

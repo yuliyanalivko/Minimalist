@@ -26,7 +26,17 @@ struct CartView: View {
         case .itemDetails(_, let id):
             ItemDetailsView(id: id)
                 .navigationTitle(route.title)
+            
+        case .checkout(let items):
+            checkoutView(items: items)
+                .navigationTitle(route.title)
         }
+    }
+    
+    private func checkoutView(items: [Item]) -> some View {
+        viewModel.updateCheckoutViewModel(items: items)
+        
+        return CheckoutView(viewModel: viewModel.checkoutViewModel!)
     }
 }
 
