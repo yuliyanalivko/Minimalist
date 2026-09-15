@@ -21,7 +21,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .background(
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.white)
+                        .fill(Color.AppColor.backgroundPrimary)
                         .stroke(borderColor ?? .clear, lineWidth: 1)
                     
                     RoundedRectangle(cornerRadius: 10)

@@ -37,7 +37,7 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
         let prices = allItems.map(\.price)
         
         guard let lowest = prices.min(), let highest = prices.max() else {
-            return 0...0
+            return 0...1000
         }
         
         return lowest.rounded(.down)...highest.rounded(.up)
@@ -217,18 +217,6 @@ class ItemListViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     private func mapUrls(of items: [Item]) -> [Item]{
-        items.map { item in
-            guard let thumbnailUrl = item.thumbnailUrl,
-                  let url = URL(string: thumbnailUrl) else {
-                return item
-            }
-            
-            var updatedItem = item
-            
-            updatedItem.thumbnailUrl = thumbnailUrl
-            updatedItem.thumbnailUrl = url.resized(to: 500).absoluteString
-            
-            return updatedItem
-        }
+        URLHelper.mapUrls(of: items, keyPath: \.thumbnailUrl)
     }
 }

@@ -4,8 +4,18 @@ import Foundation
 final class CartDataCoordinator: BaseDataCoordinator {
     private let networkService: CartNetworkService
     
-    init(networkService: CartNetworkService = CartNetworkService()) {
+    private let storeResolver: () -> CartStoring
+    
+    private var store: CartStoring {
+        storeResolver()
+    }
+    
+    init(
+        networkService: CartNetworkService = CartNetworkService(),
+        storeResolver: @escaping () -> CartStoring = { StoreFactory.makeStore() }
+    ) {
         self.networkService = networkService
+        self.storeResolver = storeResolver
     }
     
     func getCartItems() async throws -> [Item] {
@@ -21,6 +31,7 @@ final class CartDataCoordinator: BaseDataCoordinator {
     func addToCart(id: String) async throws {
         do {
             _ = try await networkService.addToCart(id: id)
+            try store.setAddedToCart(id: id, isAddedToCart: true)
         } catch {
             throw convert(error: error)
         }
@@ -29,6 +40,7 @@ final class CartDataCoordinator: BaseDataCoordinator {
     func removeFromCart(id: String) async throws {
         do {
             _ = try await networkService.removeFromCart(id: id)
+            try store.setAddedToCart(id: id, isAddedToCart: false)
         } catch {
             throw convert(error: error)
         }

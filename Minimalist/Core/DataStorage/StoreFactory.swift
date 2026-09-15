@@ -1,7 +1,7 @@
 import SwiftData
 
-enum CatalogStoreFactory {
-    /// Creates a `CatalogStoring` instance for the given storage engine.
+enum StoreFactory {
+    /// Creates a `CacheStoring` instance for the given storage engine.
     /// - Parameters:
     ///   - storageEngine: Preferred cache storage engine. Defaults to the value in `UserSettings`.
     ///   - swiftDataContainer: SwiftData container used when `storageEngine` is `.swiftData`.
@@ -11,12 +11,13 @@ enum CatalogStoreFactory {
     static func makeStore(
         storageEngine: CacheStorageEngine = UserSettings().storageEngine,
         swiftDataContainer: ModelContainer? = AppConfigurationManager.shared.swiftDataContainer
-    ) -> CatalogStoring {
+    ) -> CacheStoring {
         guard storageEngine == .swiftData,
               let container = swiftDataContainer else {
-            return RealmCatalogStore()
+            return RealmStore()
         }
         
         return SwiftDataCatalogStore(container: container)
     }
 }
+

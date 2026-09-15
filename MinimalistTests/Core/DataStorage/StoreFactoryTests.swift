@@ -4,7 +4,7 @@ import Testing
 @testable import Minimalist
 
 @MainActor
-struct CatalogStoreFactoryTests {
+struct StoreFactoryTests {
     
     private func makeContainer() throws -> ModelContainer {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
@@ -19,27 +19,27 @@ struct CatalogStoreFactoryTests {
     
     @Test("Should return RealmCatalogStore for realm engine")
     func makeStore_realm_returnRealmCatalogStore() throws {
-        let store = CatalogStoreFactory.makeStore(
+        let store = StoreFactory.makeStore(
             storageEngine: .realm,
             swiftDataContainer: try makeContainer()
         )
         
-        #expect(store is RealmCatalogStore)
+        #expect(store is RealmStore)
     }
     
     @Test("Should return RealmCatalogStore when SwiftData container is missing")
     func makeStore_swiftDataWithoutContainer_returnRealmCatalogStore() {
-        let store = CatalogStoreFactory.makeStore(
+        let store = StoreFactory.makeStore(
             storageEngine: .swiftData,
             swiftDataContainer: nil
         )
         
-        #expect(store is RealmCatalogStore)
+        #expect(store is RealmStore)
     }
     
     @Test("Should return SwiftDataCatalogStore for swiftData engine with container")
     func makeStore_swiftDataWithContainer_returnSwiftDataCatalogStore() throws {
-        let store = CatalogStoreFactory.makeStore(
+        let store = StoreFactory.makeStore(
             storageEngine: .swiftData,
             swiftDataContainer: try makeContainer()
         )

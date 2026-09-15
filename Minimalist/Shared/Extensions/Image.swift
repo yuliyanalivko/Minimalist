@@ -14,6 +14,7 @@ enum AppIcon: String {
     case arrowDown = "chevron.down"
     case internaldrive = "internaldrive"
     case hammer = "hammer"
+    case trash = "trash"
 }
 
 extension Image {
@@ -67,5 +68,9 @@ extension Image {
     
     static var hammer: Image {
         Image(systemName: AppIcon.hammer.rawValue)
+    }
+    
+    static var trash: Image {
+        Image(systemName: AppIcon.trash.rawValue)
     }
 }

@@ -11,8 +11,14 @@ struct ImageTests {
         (AppIcon.photo, "photo"),
         (AppIcon.star, "star.fill"),
         (AppIcon.magnifyingGlass, "exclamationmark.magnifyingglass"),
+        (AppIcon.cart, "cart.fill"),
+        (AppIcon.arrowLeft, "chevron.left"),
+        (AppIcon.arrowRight, "chevron.right"),
         (AppIcon.arrowUp, "chevron.up"),
-        (AppIcon.arrowDown, "chevron.down")
+        (AppIcon.arrowDown, "chevron.down"),
+        (AppIcon.internaldrive, "internaldrive"),
+        (AppIcon.hammer, "hammer"),
+        (AppIcon.trash, "trash")
     ])
     func appIcon_correctName(icon: AppIcon, expectedName: String) {
         #expect(icon.rawValue == expectedName)

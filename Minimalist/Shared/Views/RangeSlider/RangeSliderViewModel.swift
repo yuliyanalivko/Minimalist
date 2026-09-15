@@ -1,10 +1,20 @@
 import Foundation
 
-struct RangeSliderMath {
+@Observable
+class RangeSliderViewModel {
     
     let bounds: ClosedRange<Double>
-    let step: Double
-    let thumbSize: CGFloat
+    
+    let step: Double = 1
+    let thumbSize: CGFloat = 18
+    var width: Double = 0
+    var fromLabelWidth: CGFloat = 0
+    var toLabelWidth: CGFloat = 0
+    let trackCoordinateSpace = "RangeSliderTrack"
+    
+    init(bounds: ClosedRange<Double>) {
+        self.bounds = bounds
+    }
     
     func sliderWidth(width: CGFloat, from: Double, to: Double) -> CGFloat {
         xOffset(width: width, for: to) - xOffset(width: width, for: from)

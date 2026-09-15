@@ -11,7 +11,7 @@ final class CatalogDataCoordinator: BaseDataCoordinator {
     
     init(
         networkService: CatalogNetworkService = CatalogNetworkService(),
-        storeResolver: @escaping () -> CatalogStoring = { CatalogStoreFactory.makeStore() }
+        storeResolver: @escaping () -> CatalogStoring = { StoreFactory.makeStore() }
     ) {
         self.networkService = networkService
         self.storeResolver = storeResolver

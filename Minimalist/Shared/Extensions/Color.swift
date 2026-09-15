@@ -18,6 +18,10 @@ extension Color {
         // R: 255, G: 255, B: 255
         static var buttonTextPrimary = Color("buttonTextPrimary")
         
+        // light: R: 255, G: 255, B: 255
+        // dark: R: 0, G: 0, B: 0
+        static var backgroundPrimary = Color("backgroundPrimary")
+        
         // light: R: 237, G: 237, B: 237
         // dark: R: 51, G: 51, B: 51
         static var backgroundSecondary = Color("backgroundSecondary")

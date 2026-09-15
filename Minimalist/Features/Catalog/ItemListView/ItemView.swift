@@ -1,12 +1,16 @@
 import SwiftUI
 
-struct ItemView: View {
+struct ItemView<Content: View>: View {
     let item: Item
-    
-    var onAddToFavoriteTap: () -> Void
+    let actions: Content
     
     private var imageSize: CGFloat {
         UIScreen.main.bounds.width * 0.4
+    }
+    
+    init(item: Item, @ViewBuilder actions: () -> Content) {
+        self.item = item
+        self.actions = actions()
     }
     
     var body: some View {
@@ -32,19 +36,13 @@ struct ItemView: View {
                     
                     Spacer()
                     
-                    Image.heart
-                        .font(.AppFont.icon)
-                        .padding(.leading, 4)
-                        .foregroundStyle(item.isFavorited ? Color.AppColor.primary : Color.AppColor.backgroundSecondary)
-                        .onTapGesture {
-                            onAddToFavoriteTap()
-                        }
+                    actions
                 }
                 
                 Text(item.subcategory?.name ?? "")
                     .font(.AppFont.caption)
                     .padding(.bottom, 10)
-
+                
                 RatingView(rating: item.rating)
                     .padding(.bottom, 10)
                 
@@ -58,18 +56,9 @@ struct ItemView: View {
         .defaultHorizontalScreenPadding()
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
         .listRowSeparator(.hidden)
-        .overlay(
-            Rectangle()
-                .frame(height: 2)
-                .foregroundColor(Color.AppColor.backgroundSecondary),
-            alignment: .top
-        )
-        .overlay(
-            Rectangle()
-                .frame(height: 2)
-                .foregroundColor(Color.AppColor.backgroundSecondary),
-            alignment: .bottom
-        )
+        .listRowBackground(Color.clear)
+        .separator(.top)
+        .separator(.bottom)
     }
     
     private var imagePlaceholder: some View {
@@ -100,5 +89,11 @@ struct ItemView: View {
         isAddedToCart: true,
         price: 45.7643,
         thumbnailUrl:  "https://www.mamp.one/wp-content/uploads/2024/09/image-resources2.jpg"
-    ), onAddToFavoriteTap: {})
+    ))
+}
+
+extension ItemView where Content == EmptyView {
+    init(item: Item) {
+        self.init(item: item, actions: { EmptyView() })
+    }
 }

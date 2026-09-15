@@ -10,9 +10,7 @@ protocol SDKConfigurator {
 
 struct FirebaseConfigurator: SDKConfigurator {
     func configure() {
-        if FirebaseApp.app() == nil {
-            FirebaseApp.configure()
-        }
+        FirebaseApp.configure()
     }
 }
 
@@ -104,7 +102,7 @@ final class AppConfigurationManager {
             return
         }
         
-        let cleaner = cacheCleaner ?? CatalogCacheCleaner(swiftDataContainer: swiftDataContainer)
+        let cleaner = cacheCleaner ?? CacheCleaner(swiftDataContainer: swiftDataContainer)
         try? cleaner.deleteExpired(olderThan: cutoff)
     }
     

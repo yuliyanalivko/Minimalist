@@ -8,10 +8,18 @@ struct ItemListView: View {
             ForEach(viewModel.displayedItems, id: \.id) { item in
                 ItemView(
                     item: item,
-                    onAddToFavoriteTap: {
-                        Task {
-                            await viewModel.toggleFavorite(item)
+                    actions: {
+                        Button {
+                            Task {
+                                await viewModel.toggleFavorite(item)
+                            }
+                        } label: {
+                            Image.heart
+                                .font(.AppFont.icon)
+                                .padding(.leading, 4)
+                                .foregroundStyle(item.isFavorited ? Color.AppColor.primary : Color.AppColor.backgroundSecondary)
                         }
+                        .buttonStyle(.plain)
                     }
                 )
                 .onTapGesture {
