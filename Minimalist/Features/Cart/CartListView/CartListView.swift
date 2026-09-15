@@ -4,35 +4,38 @@ struct CartListView: View {
     @State var viewModel: CartListViewModel
     
     var body: some View {
-        VStack(spacing: 0) {
-            List(selection: $viewModel.selectedIds) {
-                ForEach(viewModel.displayedItems, id: \.id) { item in
-                    listItem(item: item)
-                        .onTapGesture {
-                            viewModel.handleItemClick(item: item)
-                        }
-                        .onLongPressGesture(minimumDuration: 0.5) {
-                            viewModel.handleItemLongPress(item: item)
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                Task {
-                                    await viewModel.removeFromCart(item)
-                                }
-                            } label: {
-                                Label("Delete", systemImage: AppIcon.trash.rawValue)
+        List(selection: $viewModel.selectedIds) {
+            ForEach(viewModel.displayedItems, id: \.id) { item in
+                listItem(item: item)
+                    .onTapGesture {
+                        viewModel.handleItemClick(item: item)
+                    }
+                    .onLongPressGesture(minimumDuration: 0.5) {
+                        viewModel.handleItemLongPress(item: item)
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button {
+                            Task {
+                                await viewModel.removeFromCart(item)
                             }
-                            .tint(.AppColor.error)
+                        } label: {
+                            Label("Delete", systemImage: AppIcon.trash.rawValue)
                         }
+                        .tint(.AppColor.error)
+                    }
+            }
+        }
+        .verticalScreenSpacing()
+        .padding(.bottom, 120)
+        .listStyle(.plain)
+        .overlay(alignment: .bottom) {
+            Group {
+                if !viewModel.allItems.isEmpty {
+                    footer
+                        .tabBarAwareCentering()
                 }
             }
-            
-            footer
         }
-        .tabBarAwareCentering()
-        .verticalScreenSpacing()
-        .listStyle(.plain)
-        
         .overlay(
             Group {
                 switch viewModel.state {
@@ -86,6 +89,7 @@ struct CartListView: View {
             .defaultHorizontalScreenPadding()
             
             Button {
+                viewModel.handleBuyButtonClick()
             } label: {
                 Text("Buy")
                     .frame(maxWidth: .infinity)
@@ -94,8 +98,10 @@ struct CartListView: View {
             .buttonStyle(PrimaryButtonStyle())
             .defaultHorizontalScreenPadding()
         }
-        .padding(.vertical, 20)
+        .padding(.top, 20)
+        .padding(.bottom, 10)
         .separator(.top)
+        .background(Color.AppColor.backgroundPrimary)
     }
 }
 
