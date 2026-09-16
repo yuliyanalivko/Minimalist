@@ -322,6 +322,30 @@ struct CartListViewModelTests {
         #expect(vm.isSelectionMode)
     }
     
+    @Test("Should navigate to checkout page on click and log begin purchase event")
+    func handleBuyButtonClick_navigatesToICheckout() {
+        
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = makeViewModel(analyticsManager: analyticsManager)
+        vm.allItems = items
+        
+        vm.handleBuyButtonClick()
+        
+        guard let name = consumer.loggedEvent?.name,
+              let parameters = consumer.loggedEvent?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(vm.router.path.count == 1)
+        #expect(name == AnalyticsEventName.beginCheckout.rawValue)
+        #expect(parameters[AnalyticsParamName.quantity.rawValue] as? Int == 2)
+        #expect(parameters[AnalyticsParamName.items.rawValue] as? [String] == ["1", "2"])
+    }
+    
     @Test("Should call logEvent with the correct search event")
     func logSearchEvent_callLogEvent() {
         let consumer = MockAnalyticsConsumer()

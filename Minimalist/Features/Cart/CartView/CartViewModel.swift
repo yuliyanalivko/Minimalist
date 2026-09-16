@@ -11,11 +11,15 @@ class CartViewModel: RoutableViewModel<CartRouter> {
     }
     
     func updateCheckoutViewModel(items: [Item]) {
-        if let existing = checkoutViewModel, existing.items == items {
+        guard let checkoutViewModel else {
+            checkoutViewModel = CheckoutViewModel(router: router, items: items)
+            
             return
         }
-        
-        checkoutViewModel = CheckoutViewModel(router: router, items: items)
+
+        if checkoutViewModel.items != items {
+            checkoutViewModel.updateItems(items: items)
+        }
     }
     
     func trackCartScreen() {

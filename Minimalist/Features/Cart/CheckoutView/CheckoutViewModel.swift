@@ -2,8 +2,6 @@ import SwiftUI
 
 @Observable
 class CheckoutViewModel: RoutableViewModel<CartRouter> {
-    let items: [Item]
-    
     let totalPrice: Double
     var showAlert: Bool = false
     
@@ -16,7 +14,8 @@ class CheckoutViewModel: RoutableViewModel<CartRouter> {
         validators: [
             { value in
                 Validator.required(value, fieldName: "Name")
-            }
+            },
+            Validator.name
         ]
     )
     
@@ -35,7 +34,8 @@ class CheckoutViewModel: RoutableViewModel<CartRouter> {
         validators: [
             { value in
                 Validator.required(value, fieldName: "Address")
-            }
+            },
+            Validator.address
         ]
     )
     
@@ -49,6 +49,7 @@ class CheckoutViewModel: RoutableViewModel<CartRouter> {
         ]
     )
     
+    private(set) var items: [Item]
     private var isFormValid: Bool = false
     private var orderDataCoordinator: OrderDataCoordinator
     
@@ -63,6 +64,10 @@ class CheckoutViewModel: RoutableViewModel<CartRouter> {
         self.orderDataCoordinator = orderDataCoordinator
  
         super.init(router: router, analyticsManager: analyticsManager)
+    }
+    
+    func updateItems(items: [Item]) {
+        self.items = items
     }
     
     func resetForm() {
@@ -97,7 +102,6 @@ class CheckoutViewModel: RoutableViewModel<CartRouter> {
             zipcode: zipcodeField.value,
             items: items.map { $0.id }
         )
-        print(orderRequest)
         
         isLoading = true
         

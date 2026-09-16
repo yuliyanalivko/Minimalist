@@ -35,7 +35,6 @@ struct TextFieldControl: View {
                     .textFieldStyle(.plain)
                     .padding(.vertical, 10)
                     .padding(.horizontal, 20)
-                //                    .focused($isFocused)
                     .keyboardType(isNumeric ? .numberPad : .default)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
@@ -77,16 +76,6 @@ struct TextFieldControl: View {
             .font(.AppFont.headline)
         }
     }
-    
-    //    private func validate() {
-    //        for validator in validators where validator(value) != .valid {
-    //            validationState = validator(value)
-    //
-    //            return
-    //        }
-    //
-    //        validationState = .valid
-    //    }
 }
 
 #Preview {

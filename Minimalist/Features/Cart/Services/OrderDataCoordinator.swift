@@ -12,7 +12,7 @@ final class OrderDataCoordinator: BaseDataCoordinator {
     
     func createOrder(order: OrderRequest) async throws {
         do {
-            _ = try await networkService.createOrder(order: order)
+            try await networkService.createOrder(order: order)
         } catch {
             throw convert(error: error)
         }
