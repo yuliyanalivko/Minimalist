@@ -9,4 +9,12 @@ extension Router {
     func navigate<T: Hashable>(to destination: T) {
         path.append(destination)
     }
+    
+    func navigateBack() {
+        guard !path.isEmpty else {
+            return
+        }
+        
+        path.removeLast()
+    }
 }

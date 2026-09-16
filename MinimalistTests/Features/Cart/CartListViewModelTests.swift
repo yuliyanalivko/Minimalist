@@ -192,7 +192,7 @@ struct CartListViewModelTests {
         #expect(vm.isLoading == false)
     }
     
-    @Test("Should refresh cart items after showing cache")
+    @Test("Should refresh cart items after showing cache and filter selectedIds")
     func fetchCartItems_cacheThenNetwork() async {
         let cached = items
         let database = MockDatabaseManager()
@@ -200,11 +200,15 @@ struct CartListViewModelTests {
         let json = mockItems.data(using: .utf8)!
         let network = try! JSONDecoder().decode([Item].self, from: json)
         let vm = makeViewModel(mockData: json, database: database)
+        vm.selectedIds.insert("1")
+        vm.selectedIds.insert("2")
         
         await vm.fetchCartItems()
         
         #expect(vm.allItems == network)
         #expect(vm.isLoading == false)
+        #expect(vm.selectedIds.contains("1"))
+        #expect(!vm.selectedIds.contains("2"))
     }
     
     @Test("Should keep cached cart items when network fails")
@@ -320,6 +324,30 @@ struct CartListViewModelTests {
         
         #expect(vm.selectedIds.contains(items[0].id))
         #expect(vm.isSelectionMode)
+    }
+    
+    @Test("Should navigate to checkout page on click and log begin purchase event")
+    func handleBuyButtonClick_navigatesToICheckout() {
+        
+        let consumer = MockAnalyticsConsumer()
+        let provider = FirebaseAnalyticsProvider(consumer: consumer)
+        let analyticsManager = AnalyticsManager(providers: [provider])
+        let vm = makeViewModel(analyticsManager: analyticsManager)
+        vm.allItems = items
+        
+        vm.handleBuyButtonClick()
+        
+        guard let name = consumer.loggedEvent?.name,
+              let parameters = consumer.loggedEvent?.parameters else {
+            Issue.record("Expected event to be defined and to have name and parameters")
+            
+            return
+        }
+        
+        #expect(vm.router.path.count == 1)
+        #expect(name == AnalyticsEventName.beginCheckout.rawValue)
+        #expect(parameters[AnalyticsParamName.quantity.rawValue] as? Int == 2)
+        #expect(parameters[AnalyticsParamName.items.rawValue] as? [String] == ["1", "2"])
     }
     
     @Test("Should call logEvent with the correct search event")

@@ -28,9 +28,13 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
     }
     
     var totalPrice: Double {
+        selectedItems
+            .reduce(0.0) { $0 + $1.price }
+    }
+    
+    private var selectedItems: [Item] {
         allItems
             .filter { isSelectionMode ? selectedIds.contains($0.id) : true }
-            .reduce(0.0) { $0 + $1.price }
     }
     
     private let cartDataCoordinator: CartDataCoordinator
@@ -56,9 +60,11 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         do {
             for try await items in cartDataCoordinator.getCartItems() {
                 allItems = mapUrls(of: items)
-                isLoading = false
             }
             
+            selectedIds = selectedIds.filter(Set(allItems.map { $0.id }).contains)
+            isLoading = false
+
         } catch {
             setError(error)
         }
@@ -91,6 +97,11 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         toggleSelection(for: item.id)
     }
     
+    func handleBuyButtonClick() {
+        router.navigate(to: CartRoute.checkout(items: selectedItems))
+        logBeginCheckoutEvent()
+    }
+    
     func logSearchEvent() {
         let searchTerm = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -106,6 +117,13 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         logEvent(AnalyticsEvent(
             name: AnalyticsEventName.removeFromCart,
             parameters: [.itemId: item.id, .itemName: item.name]
+        ))
+    }
+    
+    private func logBeginCheckoutEvent() {
+        logEvent(AnalyticsEvent(
+            name: AnalyticsEventName.beginCheckout,
+            parameters: [.quantity: selectedItems.count, .items: selectedItems.map { $0.id }]
         ))
     }
     

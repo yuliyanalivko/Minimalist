@@ -17,6 +17,8 @@ enum AppIcon: String {
     case trash = "trash"
     case circle = "circle"
     case checkmarkCircleFill = "checkmark.circle.fill"
+    case checkmark = "checkmark"
+    case xmarkCircleFill = "xmark.circle.fill"
 }
 
 extension Image {

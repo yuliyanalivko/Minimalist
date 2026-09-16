@@ -13,6 +13,27 @@ struct CartViewModelTests {
         #expect(vm.router === router)
     }
     
+    @Test("Should create a new instance of CheckoutViewModel if it's nil")
+    func updateCheckoutViewModel_createNewInstance_whenNil() {
+        let router = CartRouter()
+        let vm = CartViewModel(router: router)
+
+        vm.updateCheckoutViewModel(items: [item, item2])
+        
+        #expect(vm.checkoutViewModel?.items == [item, item2])
+    }
+    
+    @Test("Should update checkoutViewModel items when items have been changed")
+    func updateCheckoutViewModel_updateItems_whenChanged() {
+        let router = CartRouter()
+        let vm = CartViewModel(router: router)
+        vm.checkoutViewModel = CheckoutViewModel(router: router, items: [item, item2])
+
+        vm.updateCheckoutViewModel(items: [item])
+        
+        #expect(vm.checkoutViewModel?.items == [item])
+    }
+    
     @Test("Should call trackScreen with the correct screenName")
     func trackCartScreen_callLogEvent() {
         let consumer = MockAnalyticsConsumer()
