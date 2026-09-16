@@ -60,9 +60,11 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         do {
             for try await items in cartDataCoordinator.getCartItems() {
                 allItems = mapUrls(of: items)
-                isLoading = false
             }
             
+            selectedIds = selectedIds.filter(Set(allItems.map { $0.id }).contains)
+            isLoading = false
+
         } catch {
             setError(error)
         }

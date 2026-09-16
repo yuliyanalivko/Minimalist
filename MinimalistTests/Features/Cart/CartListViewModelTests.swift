@@ -192,7 +192,7 @@ struct CartListViewModelTests {
         #expect(vm.isLoading == false)
     }
     
-    @Test("Should refresh cart items after showing cache")
+    @Test("Should refresh cart items after showing cache and filter selectedIds")
     func fetchCartItems_cacheThenNetwork() async {
         let cached = items
         let database = MockDatabaseManager()
@@ -200,11 +200,15 @@ struct CartListViewModelTests {
         let json = mockItems.data(using: .utf8)!
         let network = try! JSONDecoder().decode([Item].self, from: json)
         let vm = makeViewModel(mockData: json, database: database)
+        vm.selectedIds.insert("1")
+        vm.selectedIds.insert("2")
         
         await vm.fetchCartItems()
         
         #expect(vm.allItems == network)
         #expect(vm.isLoading == false)
+        #expect(vm.selectedIds.contains("1"))
+        #expect(!vm.selectedIds.contains("2"))
     }
     
     @Test("Should keep cached cart items when network fails")
