@@ -22,7 +22,7 @@ struct RadioButton<Value: Hashable>: View {
                 
                 Spacer()
                 
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                Image(systemName: isSelected ? AppIcon.checkmarkCircleFill.rawValue : AppIcon.circle.rawValue)
                     .foregroundColor(isSelected ? .AppColor.primary : .AppColor.textSecondary)
                     .frame(width: 24, height: 24)
             }

@@ -88,5 +88,15 @@ final class RealmStore: CacheStoring {
             details.isAddedToCart = isAddedToCart
         }
     }
+    
+    
+    /// Fetches stored cart items from the Realm database and maps them to domain models.
+    /// - Returns: An array of `Item` domain objects marked as added to cart.
+    func getCartItems() throws -> [Item] {
+        let entities = try databaseManager.get(type: RealmItem.self, sort: .name)
+            .filter(\.isAddedToCart)
+        
+        return entities.map { Item(from: $0) }
+    }
 }
 

@@ -9,7 +9,10 @@ struct Separator: ViewModifier {
             .overlay(
                 Rectangle()
                     .frame(height: 1)
-                    .foregroundStyle(color),
+                    .foregroundStyle(color)
+                // To maintain edge-to-edge borders when an item shifts,
+                // such as during selection in the ItemListView
+                    .padding(.horizontal, -100),
                 alignment: alignment
             )
     }

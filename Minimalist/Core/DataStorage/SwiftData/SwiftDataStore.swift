@@ -90,4 +90,13 @@ final class SwiftDataCatalogStore: CacheStoring {
             details.isAddedToCart = isAddedToCart
         }
     }
+    
+    /// Fetches stored cart items from the SwiftData database and maps them to domain models.
+    /// - Returns: An array of `Item` domain objects marked as added to cart.
+    func getCartItems() throws -> [Item] {
+        let entities = try databaseManager.get(type: SwiftDataItem.self, sort: .name)
+            .filter(\.isAddedToCart)
+        
+        return entities.map { Item(from: $0) }
+    }
 }
