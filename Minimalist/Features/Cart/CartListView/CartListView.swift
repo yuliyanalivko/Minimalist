@@ -89,7 +89,6 @@ struct CartListView: View {
             .defaultHorizontalScreenPadding()
             
             Button {
-                viewModel.handleBuyButtonClick()
             } label: {
                 Text("Buy")
                     .frame(maxWidth: .infinity)
