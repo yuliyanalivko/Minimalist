@@ -5,6 +5,7 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     
     var itemListViewModel: ItemListViewModel?
     let categoryViewModel: CategoryViewModel
+    let cartService: CartService
     
     var categorySearchText: String {
         get {
@@ -25,7 +26,12 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     }
     
     
-    override init(router: CatalogRouter, analyticsManager: AnalyticsManager? = nil) {
+    init(
+        router: CatalogRouter,
+        cartService: CartService = CartService(),
+        analyticsManager: AnalyticsManager? = nil
+    ) {
+        self.cartService = cartService
         self.categoryViewModel = CategoryViewModel(router: router)
         
         super.init(router: router, analyticsManager: analyticsManager)

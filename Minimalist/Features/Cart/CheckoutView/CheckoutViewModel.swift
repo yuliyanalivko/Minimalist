@@ -2,8 +2,11 @@ import SwiftUI
 
 @Observable
 class CheckoutViewModel: RoutableViewModel<CartRouter> {
-    let totalPrice: Double
     var showAlert: Bool = false
+    
+    var totalPrice: Double {
+        items.reduce(0) { $0 + $1.price }
+    }
     
     var itemsLabel: String {
         "\(items.count) item\(items.count > 1 ? "s" : "")"
@@ -60,7 +63,6 @@ class CheckoutViewModel: RoutableViewModel<CartRouter> {
         analyticsManager: AnalyticsManager? = nil
     ) {
         self.items = items
-        self.totalPrice = items.reduce(0) { $0 + $1.price }
         self.orderDataCoordinator = orderDataCoordinator
  
         super.init(router: router, analyticsManager: analyticsManager)

@@ -7,6 +7,7 @@ struct CartListView: View {
         List(selection: $viewModel.selectedIds) {
             ForEach(viewModel.displayedItems, id: \.id) { item in
                 listItem(item: item)
+                    .tag(item.id)
                     .onTapGesture {
                         viewModel.handleItemClick(item: item)
                     }
@@ -63,6 +64,9 @@ struct CartListView: View {
         .tint(.AppColor.primary)
         .environment(\.editMode, .constant(viewModel.isSelectionMode ? .active : .inactive))
         .animation(.easeInOut, value: viewModel.isSelectionMode)
+        .onDisappear {
+            viewModel.resetSelection()
+        }
     }
     
     @ViewBuilder
@@ -106,5 +110,5 @@ struct CartListView: View {
 }
 
 #Preview {
-    CartListView(viewModel: .init(router: CartRouter()))
+    CartListView(viewModel: .init(router: CartRouter(), cartService: CartService()))
 }

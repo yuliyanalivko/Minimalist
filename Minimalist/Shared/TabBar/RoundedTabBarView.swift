@@ -27,6 +27,12 @@ struct RoundedTabBarView: View {
                         viewModel.select(index)
                     }
                 }
+                .overlay(alignment: .topLeading) {
+                    if let badgeText = item.badgeText {
+                        Badge(text: badgeText)
+                            .offset(x: 50, y: 6)
+                    }
+                }
             }
         }
         .padding(4)

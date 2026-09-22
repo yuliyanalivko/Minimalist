@@ -47,13 +47,14 @@ struct ItemDetailsViewModelTests {
             networkService: CartNetworkService(networkClient: cartMock),
             storeResolver: { RealmStore(databaseManager: database) }
         )
+        let cartService = CartService(dataCoordinator: cartDataCoordinator)
 
         if let analyticsManager {
             return ItemDetailsViewModel(
                 id: "1",
                 catalogDataCoordinator: catalogDataCoordinator,
                 favoritesDataCoordinator: favoritesDataCoordinator,
-                cartDataCoordinator: cartDataCoordinator,
+                cartService: cartService,
                 analyticsManager: analyticsManager
             )
         }
@@ -62,7 +63,7 @@ struct ItemDetailsViewModelTests {
             id: "1",
             catalogDataCoordinator: catalogDataCoordinator,
             favoritesDataCoordinator: favoritesDataCoordinator,
-            cartDataCoordinator: cartDataCoordinator
+            cartService: cartService
         )
     }
 

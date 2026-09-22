@@ -24,7 +24,7 @@ struct CartView: View {
                 .searchableWithDebounce(text: $viewModel.cartListViewModel.searchText, action: viewModel.logCartListSearchEvent)
             
         case .itemDetails(_, let id):
-            ItemDetailsView(id: id)
+            ItemDetailsView(id: id, cartService: viewModel.cartService)
                 .navigationTitle(route.title)
             
         case .checkout(let items):
@@ -41,5 +41,5 @@ struct CartView: View {
 }
 
 #Preview {
-    CartView(viewModel: CartViewModel(router: .init()))
+    CartView(viewModel: CartViewModel(router: .init(), cartService: CartService()))
 }

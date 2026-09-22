@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 @Observable
 class CartListViewModel: RoutableViewModel<CartRouter> {
@@ -37,14 +38,14 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
             .filter { isSelectionMode ? selectedIds.contains($0.id) : true }
     }
     
-    private let cartDataCoordinator: CartDataCoordinator
+    private let cartService: CartService
 
     init(
         router: CartRouter,
-        cartDataCoordinator: CartDataCoordinator = CartDataCoordinator(),
+        cartService: CartService = CartService(),
         analyticsManager: AnalyticsManager? = nil
     ) {
-        self.cartDataCoordinator = cartDataCoordinator
+        self.cartService = cartService
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
@@ -58,11 +59,12 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         }
         
         do {
-            for try await items in cartDataCoordinator.getCartItems() {
+            for try await items in cartService.getCartItems() {
                 allItems = mapUrls(of: items)
             }
             
             selectedIds = selectedIds.filter(Set(allItems.map { $0.id }).contains)
+                     
             isLoading = false
 
         } catch {
@@ -73,8 +75,8 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
     func removeFromCart(_ item: Item) async {
         if let index = allItems.firstIndex(where: { $0.id == item.id }) {
             do {
-                try await cartDataCoordinator.removeFromCart(id: item.id)
-                
+                try await cartService.removeFromCart(id: item.id)
+
                 logRemoveFromCartEvent(item: allItems[index])
                 allItems.remove(at: index)
             } catch {
@@ -100,6 +102,10 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
     func handleBuyButtonClick() {
         router.navigate(to: CartRoute.checkout(items: selectedItems))
         logBeginCheckoutEvent()
+    }
+    
+    func resetSelection() {
+        selectedIds = []
     }
     
     func logSearchEvent() {

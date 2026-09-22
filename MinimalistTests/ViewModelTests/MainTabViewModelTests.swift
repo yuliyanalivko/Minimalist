@@ -29,4 +29,13 @@ struct MainTabViewModelTests {
 
         #expect(vm.selectedItem == nil)
     }
+    
+    @Test("Should set cart badge text")
+    func cartBadge_hiddenWhenEmpty() {
+        let vm = MainTabViewModel()
+        let cartIndex = MainTabViewModel.Tab.allCases.firstIndex(of: .cart)
+        
+        #expect(cartIndex != nil)
+        #expect(vm.items[cartIndex!].badgeText == "0")
+    }
 }

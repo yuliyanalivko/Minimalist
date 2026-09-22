@@ -55,7 +55,7 @@ struct CartListViewModelTests {
         
         return CartListViewModel(
             router: CartRouter(),
-            cartDataCoordinator: cartDataCoordinator,
+            cartService: CartService(dataCoordinator: cartDataCoordinator),
             analyticsManager: analyticsManager
         )
     }

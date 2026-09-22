@@ -57,11 +57,12 @@ struct FavoriteListViewModelTests {
             networkService: CartNetworkService(networkClient: cartMock),
             storeResolver: { RealmStore(databaseManager: database) }
         )
+        let cartService = CartService(dataCoordinator: cartDataCoordinator)
         
         return FavoriteListViewModel(
             router: FavoritesRouter(),
             favoritesDataCoordinator: favoritesDataCoordinator,
-            cartDataCoordinator: cartDataCoordinator,
+            cartService: cartService,
             analyticsManager: analyticsManager
         )
     }

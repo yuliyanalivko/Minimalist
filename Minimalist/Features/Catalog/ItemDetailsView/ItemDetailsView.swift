@@ -4,8 +4,8 @@ struct ItemDetailsView: View {
     
     @State private var viewModel: ItemDetailsViewModel
     
-    init(id: String) {
-        _viewModel = State(initialValue: ItemDetailsViewModel(id: id))
+    init(id: String, cartService: CartService) {
+        _viewModel = State(initialValue: ItemDetailsViewModel(id: id, cartService: cartService))
     }
     
     var body: some View {
@@ -115,5 +115,5 @@ struct ItemDetailsView: View {
 }
 
 #Preview {
-    ItemDetailsView(id: "003479db-a8ec-4d3a-8657-bad7da28d01a")
+    ItemDetailsView(id: "003479db-a8ec-4d3a-8657-bad7da28d01a", cartService: CartService())
 }

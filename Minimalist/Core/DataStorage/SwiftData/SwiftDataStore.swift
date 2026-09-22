@@ -83,7 +83,6 @@ final class SwiftDataCatalogStore: CacheStoring {
     func setAddedToCart(id: String, isAddedToCart: Bool) throws {
         try databaseManager.update(type: SwiftDataItem.self, id: id) { item in
             item.isAddedToCart = isAddedToCart
-
         }
         
         try databaseManager.update(type: SwiftDataItemDetails.self, id: id) { details in

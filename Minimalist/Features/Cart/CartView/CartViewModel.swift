@@ -2,11 +2,17 @@ import SwiftUI
 
 @Observable
 class CartViewModel: RoutableViewModel<CartRouter> {
+    let cartService: CartService
     var cartListViewModel: CartListViewModel
     var checkoutViewModel: CheckoutViewModel?
 
-    override init(router: CartRouter, analyticsManager: AnalyticsManager? = nil) {
-        cartListViewModel = CartListViewModel(router: router)
+    init(
+        router: CartRouter,
+        cartService: CartService = CartService(),
+        analyticsManager: AnalyticsManager? = nil
+    ) {
+        self.cartService = cartService
+        cartListViewModel = CartListViewModel(router: router, cartService: cartService, analyticsManager: analyticsManager)
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
