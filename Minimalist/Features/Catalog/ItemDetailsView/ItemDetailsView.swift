@@ -4,7 +4,7 @@ struct ItemDetailsView: View {
     
     @State private var viewModel: ItemDetailsViewModel
     
-    init(id: String, cartService: CartService) {
+    init(id: String, cartService: CartManaging) {
         _viewModel = State(initialValue: ItemDetailsViewModel(id: id, cartService: cartService))
     }
     
