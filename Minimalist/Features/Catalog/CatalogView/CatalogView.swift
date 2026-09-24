@@ -33,7 +33,7 @@ struct CatalogView: View {
                 }
             
         case .itemDetails(_, let id):
-            ItemDetailsView(id: id)
+            ItemDetailsView(id: id, cartService: viewModel.cartService)
                 .navigationTitle(route.title)
         }
     }

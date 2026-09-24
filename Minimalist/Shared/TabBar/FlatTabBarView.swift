@@ -11,6 +11,12 @@ struct FlatTabBarView: View {
                 VStack {
                     Image(systemName: item.icon)
                         .font(.AppFont.icon)
+                        .overlay(alignment: .topLeading) {
+                            if let badgeText = item.badgeText {
+                                Badge(text: badgeText)
+                                    .offset(x: 30, y: -4)
+                            }
+                        }
                     
                     Text(item.title ?? "")
                         .font(.AppFont.caption)

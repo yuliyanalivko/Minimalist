@@ -22,16 +22,16 @@ class FavoriteListViewModel: RoutableViewModel<FavoritesRouter> {
     }
     
     private let favoritesDataCoordinator: FavoritesDataCoordinator
-    private let cartDataCoordinator: CartDataCoordinator
+    private let cartService: CartService
 
     init(
         router: FavoritesRouter,
         favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
-        cartDataCoordinator: CartDataCoordinator = CartDataCoordinator(),
+        cartService: CartService = CartService(),
         analyticsManager: AnalyticsManager? = nil
     ) {
         self.favoritesDataCoordinator = favoritesDataCoordinator
-        self.cartDataCoordinator = cartDataCoordinator
+        self.cartService = cartService
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
@@ -61,9 +61,9 @@ class FavoriteListViewModel: RoutableViewModel<FavoritesRouter> {
                 allItems[index].isAddedToCart.toggle()
                 
                 if allItems[index].isAddedToCart {
-                    try await cartDataCoordinator.addToCart(id: item.id)
+                    try await cartService.addToCart(id: item.id)
                 } else {
-                    try await cartDataCoordinator.removeFromCart(id: item.id)
+                    try await cartService.removeFromCart(id: item.id)
                 }
                 
                 logCartEvent(item: allItems[index])

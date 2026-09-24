@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainTabView: View {
-    let viewModel = MainTabViewModel()
+    let viewModel: MainTabViewModel = MainTabViewModel()
 
     var body: some View {
         ZStack {
@@ -21,6 +21,9 @@ struct MainTabView: View {
         }
         .toast()
         .tint(.AppColor.primary)
+        .task {
+            await viewModel.loadCartItems()
+        }
         .onReceive(viewModel.keyboardPublisher) {
             viewModel.isKeyboardVisible = $0
         }

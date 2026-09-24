@@ -28,19 +28,19 @@ class ItemDetailsViewModel: BaseViewModel {
     private let id: String
     private let catalogDataCoordinator: CatalogDataCoordinator
     private let favoritesDataCoordinator: FavoritesDataCoordinator
-    private let cartDataCoordinator: CartDataCoordinator
+    private let cartService: CartService
     
     convenience init(
         id: String,
         catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
-        cartDataCoordinator: CartDataCoordinator = CartDataCoordinator()
+        cartService: CartService = CartService()
     ) {
         self.init(
             id: id,
             catalogDataCoordinator: catalogDataCoordinator,
             favoritesDataCoordinator: favoritesDataCoordinator,
-            cartDataCoordinator: cartDataCoordinator,
+            cartService: cartService,
             analyticsManager: AppConfigurationManager.shared.analyticsManager
         )
     }
@@ -49,13 +49,13 @@ class ItemDetailsViewModel: BaseViewModel {
         id: String,
         catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
-        cartDataCoordinator: CartDataCoordinator = CartDataCoordinator(),
+        cartService: CartService = CartService(),
         analyticsManager: AnalyticsManager?
     ) {
         self.id = id
         self.catalogDataCoordinator = catalogDataCoordinator
         self.favoritesDataCoordinator = favoritesDataCoordinator
-        self.cartDataCoordinator = cartDataCoordinator
+        self.cartService = cartService
         
         itemImageCarouselViewModel = ItemImageCarouselViewModel()
         itemReviewsViewModel = ItemReviewsViewModel()
@@ -116,9 +116,9 @@ class ItemDetailsViewModel: BaseViewModel {
         
         do {
             if item.isAddedToCart {
-                try await cartDataCoordinator.addToCart(id: item.id)
+                try await cartService.addToCart(id: item.id)
             } else {
-                try await cartDataCoordinator.removeFromCart(id: item.id)
+                try await cartService.removeFromCart(id: item.id)
             }
             
             logCartEvent()

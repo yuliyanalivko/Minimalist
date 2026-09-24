@@ -26,7 +26,6 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
             }
         }
     }
-
     let catalogRouter = CatalogRouter()
     let favoritesRouter = FavoritesRouter()
     let cartRouter = CartRouter()
@@ -46,13 +45,16 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
         ).eraseToAnyPublisher()
     }
     
-    let items: [SelectableListItemRepresentable] = Tab.allCases.map { tab in
-        SelectableListItem(
-            title: tab.title,
-            icon: tab.icon,
-            highlightedColor: Color.AppColor.primary,
-            inactiveColor: Color.AppColor.textSecondary
-        )
+    var items: [SelectableListItemRepresentable] {
+        Tab.allCases.map { tab in
+            SelectableListItem(
+                title: tab.title,
+                icon: tab.icon,
+                highlightedColor: Color.AppColor.primary,
+                inactiveColor: Color.AppColor.textSecondary,
+                badgeText: badgeText(for: tab)
+            )
+        }
     }
     
     var selectedItem: SelectableListItemRepresentable? {
@@ -60,19 +62,32 @@ class MainTabViewModel: BaseViewModel, TabBarDataModel {
     }
     
     private(set) var showRoundedTabBar: Bool
-    
     private(set) var selectedItemIndex: Int = 0
+    private let cartService = CartService()
     
     init() {
         showRoundedTabBar = AppConfigurationManager.shared.remoteConfigManager.isRoundTabBarEnabled
-        catalogViewModel = CatalogViewModel(router: catalogRouter)
-        favoritesViewModel = FavoritesViewModel(router: favoritesRouter)
-        cartViewModel = CartViewModel(router: cartRouter)
+        catalogViewModel = CatalogViewModel(router: catalogRouter, cartService: cartService)
+        favoritesViewModel = FavoritesViewModel(router: favoritesRouter, cartService: cartService)
+        cartViewModel = CartViewModel(router: cartRouter, cartService: cartService)
         settingsViewModel = SettingsViewModel(router: settingsRouter)
+        
         super.init()
     }
     
     func select(_ index: Int) {
         selectedItemIndex = index
+    }
+    
+    func loadCartItems() async {
+        await cartService.loadCartItems()
+    }
+    
+    private func badgeText(for tab: Tab) -> String? {
+        guard tab == .cart else {
+            return nil
+        }
+        
+        return cartService.itemCount > 99 ? "99+" : "\(cartService.itemCount)"
     }
 }

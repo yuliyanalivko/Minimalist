@@ -24,7 +24,7 @@ struct FavoritesView: View {
                 .searchableWithDebounce(text: $viewModel.favoriteListViewModel.searchText, action: viewModel.logFavoriteListSearchEvent)
             
         case .itemDetails(_, let id):
-            ItemDetailsView(id: id)
+            ItemDetailsView(id: id, cartService: viewModel.cartService)
                 .navigationTitle(route.title)
         }
     }

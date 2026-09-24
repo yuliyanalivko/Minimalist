@@ -5,4 +5,5 @@ protocol SelectableListItemRepresentable {
     var icon: String { get }
     var highlightedColor: Color { get }
     var inactiveColor: Color { get }
+    var badgeText: String? { get }
 }

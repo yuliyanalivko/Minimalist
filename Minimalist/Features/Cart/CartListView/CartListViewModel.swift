@@ -28,19 +28,23 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
     }
     
     var totalPrice: Double {
-        allItems
-            .filter { isSelectionMode ? selectedIds.contains($0.id) : true }
+        selectedItems
             .reduce(0.0) { $0 + $1.price }
     }
     
-    private let cartDataCoordinator: CartDataCoordinator
+    private var selectedItems: [Item] {
+        allItems
+            .filter { isSelectionMode ? selectedIds.contains($0.id) : true }
+    }
+    
+    private let cartService: CartService
 
     init(
         router: CartRouter,
-        cartDataCoordinator: CartDataCoordinator = CartDataCoordinator(),
+        cartService: CartService = CartService(),
         analyticsManager: AnalyticsManager? = nil
     ) {
-        self.cartDataCoordinator = cartDataCoordinator
+        self.cartService = cartService
         super.init(router: router, analyticsManager: analyticsManager)
     }
     
@@ -54,11 +58,14 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         }
         
         do {
-            for try await items in cartDataCoordinator.getCartItems() {
+            for try await items in cartService.getCartItems() {
                 allItems = mapUrls(of: items)
-                isLoading = false
             }
             
+            selectedIds = selectedIds.filter(Set(allItems.map { $0.id }).contains)
+                     
+            isLoading = false
+
         } catch {
             setError(error)
         }
@@ -67,8 +74,8 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
     func removeFromCart(_ item: Item) async {
         if let index = allItems.firstIndex(where: { $0.id == item.id }) {
             do {
-                try await cartDataCoordinator.removeFromCart(id: item.id)
-                
+                try await cartService.removeFromCart(id: item.id)
+
                 logRemoveFromCartEvent(item: allItems[index])
                 allItems.remove(at: index)
             } catch {
@@ -91,6 +98,15 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         toggleSelection(for: item.id)
     }
     
+    func handleBuyButtonClick() {
+        router.navigate(to: CartRoute.checkout(items: selectedItems))
+        logBeginCheckoutEvent()
+    }
+    
+    func resetSelection() {
+        selectedIds = []
+    }
+    
     func logSearchEvent() {
         let searchTerm = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -106,6 +122,13 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
         logEvent(AnalyticsEvent(
             name: AnalyticsEventName.removeFromCart,
             parameters: [.itemId: item.id, .itemName: item.name]
+        ))
+    }
+    
+    private func logBeginCheckoutEvent() {
+        logEvent(AnalyticsEvent(
+            name: AnalyticsEventName.beginCheckout,
+            parameters: [.quantity: selectedItems.count, .items: selectedItems.map { $0.id }]
         ))
     }
     

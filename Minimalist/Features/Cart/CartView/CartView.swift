@@ -24,12 +24,22 @@ struct CartView: View {
                 .searchableWithDebounce(text: $viewModel.cartListViewModel.searchText, action: viewModel.logCartListSearchEvent)
             
         case .itemDetails(_, let id):
-            ItemDetailsView(id: id)
+            ItemDetailsView(id: id, cartService: viewModel.cartService)
+                .navigationTitle(route.title)
+            
+        case .checkout(let items):
+            checkoutView(items: items)
                 .navigationTitle(route.title)
         }
+    }
+    
+    private func checkoutView(items: [Item]) -> some View {
+        viewModel.updateCheckoutViewModel(items: items)
+        
+        return CheckoutView(viewModel: viewModel.checkoutViewModel!)
     }
 }
 
 #Preview {
-    CartView(viewModel: CartViewModel(router: .init()))
+    CartView(viewModel: CartViewModel(router: .init(), cartService: CartService()))
 }

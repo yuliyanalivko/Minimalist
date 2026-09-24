@@ -2,10 +2,15 @@ import SwiftUI
 
 @Observable
 class FavoritesViewModel: RoutableViewModel<FavoritesRouter> {
+    let cartService: CartService
     var favoriteListViewModel: FavoriteListViewModel
 
-    init(router: FavoritesRouter) {
-        favoriteListViewModel = FavoriteListViewModel(router: router)
+    init(
+        router: FavoritesRouter,
+        cartService: CartService = CartService()
+    ) {
+        self.cartService = cartService
+        favoriteListViewModel = FavoriteListViewModel(router: router, cartService: cartService)
         super.init(router: router)
     }
     
