@@ -28,13 +28,13 @@ class ItemDetailsViewModel: BaseViewModel {
     private let id: String
     private let catalogDataCoordinator: CatalogDataCoordinator
     private let favoritesDataCoordinator: FavoritesDataCoordinator
-    private let cartService: CartService
+    private let cartService: CartManaging
     
     convenience init(
         id: String,
         catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
-        cartService: CartService = CartService()
+        cartService: CartManaging = CartService()
     ) {
         self.init(
             id: id,
@@ -49,7 +49,7 @@ class ItemDetailsViewModel: BaseViewModel {
         id: String,
         catalogDataCoordinator: CatalogDataCoordinator = CatalogDataCoordinator(),
         favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
-        cartService: CartService = CartService(),
+        cartService: CartManaging = CartService(),
         analyticsManager: AnalyticsManager?
     ) {
         self.id = id

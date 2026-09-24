@@ -5,7 +5,7 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     
     var itemListViewModel: ItemListViewModel?
     let categoryViewModel: CategoryViewModel
-    let cartService: CartService
+    let cartService: CartManaging
     
     var categorySearchText: String {
         get {
@@ -28,7 +28,7 @@ class CatalogViewModel: RoutableViewModel<CatalogRouter> {
     
     init(
         router: CatalogRouter,
-        cartService: CartService = CartService(),
+        cartService: CartManaging = CartService(),
         analyticsManager: AnalyticsManager? = nil
     ) {
         self.cartService = cartService

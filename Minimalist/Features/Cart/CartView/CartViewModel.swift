@@ -2,13 +2,13 @@ import SwiftUI
 
 @Observable
 class CartViewModel: RoutableViewModel<CartRouter> {
-    let cartService: CartService
+    let cartService: CartManaging
     var cartListViewModel: CartListViewModel
     var checkoutViewModel: CheckoutViewModel?
 
     init(
         router: CartRouter,
-        cartService: CartService = CartService(),
+        cartService: CartManaging = CartService(),
         analyticsManager: AnalyticsManager? = nil
     ) {
         self.cartService = cartService

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @Environment(\.scenePhase) var scenePhase
+
     let viewModel: MainTabViewModel = MainTabViewModel()
 
     var body: some View {
@@ -26,6 +28,15 @@ struct MainTabView: View {
         }
         .onReceive(viewModel.keyboardPublisher) {
             viewModel.isKeyboardVisible = $0
+        }
+        .onChange(of: scenePhase) {
+            if scenePhase == .background {
+                viewModel.scheduleNotification()
+            }
+            
+            if scenePhase == .active {
+                viewModel.cancelNotification()
+            }
         }
     }
     

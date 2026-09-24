@@ -37,11 +37,11 @@ class CartListViewModel: RoutableViewModel<CartRouter> {
             .filter { isSelectionMode ? selectedIds.contains($0.id) : true }
     }
     
-    private let cartService: CartService
+    private let cartService: CartManaging
 
     init(
         router: CartRouter,
-        cartService: CartService = CartService(),
+        cartService: CartManaging = CartService(),
         analyticsManager: AnalyticsManager? = nil
     ) {
         self.cartService = cartService
