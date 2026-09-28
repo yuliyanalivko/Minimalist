@@ -2,22 +2,6 @@ import Testing
 import UserNotifications
 @testable import Minimalist
 
-final class MockNotificationCenter: NotificationCenterProtocol {
-    var delegate: UNUserNotificationCenterDelegate?
-    
-    private(set) var requestedOptions: UNAuthorizationOptions?
-    private(set) var addedRequests: [UNNotificationRequest] = []
-    
-    func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool {
-        requestedOptions = options
-        return true
-    }
-    
-    func add(_ request: UNNotificationRequest) async throws {
-        addedRequests.append(request)
-    }
-}
-
 @MainActor
 struct NotificationManagerTests {
     
@@ -39,8 +23,8 @@ struct NotificationManagerTests {
         #expect(mockCenter.requestedOptions == [.alert])
     }
     
-    @Test("Should correctly format and schedule a notification request")
-    func showNotification_scheduleNotification() async throws {
+    @Test("Should correctly format and schedule a notification request with a 0.1 sec delay")
+    func showNotification_withLittleDelay() async throws {
         let mockCenter = MockNotificationCenter()
         let manager = NotificationManager(center: mockCenter)
         let expectedTitle = "Title"
@@ -62,6 +46,36 @@ struct NotificationManagerTests {
         let trigger = try #require(request.trigger as? UNTimeIntervalNotificationTrigger)
         #expect(trigger.timeInterval == 0.1)
         #expect(trigger.repeats == false)
+    }
+    
+    @Test("Should correctly format and schedule a notification request with a specified delay and cancel it")
+    func showNotification_withSpecifiedDelay_and_cancelSheduledNotification() async throws {
+        let mockCenter = MockNotificationCenter()
+        let manager = NotificationManager(center: mockCenter)
+        let expectedTitle = "Title"
+        let expectedMessage = "Message"
+        
+        let id = manager.showNotification(title: expectedTitle, message: expectedMessage, timeInterval: 2)
+        
+        try await Task.sleep(nanoseconds: 10_000_000)
+        
+        guard let request = mockCenter.addedRequests.first else {
+            Issue.record("Expected a notification request to be added")
+            
+            return
+        }
+        
+        #expect(request.content.title == expectedTitle)
+        #expect(request.content.body == expectedMessage)
+        
+        let trigger = try #require(request.trigger as? UNTimeIntervalNotificationTrigger)
+        #expect(trigger.timeInterval == 2)
+        #expect(trigger.repeats == false)
+        #expect(mockCenter.addedRequests[0].identifier == id)
+        
+        manager.cancelSheduledNotification(withIdentifier: id)
+        
+        #expect(mockCenter.addedRequests == [])
     }
     
     @Test("Should trigger the correct banner presentation options")

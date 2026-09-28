@@ -38,4 +38,31 @@ struct MainTabViewModelTests {
         #expect(cartIndex != nil)
         #expect(vm.items[cartIndex!].badgeText == "0")
     }
+    
+    @Test("Should schedule a notification when the cart is not empty")
+    func scheduleNotification_setNotificationId_whenCartIsNotEmpty() {
+        let vm = MainTabViewModel(cartService: MockCartManager(items: [item]))
+        
+        vm.scheduleNotification()
+        
+        #expect(vm.notificationId != nil)
+    }
+    
+    @Test("Should not schedule a notification when the cart is empty")
+    func scheduleNotification_doesNothing_whenCartIsEmpty() {
+        let vm = MainTabViewModel()
+        
+        vm.scheduleNotification()
+        
+        #expect(vm.notificationId == nil)
+    }
+    
+    @Test("Should not cancel when no notification was scheduled")
+    func cancelNotification_doesNothing_whenIdIsNil() {
+        let vm = MainTabViewModel()
+        
+        vm.cancelNotification()
+        
+        #expect(vm.notificationId == nil)
+    }
 }

@@ -1,7 +1,17 @@
 import Foundation
 
+protocol CartManaging {
+    var items: [Item] { get }
+    var itemCount: Int { get }
+    
+    func loadCartItems() async
+    func getCartItems() -> AsyncThrowingStream<[Item], Error>
+    func addToCart(id: String) async throws
+    func removeFromCart(id: String) async throws
+}
+
 @Observable
-final class CartService {
+final class CartService: CartManaging {
     var itemCount: Int {
         items.count
     }

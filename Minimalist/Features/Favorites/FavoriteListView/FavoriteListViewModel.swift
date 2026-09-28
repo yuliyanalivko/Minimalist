@@ -22,12 +22,12 @@ class FavoriteListViewModel: RoutableViewModel<FavoritesRouter> {
     }
     
     private let favoritesDataCoordinator: FavoritesDataCoordinator
-    private let cartService: CartService
+    private let cartService: CartManaging
 
     init(
         router: FavoritesRouter,
         favoritesDataCoordinator: FavoritesDataCoordinator = FavoritesDataCoordinator(),
-        cartService: CartService = CartService(),
+        cartService: CartManaging = CartService(),
         analyticsManager: AnalyticsManager? = nil
     ) {
         self.favoritesDataCoordinator = favoritesDataCoordinator
