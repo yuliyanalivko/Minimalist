@@ -42,7 +42,7 @@ final class FavoritesDataCoordinator: BaseDataCoordinator {
     
     func addToFavorites(id: String) async throws {
         do {
-            _ = try await networkService.addToFavorites(id: id)
+            try await networkService.addToFavorites(id: id)
             try store.setFavorited(id: id, isFavorited: true)
         } catch {
             throw convert(error: error)
@@ -51,7 +51,7 @@ final class FavoritesDataCoordinator: BaseDataCoordinator {
     
     func removeFromFavorites(id: String) async throws {
         do {
-            _ = try await networkService.removeFromFavorites(id: id)
+            try await networkService.removeFromFavorites(id: id)
             try store.setFavorited(id: id, isFavorited: false)
         } catch {
             throw convert(error: error)

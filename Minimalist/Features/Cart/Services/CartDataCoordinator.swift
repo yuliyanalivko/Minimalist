@@ -43,7 +43,7 @@ final class CartDataCoordinator: BaseDataCoordinator {
     
     func addToCart(id: String) async throws {
         do {
-            _ = try await networkService.addToCart(id: id)
+            try await networkService.addToCart(id: id)
             try store.setAddedToCart(id: id, isAddedToCart: true)
         } catch {
             throw convert(error: error)
@@ -52,7 +52,7 @@ final class CartDataCoordinator: BaseDataCoordinator {
     
     func removeFromCart(id: String) async throws {
         do {
-            _ = try await networkService.removeFromCart(id: id)
+            try await networkService.removeFromCart(id: id)
             try store.setAddedToCart(id: id, isAddedToCart: false)
         } catch {
             throw convert(error: error)
