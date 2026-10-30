@@ -12,6 +12,6 @@ class AppViewModel: BaseViewModel {
     var isStarted: Bool = false
     
     func startTheApp() {
-        isStarted = true
+        isStarted = false//true
     }
 }
