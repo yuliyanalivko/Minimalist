@@ -21,10 +21,84 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Resolve commit author
+        id: author
+        run: |
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          if ! git cat-file -e "${SHA}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$SHA"
+          fi
+          EMAIL="$(git log -1 --format='%ae' "$SHA")"
+          NAME="$(git log -1 --format='%an' "$SHA")"
+          {
+            echo "sha=$SHA"
+            echo "email=$EMAIL"
+            echo "name=$NAME"
+          } >> "$GITHUB_OUTPUT"
+          echo "Commit author: $NAME <$EMAIL>"
+
       - name: Show Xcode version
         run: xcodebuild -version
 
       - name: Run unit tests
+        id: tests
         run: |
           chmod +x scripts/run-unit-tests.sh
           scripts/run-unit-tests.sh
+
+      - name: Prepare failure email
+        if: failure() && steps.tests.outcome == 'failure'
+        run: |
+          FAILED_TESTS_FILE="failed-tests.txt"
+          if [[ ! -s "$FAILED_TESTS_FILE" ]]; then
+            echo "The test run failed before individual test results were produced." > "$FAILED_TESTS_FILE"
+          fi
+
+          cat > email-body.txt <<EOF
+          Hello ${{ steps.author.outputs.name }},
+
+          Unit tests failed in ${{ github.repository }}.
+
+          Branch: ${{ github.ref_name }}
+          Commit: ${{ steps.author.outputs.sha }}
+          Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Failed tests:
+          $(cat "$FAILED_TESTS_FILE")
+          EOF
+
+      - name: Skip email notice
+        if: >
+          failure()
+          && steps.tests.outcome == 'failure'
+          && (
+            secrets.MAIL_USERNAME == ''
+            || secrets.MAIL_PASSWORD == ''
+            || steps.author.outputs.email == ''
+            || contains(steps.author.outputs.email, 'noreply.github.com')
+          )
+        run: |
+          echo "Skipping failure email."
+          echo "Commit author: ${{ steps.author.outputs.name }} <${{ steps.author.outputs.email }}>"
+          echo "Set repository secrets MAIL_USERNAME and MAIL_PASSWORD."
+          echo "Use a real git author email, not a GitHub noreply address."
+
+      - name: Email failed tests to the commit author
+        if: >
+          failure()
+          && steps.tests.outcome == 'failure'
+          && secrets.MAIL_USERNAME != ''
+          && secrets.MAIL_PASSWORD != ''
+          && steps.author.outputs.email != ''
+          && !contains(steps.author.outputs.email, 'noreply.github.com')
+        uses: dawidd6/action-send-mail@v24
+        with:
+          server_address: ${{ vars.MAIL_HOST || 'smtp.gmail.com' }}
+          server_port: ${{ vars.MAIL_PORT || 465 }}
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Unit tests failed in ${{ github.repository }}"
+          to: ${{ steps.author.outputs.email }}
+          from: ${{ vars.MAIL_FROM || secrets.MAIL_USERNAME }}
+          body: file://email-body.txt
