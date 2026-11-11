@@ -33,6 +33,7 @@ playground.xcworkspace
 build/
 failed-tests.txt
 email-body.txt
+email-body.html
 
 # CocoaPods
 #

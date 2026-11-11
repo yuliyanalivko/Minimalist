@@ -51,24 +51,25 @@ jobs:
 
       - name: Prepare failure email
         if: failure() && steps.tests.outcome == 'failure'
+        env:
+          AUTHOR_NAME: ${{ steps.author.outputs.name }}
+          COMMIT_SHA: ${{ steps.author.outputs.sha }}
         run: |
           FAILED_TESTS_FILE="failed-tests.txt"
           if [[ ! -s "$FAILED_TESTS_FILE" ]]; then
             echo "The test run failed before individual test results were produced." > "$FAILED_TESTS_FILE"
           fi
 
-          cat > email-body.txt <<EOF
-          Hello ${{ steps.author.outputs.name }},
-
-          Unit tests failed in ${{ github.repository }}.
-
-          Branch: ${{ github.ref_name }}
-          Commit: ${{ steps.author.outputs.sha }}
-          Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-          Failed tests:
-          $(cat "$FAILED_TESTS_FILE")
-          EOF
+          python3 scripts/compose-failure-email.py \
+            --failed-tests "$FAILED_TESTS_FILE" \
+            --author-name "$AUTHOR_NAME" \
+            --repository "${{ github.repository }}" \
+            --branch "${{ github.ref_name }}" \
+            --commit "$COMMIT_SHA" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --commit-url "${{ github.server_url }}/${{ github.repository }}/commit/${COMMIT_SHA}" \
+            --html-out email-body.html \
+            --text-out email-body.txt
 
       - name: Decide whether to email
         if: failure() && steps.tests.outcome == 'failure'
@@ -101,3 +102,4 @@ jobs:
           to: ${{ steps.author.outputs.email }}
           from: ${{ vars.MAIL_FROM || env.MAIL_USERNAME }}
           body: file://email-body.txt
+          html_body: file://email-body.html
