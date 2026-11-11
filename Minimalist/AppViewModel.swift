@@ -9,7 +9,7 @@ enum AppLoadingState {
 
 @Observable
 class AppViewModel: BaseViewModel {
-    var isStarted: Bool = false
+    var isStarted: Bool = true//false
     
     func startTheApp() {
         isStarted = true
