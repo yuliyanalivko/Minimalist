@@ -16,6 +16,9 @@ jobs:
     name: Run unit tests
     runs-on: macos-26
     timeout-minutes: 45
+    env:
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
     steps:
       - name: Checkout
@@ -67,38 +70,34 @@ jobs:
           $(cat "$FAILED_TESTS_FILE")
           EOF
 
-      - name: Skip email notice
-        if: >
-          failure()
-          && steps.tests.outcome == 'failure'
-          && (
-            secrets.MAIL_USERNAME == ''
-            || secrets.MAIL_PASSWORD == ''
-            || steps.author.outputs.email == ''
-            || contains(steps.author.outputs.email, 'noreply.github.com')
-          )
+      - name: Decide whether to email
+        if: failure() && steps.tests.outcome == 'failure'
+        id: mail
+        env:
+          AUTHOR_EMAIL: ${{ steps.author.outputs.email }}
         run: |
-          echo "Skipping failure email."
-          echo "Commit author: ${{ steps.author.outputs.name }} <${{ steps.author.outputs.email }}>"
-          echo "Set repository secrets MAIL_USERNAME and MAIL_PASSWORD."
-          echo "Use a real git author email, not a GitHub noreply address."
+          if [[ -z "$MAIL_USERNAME" || -z "$MAIL_PASSWORD" ]]; then
+            echo "should_send=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping failure email: set repository secrets MAIL_USERNAME and MAIL_PASSWORD."
+          elif [[ -z "$AUTHOR_EMAIL" || "$AUTHOR_EMAIL" == *"noreply.github.com"* ]]; then
+            echo "should_send=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping failure email: commit author <$AUTHOR_EMAIL> is not a real inbox."
+            echo "Use a real git author email, not a GitHub noreply address."
+          else
+            echo "should_send=true" >> "$GITHUB_OUTPUT"
+            echo "Will email failed tests to $AUTHOR_EMAIL"
+          fi
 
       - name: Email failed tests to the commit author
-        if: >
-          failure()
-          && steps.tests.outcome == 'failure'
-          && secrets.MAIL_USERNAME != ''
-          && secrets.MAIL_PASSWORD != ''
-          && steps.author.outputs.email != ''
-          && !contains(steps.author.outputs.email, 'noreply.github.com')
+        if: failure() && steps.tests.outcome == 'failure' && steps.mail.outputs.should_send == 'true'
         uses: dawidd6/action-send-mail@v24
         with:
           server_address: ${{ vars.MAIL_HOST || 'smtp.gmail.com' }}
           server_port: ${{ vars.MAIL_PORT || 465 }}
           secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
+          username: ${{ env.MAIL_USERNAME }}
+          password: ${{ env.MAIL_PASSWORD }}
           subject: "Unit tests failed in ${{ github.repository }}"
           to: ${{ steps.author.outputs.email }}
-          from: ${{ vars.MAIL_FROM || secrets.MAIL_USERNAME }}
+          from: ${{ vars.MAIL_FROM || env.MAIL_USERNAME }}
           body: file://email-body.txt
