@@ -184,8 +184,8 @@ def render_html(args: argparse.Namespace, tests: list[dict[str, object]]) -> str
                   <td style="padding: 8px 32px 32px 32px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td style="border-radius: 10px; background-color: #A2BD80;">
-                          <a href="{run_url}" style="display: inline-block; padding: 12px 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; letter-spacing: 0.04em; text-decoration: none; color: #000000;">
+                        <td style="border-radius: 10px; background-color: #000000;">
+                          <a href="{run_url}" style="display: inline-block; padding: 12px 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; letter-spacing: 0.04em; text-decoration: none; color: #ffffff;">
                             Open workflow run
                           </a>
                         </td>
