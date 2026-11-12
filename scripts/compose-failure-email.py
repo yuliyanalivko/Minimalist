@@ -127,7 +127,7 @@ def render_html(args: argparse.Namespace, tests: list[dict[str, object]]) -> str
             <td>
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #FFFFFF; border-radius: 10px; overflow: hidden; box-shadow: 0 18px 40px rgba(28, 25, 23, 0.08);">
                 <tr>
-                  <td style="background-color: #A2BD80; padding: 28px 32px 24px 32px;">
+                  <td style="background-color: #FF3B30; padding: 28px 32px 24px 32px;">
                     <p style="margin: 0 0 8px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #FFFFFF;">
                       CI notification
                     </p>
@@ -161,7 +161,7 @@ def render_html(args: argparse.Namespace, tests: list[dict[str, object]]) -> str
                               </td>
                               <td width="33%" style="padding: 6px 8px; vertical-align: top;">
                                 <p style="margin: 0 0 4px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #A8A29A;">Failed</p>
-                                <p style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 18px; color: #FF3B30;">{count}</p>
+                                <p style="margin: 0; font-family: sans-serif; font-size: 18px; color: #FF3B30;">{count}</p>
                               </td>
                             </tr>
                           </table>
@@ -185,7 +185,7 @@ def render_html(args: argparse.Namespace, tests: list[dict[str, object]]) -> str
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                       <tr>
                         <td style="border-radius: 10px; background-color: #A2BD80;">
-                          <a href="{run_url}" style="display: inline-block; padding: 12px 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; letter-spacing: 0.04em; text-decoration: none; color: #FFFFFF;">
+                          <a href="{run_url}" style="display: inline-block; padding: 12px 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; letter-spacing: 0.04em; text-decoration: none; color: #000000;">
                             Open workflow run
                           </a>
                         </td>
