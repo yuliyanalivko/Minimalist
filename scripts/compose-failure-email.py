@@ -77,7 +77,7 @@ def test_card(test: dict[str, object]) -> str:
       <td style="padding: 0 0 14px 0;">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px solid #E8E0D8; border-radius: 16px; background-color: #FFFFFF;">
           <tr>
-            <td style="padding: 16px 18px 14px 18px; border-left: 4px solid #B42318;">
+            <td style="padding: 16px 18px 14px 18px; border-left: 4px solid #FF3B30;">
               <p style="margin: 0 0 10px 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; line-height: 22px; color: #1C1917;">
                 {name}
               </p>
@@ -108,43 +108,43 @@ def render_html(args: argparse.Namespace, tests: list[dict[str, object]]) -> str
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Unit tests failed</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #F4F0EA;">
+<body style="margin: 0; padding: 0;">
   <div style="display: none; max-height: 0; overflow: hidden; opacity: 0;">
     {html.escape(count_label)} in {repository} on {branch}.
   </div>
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #F4F0EA;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
     <tr>
       <td align="center" style="padding: 36px 16px;">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px;">
           <tr>
             <td style="padding: 0 8px 20px 8px;">
-              <p style="margin: 0; font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif; font-size: 20px; letter-spacing: 0.12em; text-transform: uppercase; color: #1C1917;">
+              <p style="margin: 0; font-family: sans-serif; font-size: 20px; letter-spacing: 0.12em; text-transform: uppercase; color: #1C1917;">
                 Minimalist
               </p>
             </td>
           </tr>
           <tr>
             <td>
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #FFFFFF; border-radius: 24px; overflow: hidden; box-shadow: 0 18px 40px rgba(28, 25, 23, 0.08);">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #FFFFFF; border-radius: 10px; overflow: hidden; box-shadow: 0 18px 40px rgba(28, 25, 23, 0.08);">
                 <tr>
-                  <td style="background-color: #1C1917; padding: 28px 32px 24px 32px;">
-                    <p style="margin: 0 0 8px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #D6C7B8;">
+                  <td style="background-color: #A2BD80; padding: 28px 32px 24px 32px;">
+                    <p style="margin: 0 0 8px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #FFFFFF;">
                       CI notification
                     </p>
-                    <h1 style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 32px; line-height: 38px; font-weight: normal; color: #FFFFFF;">
+                    <h1 style="margin: 0; font-family: sans-serif; font-size: 32px; line-height: 38px; font-weight: normal; color: #FFFFFF;">
                       Unit tests failed
                     </h1>
-                    <p style="margin: 12px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; color: #E8D5C4;">
+                    <p style="margin: 12px 0 0 0; font-family: sans-serif; font-size: 16px; line-height: 24px; color: #FFFFFF;">
                       {html.escape(count_label)} in {repository}
                     </p>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding: 28px 32px 8px 32px;">
-                    <p style="margin: 0 0 20px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 26px; color: #44403C;">
+                    <p style="margin: 0 0 20px 0; font-family: sans-serif; font-size: 16px; line-height: 26px; color: #44403C;">
                       Hello {greeting_name}, a commit you authored did not pass unit tests. The failing cases are listed below.
                     </p>
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #F7F3EE; border-radius: 16px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #F9F9F9; border-radius: 10px;">
                       <tr>
                         <td style="padding: 16px 18px;">
                           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -161,7 +161,7 @@ def render_html(args: argparse.Namespace, tests: list[dict[str, object]]) -> str
                               </td>
                               <td width="33%" style="padding: 6px 8px; vertical-align: top;">
                                 <p style="margin: 0 0 4px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #A8A29A;">Failed</p>
-                                <p style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 18px; color: #B42318;">{count}</p>
+                                <p style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 18px; color: #FF3B30;">{count}</p>
                               </td>
                             </tr>
                           </table>
@@ -184,7 +184,7 @@ def render_html(args: argparse.Namespace, tests: list[dict[str, object]]) -> str
                   <td style="padding: 8px 32px 32px 32px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td style="border-radius: 999px; background-color: #1C1917;">
+                        <td style="border-radius: 10px; background-color: #A2BD80;">
                           <a href="{run_url}" style="display: inline-block; padding: 12px 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; letter-spacing: 0.04em; text-decoration: none; color: #FFFFFF;">
                             Open workflow run
                           </a>
